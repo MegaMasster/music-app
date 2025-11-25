@@ -5,6 +5,7 @@ import passwordIcon from "../../../assets/images/password-icon.png"
 import emailIcon from "../../../assets/images/email-icon.png"
 import AuthAnim from '../../../shared/ui/authAnimation/authAnim'
 import useAuthStore from '../../../shared/stores/useAuthStore'
+import { authApi } from '../api/authApi'
 
 const SignUp = () => {
 
@@ -21,9 +22,18 @@ const SignUp = () => {
 
     const watchPassword = watch("password")
 
-    const onSubmit = (data) => {
+    const onSubmit = async (userData) => {
         setIsAuthenticated(true)
-        console.log(data)
+
+        try {
+            const result = await authApi.signUp(userData)
+            if (result) {
+                // делаем грязь
+            }
+        } catch(error) {
+            
+        }
+
     }
 
     return (
