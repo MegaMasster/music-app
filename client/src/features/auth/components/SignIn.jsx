@@ -39,7 +39,7 @@ const SignIn = () => {
             <AuthAnim className="flex flex-col justify-evenly w-90 h-80 rounded-2x">
                 <div className="flex justify-between items-center">
                     <h1 className="text-2xl">Sign in</h1>
-                    <div className='flex justify-center items-end h-7 w-25 rounded'>
+                    <div className='flex justify-center items-end h-7 rounded'>
                         <Link to="/sign-up" className="underline opacity-40
                             hover:text-amber-600 transition-colors"> 
                             Sign up
@@ -55,7 +55,7 @@ const SignIn = () => {
                             <img 
                                 src={emailIcon}
                                 alt="password icon"
-                                className='absolute w-5 h-5 left-4'
+                                className='absolute w-5 h-5 left-4 select-none'
                                 style={{ filter: 'invert(1)' }}
                             />
                             <input 
@@ -82,7 +82,7 @@ const SignIn = () => {
                             <img 
                                 src={passwordIcon}
                                 alt="password icon"
-                                className='absolute w-5 h-5 left-4'
+                                className='absolute w-5 h-5 left-4 select-none'
                                 style={{ filter: 'invert(1)' }}
                             />
                                 <input 

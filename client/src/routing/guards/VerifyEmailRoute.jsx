@@ -13,7 +13,7 @@ const VerifyEmailRoute = ({children}) => {
         return <Navigate to = {ROUTES.SIGN_IN} replace/>
     }
     if (isEmailVerified) {
-        return <Navigate to = {ROUTES.USER_NAME} replace/>
+        return <Navigate to = {ROUTES.INDEX} replace/>
     }
 
     return children

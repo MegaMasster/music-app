@@ -3,6 +3,8 @@ import { useRef, useState , useEffect } from 'react'
 
 import AuthAnim from '../../../shared/ui/authAnimation/authAnim'
 import useAuthStore from '../../../shared/stores/useAuthStore'
+import { authApi } from '../api/authApi'
+import AuthErrorHandler from "../../utils/auth/authErrorHandler"
 
 const VerifyEmail = () => {
 
@@ -11,6 +13,11 @@ const VerifyEmail = () => {
     const { 
         setIsEmailVerified,
         setIsAuthenticated,
+        setLoading,
+        isLoading,
+        setServerError,
+        serverError,
+        isError,
         resetError
     } = useAuthStore()
 
@@ -38,11 +45,40 @@ const VerifyEmail = () => {
         }
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault()
         const allFilled = values.every(value => value !== '')
         if (!allFilled) return
-        setIsEmailVerified(true)
+
+        setLoading(true)
+        resetError()
+
+        const email = localStorage.getItem("user_email")
+
+        try {
+            const requestData = {
+                email: email,
+                code: values.join('') 
+            }
+
+            console.log(" Sending request data:", requestData)
+
+            console.log("📥 Response from server:", result)
+
+            const result = await authApi.VerifyEmail(requestData)
+            if (result.success) {
+                setIsEmailVerified(true)
+                localStorage.removeItem("user_email")
+            } else {
+                const errorMessage = AuthErrorHandler.handlerSignUpError(result)
+                setServerError(errorMessage)
+            }
+        } catch (error) {
+            const errorMessage = AuthErrorHandler.handlerVerifyEmailError(error)
+            setServerError(errorMessage)
+        } finally {
+            setLoading(false)
+        }
     }
 
     const setIsAuthenticatedFunction = () => {
@@ -51,6 +87,13 @@ const VerifyEmail = () => {
 
     return (
         <main className="wrapper">
+
+            {isLoading && (
+                <div className="fixed inset-0 bg-opacity-5 backdrop-blur-md flex justify-center items-center z-50">
+                    <div className="w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin"></div>
+                </div>
+            )}
+
             <AuthAnim className="flex flex-col justify-evenly w-90 h-80 rounded-2x">
                 <div className="flex justify-between items-center">
                     <h1 className="text-2xl">Verify email</h1>
@@ -62,6 +105,12 @@ const VerifyEmail = () => {
                         </Link>
                     </button>
                 </div>
+
+                {isError && (
+                    <div className='flex w-full justify-center items-center mt-5'>
+                        <p className='text-md text-rose-600'>{serverError}</p>
+                    </div>
+                )} 
 
                 <form onSubmit={handleSubmit} className="flex flex-col justify-evenly items-center h-[65%]">
                     <div className='flex flex-col w-full items-center'>
@@ -99,5 +148,4 @@ const VerifyEmail = () => {
         </main>
     )
 }
-
 export default VerifyEmail

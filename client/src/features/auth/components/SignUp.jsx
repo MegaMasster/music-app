@@ -19,7 +19,8 @@ const SignUp = () => {
         isLoading,
         resetError,
         setServerError,
-        serverError
+        serverError,
+        isError,
     } = useAuthStore()
 
     useEffect(() => {
@@ -42,7 +43,7 @@ const SignUp = () => {
         try {
             const result = await authApi.signUp(userData)
             if (result.success) {
-                localStorage.setItem("user_email" , result.email)
+                localStorage.setItem("user_email" , userData.email)
                 setIsAuthenticated(true)
             } else {
                 localStorage.removeItem("user_email")
@@ -69,23 +70,22 @@ const SignUp = () => {
             )}
 
             <AuthAnim className="flex flex-col justify-evenly w-90 h-105 rounded-2x">
-                <div className="flex flex-col justify-between items-center">
 
-                    <div className='flex justify-between w-full'>
-                        <h1 className="text-2xl">Sign up</h1>
-                        <div className='flex justify-center items-end h-7 rounded'>
-                            <Link to="/sign-in" className="underline opacity-40
-                                hover:text-amber-600 transition-colors"> 
-                                Sign in
-                            </Link>
-                        </div>
+                <div className="flex justify-between items-center">
+                    <h1 className="text-2xl">Sign up</h1>
+                    <div className='flex justify-center items-end h-7 rounded'>
+                        <Link to="/sign-in" className="underline opacity-40
+                            hover:text-amber-600 transition-colors"> 
+                            Sign in
+                        </Link>
                     </div>
+                </div>
 
-                    <div className='flex w-full justify-center items-center mt-5'>
+                {isError && (
+                    <div className='flex w-full justify-center items-center'>
                         <p className='text-md text-rose-600'>{serverError}</p>
                     </div>
-
-                </div>
+                )} 
 
                 <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col justify-evenly items-center h-[65%] ">
                     <div className='flex flex-col w-full'>
@@ -95,7 +95,7 @@ const SignUp = () => {
                             <img 
                                 src={emailIcon}
                                 alt="password icon"
-                                className='absolute w-5 h-5 left-4'
+                                className='absolute w-5 h-5 left-4 select-none'
                                 style={{ filter: 'invert(1)' }}
                             />
                             <input 
@@ -123,7 +123,7 @@ const SignUp = () => {
                             <img 
                                 src={passwordIcon}
                                 alt="password icon"
-                                className='absolute w-5 h-5 left-4'
+                                className='absolute w-5 h-5 left-4 select-none'
                                 style={{ filter: 'invert(1)' }}
                             />
                             <input 
@@ -155,7 +155,7 @@ const SignUp = () => {
                             <img 
                                 src={passwordIcon}
                                 alt="password icon"
-                                className='absolute w-5 h-5 left-4'
+                                className='absolute w-5 h-5 left-4 select-none'
                                 style={{ filter: 'invert(1)' }}
                             />
                             <input 

@@ -53,7 +53,7 @@ const ForgotPassword = () => {
                             Try another email
                         </button>
                         <Link to="/sign-in" className="underline opacity-40
-                            hover:text-amber-600 transition-colors b">
+                            hover:text-amber-600 transition-colors">
                             Back to sign in
                         </Link>
                     </div>
@@ -80,7 +80,7 @@ const ForgotPassword = () => {
                                 <img 
                                     src={emailIcon}
                                     alt="password icon"
-                                    className='absolute w-5 h-5 left-4'
+                                    className='absolute w-5 h-5 left-4 select-none'
                                     style={{ filter: 'invert(1)' }}
                                 />
                                 <input 

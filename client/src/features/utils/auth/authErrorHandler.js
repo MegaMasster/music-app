@@ -6,7 +6,19 @@ class AuthErrorHandler {
         } else if (error.status === 408) {
             return "Server is busy, please try again later."
         } else if (error.status === 400) {
-            return "Invalid credentials"
+            return error.message
+        } else {
+            return "Server error. Try again later."
+        }
+    }
+
+    static handlerVerifyEmailError (error) {
+        if (error.status === 400) {
+            return error.message
+        } else if (error.status === 408) {
+            return "Server is busy, please try again later."
+        } else if (error.status === 403) {
+            return "The token has expired."
         } else {
             return "Server error. Try again later."
         }

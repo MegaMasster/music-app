@@ -33,7 +33,7 @@ const request = async (endpoint , options={}) => {
         return {
             success: true,
             email: data.email,
-            access_token: data.token
+            access_token: data.access_token
         }
     } catch (error) {
         clearTimeout(timer)
@@ -62,6 +62,6 @@ export const api = {
             method: "POST",
             credentials: "include",
             body: JSON.stringify(data)
-        })
+        }),
 
 }

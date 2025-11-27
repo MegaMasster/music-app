@@ -14,10 +14,17 @@ class UserService {
         return rows.length > 0
     }
 
+    async cleanExpiredUser(email) {
+        await pool.query(
+            `DELETE FROM pending_users 
+            WHERE email = $1 AND expires_at < NOW()`,
+            [email]
+        )
+    }   
+
     async signUp(userData) {
         try {
-            const { username , email , password } = userData
-
+            const { email , password } = userData
             RequestValidation.signUpValidation(userData)
 
             const userExists = await this.isUserExist(email)
@@ -25,23 +32,68 @@ class UserService {
                 throw new Error("User with this email already exists")
             }
 
-            const hashedPassword = await bcrypt.hash(password , 14)
+            const hashedPassword = await bcrypt.hash(password , 12)
+            const verifyCode = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000
 
-            const { rows } = await pool.query(
-                `INSERT INTO users (username , email , password)
-                VALUES ($1 , $2 , $3) RETURNING id , username , email`,
-                [username , email , hashedPassword]
+            await pool.query(
+                `INSERT INTO pending_users (email , password , verify_code , expires_at)
+                    VALUES ($1 , $2 , $3 , $4) 
+                    ON CONFLICT (email) 
+                    DO UPDATE SET 
+                        password = EXCLUDED.password,
+                        verify_code = EXCLUDED.verify_code,
+                        expires_at = EXCLUDED.expires_at`,
+                [email , hashedPassword , verifyCode , new Date(Date.now() + 15 * 60 * 1000)]
             )
 
-            const user = rows[0]
-            const token = await this.generateToken(user)
-
-            return { user , token } 
+            return { 
+                success: true,
+                needsVerification: true,
+                verifyCode: verifyCode,
+                message: "Verification code sent to email." 
+            }
         } catch(error){
             console.error("SignUp error:", error)
             throw error
         }
     }
+
+
+    async verifyEmail(data) {
+        try {
+            const {email , code} = data
+            RequestValidation.verifyCodeValidation(data)
+
+            const { rows } = await pool.query(`SELECT * FROM pending_users 
+                WHERE email = $1 and verify_code = $2` ,
+            [email , code])
+
+            const pendingUser = rows[0]
+
+            if(new Date() > new Date(pendingUser.expires_at)) {
+                await this.cleanExpiredUser(email)
+                throw new Error("The code has expired.")
+            }
+
+            await pool.query(`INSERT INTO users (email , password) VALUES ($1 , $2)` ,
+                [pendingUser.email , pendingUser.password]
+            )
+
+            await this.cleanExpiredUser(email)
+
+            const user = { id: pendingUser.id, email: pendingUser.email }
+            const token = await this.generateToken(user)
+            return {
+                success: true,
+                access_token: token,
+                message: "Account verified."
+            }
+        } catch (error) {
+            console.error("Verify error:", error)
+            throw error
+        }
+    }
+
 
     async generateToken(user) {
        try {

@@ -5,7 +5,6 @@ import { ROUTES } from "./routes"
 import PublicRoute from "./guards/PublicRoute"
 import ProtectedRoute from "./guards/ProtectedRoute"
 import VerifyEmailRoute from "./guards/VerifyEmailRoute"
-import UserNameRoute from "./guards/UserNameRoute"
 
 const SignInPage = lazy(() => import("../pages/authPages/SignInPage"))
 const SignUpPage = lazy(() => import("../pages/authPages/SignUpPage"))
@@ -13,7 +12,6 @@ const ForgotPassPage = lazy(() => import("../pages/authPages/ForgotPassPage"))
 const NotFoundPage = lazy(() => import("../pages/errorPages/NotFoundPage"))
 const IndexPage = lazy(() => import("../pages/indexPage/IndexPage"))
 const VerifyEmailPage = lazy(() => import("../pages/authPages/VerifyEmailPage"))
-const UserNamePage = lazy(() => import("../pages/authPages/UserNamePage"))
 
 const Router = () => { 
 
@@ -66,15 +64,6 @@ const Router = () => {
                             <VerifyEmailRoute>
                                 <VerifyEmailPage />
                             </VerifyEmailRoute>
-                        }
-                    />
-
-                    <Route
-                        path={ROUTES.USER_NAME}
-                        element = {
-                            <UserNameRoute>
-                                <UserNamePage/>
-                            </UserNameRoute>
                         }
                     />
 
