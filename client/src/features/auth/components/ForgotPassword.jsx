@@ -20,7 +20,7 @@ const ForgotPassword = () => {
     } = useAuthStore()
 
     useEffect(() => {
-        document.title = "Forgot password - Just for you"
+        document.title = "Forgot password - AuroraSounds"
         resetError()
     } , [location])
 

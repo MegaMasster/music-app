@@ -18,7 +18,7 @@ const SignIn = () => {
     } = useAuthStore()
 
     useEffect(() => {
-        document.title = "Sign In - Just for you"
+        document.title = "Sign In - AuroraSounds"
         resetError()
     } , [location])
 

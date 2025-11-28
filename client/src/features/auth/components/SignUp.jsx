@@ -21,10 +21,12 @@ const SignUp = () => {
         setServerError,
         serverError,
         isError,
+        setUserEmail,
+        clearPersistedEmail
     } = useAuthStore()
 
     useEffect(() => {
-        document.title = "Sign Up - Just for you"
+        document.title = "Sign Up - AuroraSounds"
         resetError()
     } , [location])
 
@@ -43,15 +45,15 @@ const SignUp = () => {
         try {
             const result = await authApi.signUp(userData)
             if (result.success) {
-                localStorage.setItem("user_email" , userData.email)
+                setUserEmail(userData.email)
                 setIsAuthenticated(true)
             } else {
-                localStorage.removeItem("user_email")
+                clearPersistedEmail()
                 const errorMessage = AuthErrorHandler.handlerSignUpError(result)
                 setServerError(errorMessage)
             }
         } catch(error) {
-            localStorage.removeItem("user_email")
+            clearPersistedEmail()
             const errorMessage = AuthErrorHandler.handlerSignUpError(error)
             setServerError(errorMessage)
         } finally {
