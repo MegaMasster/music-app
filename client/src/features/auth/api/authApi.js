@@ -15,6 +15,11 @@ export const authApi = {
     verifyToken: async () => {
         const response = await api.get("/api/auth/verifyToken")
         return response
+    },
+
+    signIn: async (userData) => {
+        const response = await api.post("/api/auth/signin" , userData)
+        return response
     }
 
 }

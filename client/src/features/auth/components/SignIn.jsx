@@ -6,6 +6,8 @@ import passwordIcon from "../../../assets/images/password-icon.png"
 import emailIcon from "../../../assets/images/email-icon.png"
 import AuthAnim from '../../../shared/ui/authAnimation/authAnim'
 import useAuthStore from '../../../shared/stores/useAuthStore'
+import { authApi } from '../api/authApi'
+import AuthErrorHandler from '../../utils/auth/authErrorHandler'
 
 const SignIn = () => {
 
@@ -14,7 +16,14 @@ const SignIn = () => {
     const {
         setIsAuthenticated,
         setIsEmailVerified,
-        resetError
+        resetError,
+        setLoading,
+        isLoading,
+        setServerError,
+        serverError,
+        isError,
+        setUserEmail,
+        clearUserEmail
     } = useAuthStore()
 
     useEffect(() => {
@@ -28,15 +37,38 @@ const SignIn = () => {
         formState: {errors}
     } = useForm({mode: "onChange"})
 
-    const onSubmit = (data) => {
-        setIsAuthenticated(true)
-        setIsEmailVerified(true)
-        console.log(data)
+    const onSubmit = async (userData) => {
+        clearUserEmail()
+        resetError()
+        setLoading(true)
+        try {
+            const result = await authApi.signIn(userData)
+            if (result.success) {
+                setIsAuthenticated(true)
+                setIsEmailVerified(true)
+            } else {
+                const errorMessage = AuthErrorHandler.handlerSignInError(result)
+                setServerError(errorMessage)
+            }   
+        } catch (error) {
+            const errorMessage = AuthErrorHandler.handlerSignInError(error)
+            setServerError(errorMessage)
+        } finally {
+            setLoading(false)
+        }
     }
 
     return (
         <main className="wrapper">
+
+            {isLoading && (
+                <div className="fixed inset-0 bg-opacity-5 backdrop-blur-md flex justify-center items-center z-50">
+                    <div className="w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin"></div>
+                </div>
+            )}
+
             <AuthAnim className="flex flex-col justify-evenly w-90 h-80 rounded-2x">
+
                 <div className="flex justify-between items-center">
                     <h1 className="text-2xl">Sign in</h1>
                     <div className='flex justify-center items-end h-7 rounded'>
@@ -46,6 +78,12 @@ const SignIn = () => {
                         </Link>
                     </div>
                 </div>
+
+                {isError && (
+                    <div className='flex w-full justify-center items-center mt-5'>
+                        <p className='text-md text-rose-600'>{serverError}</p>
+                    </div>
+                )} 
 
                 <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col justify-evenly items-center h-[65%] ">
                     <div className='flex flex-col w-full'>
@@ -112,7 +150,7 @@ const SignIn = () => {
                         hover:bg-amber-400 hover:translate-x-2 hover:cursor-pointer active:scale-95
                         transition-all duration-250'
                     >
-                        Continue
+                        {isLoading ? "Signing In" : "Continue"}
                     </button>
                 </form>
                 <div className='flex justify-center items-center'>

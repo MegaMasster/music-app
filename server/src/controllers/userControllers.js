@@ -43,7 +43,32 @@ const verifyEmail = async (req , res) => {
         AuthErrorHandler.verifyEmailHandler(error , res)
     }
 }
+
+const signIn = async (req , res) => {
+    try {
+        const result = await userService.signIn(req.body)
+
+        res.cookie("jwt" , result.access_token , {
+            httpOnly: true,
+            domain: 'localhost', 
+            maxAge: 14 * 24 * 60 * 60 * 1000,
+            path: '/'
+        })
+
+        res.status(201).json({
+            success: true, 
+            id: result.id,
+            email: result.email
+        })
+
+        console.log("Success sign in: " , result)
+    } catch (error) {
+        AuthErrorHandler.signInHandler(error , res)
+    }
+}
+
 export {
     signUp,
-    verifyEmail
+    verifyEmail,
+    signIn
 }

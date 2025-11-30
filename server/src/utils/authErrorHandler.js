@@ -2,11 +2,9 @@ class AuthErrorHandler {
 
     static signUpHandler(error , res) {
         const errorMessage = error.message
-        if (
-            errorMessage.includes("Invalid username format") 
+        if (errorMessage.includes("Invalid username format") 
             || errorMessage.includes("Email and password are required")
-            || errorMessage.includes("Invalid email format")
-        ) {
+            || errorMessage.includes("Invalid email format")) {
             return res.status(400).json({
                 success: false,
                 message: errorMessage
@@ -46,6 +44,19 @@ class AuthErrorHandler {
             success: false,
             message: "Internal server error"
         })
+    }
+
+    static signInHandler(error , res) {
+        const errorMessage = error.message
+        if (errorMessage.includes("Email must be filled in") 
+            || errorMessage.includes("Invalid password") 
+            || errorMessage.includes("Invalid email format")
+            || errorMessage.includes("User not found")) {
+            return res.status(400).json({
+                success: false,
+                message: errorMessage
+            })
+        }
     }
 
 }

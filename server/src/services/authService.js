@@ -8,10 +8,13 @@ class UserService {
 
     async isUserExist(email) {
         const { rows } = await pool.query(
-            `SELECT * FROM users WHERE email = $1` ,
+            `SELECT id, email, password FROM users WHERE email = $1` ,
             [email]
         )
-        return rows.length > 0
+        return rows.length > 0 ? {
+            exists: true,
+            user: rows[0]
+        } : { exists: false }
     }
 
     async cleanExpiredUser(email) {
@@ -28,7 +31,7 @@ class UserService {
             RequestValidation.signUpValidation(userData)
 
             const userExists = await this.isUserExist(email)
-            if (userExists) {
+            if (userExists.exists) {
                 throw new Error("User with this email already exists")
             }
 
@@ -100,6 +103,39 @@ class UserService {
             }
         } catch (error) {
             console.error("Verify error:", error)
+            throw error
+        }
+    }
+
+    async signIn(userData) {
+        try {
+
+            console.log("Sign in data: " , userData)
+            const {email , password} = userData
+
+            RequestValidation.signInValidation(userData)
+
+            const result = await this.isUserExist(email)
+            if (!result.exists) {
+                throw new Error("User not found")
+            }
+
+            const passwordValid = await bcrypt.compare(password , result.user.password)
+            if (!passwordValid) {
+                throw new Error("Invalid password")
+            }
+
+            const user = {id: result.user.id, email: result.user.email}
+            const token = await this.generateToken(user)
+
+            return {
+                success: true,
+                access_token: token,
+                id: result.user.id,
+                email: result.user.email
+            }
+        } catch (error) {
+            console.log("Sign in error: " , error)
             throw error
         }
     }
