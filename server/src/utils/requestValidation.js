@@ -1,5 +1,4 @@
 class RequestValidation {
-
     static signUpValidation(userData) {
         const { email, password } = userData
         if (!email || !password) {
@@ -31,7 +30,7 @@ class RequestValidation {
         }
     }
 
-    static signInValidation(userData){
+    static signInValidation(userData) {
         const {email , password} = userData
         if (!email) {
             throw new Error("Email must be filled in")
@@ -45,5 +44,29 @@ class RequestValidation {
         }
     }
 
+    static forgotPasswordValidation(userData) {
+        const {email} = userData
+        if (!email) {
+            throw new Error("Email must be filled in")
+        }
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        if (!emailRegex.test(email)) {
+            throw new Error("Invalid email format")
+        }
+    }
+
+    static resetPasswordValidation(userData) {
+        const {email , new_password} = userData
+        if (!email) {
+            throw new Error("Email must be filled in")
+        }
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        if (!emailRegex.test(email)) {
+            throw new Error("Invalid email format")
+        }
+        if (new_password.length < 8) {
+            throw new Error("Password must be at least 8 characters")
+        }
+    }
 }
 export default RequestValidation

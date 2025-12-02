@@ -4,5 +4,6 @@ export const ROUTES = {
     SIGN_UP: "/sign-up",
     SIGN_IN: "/sign-in",
     VERIFY_EMAIL: "/verify-email",
-    FORGOT: "/forgot-pass"
+    FORGOT_PASSWORD: "/forgot-pass",
+    RESET_PASSWORD: "/reset-password/:token"
 }

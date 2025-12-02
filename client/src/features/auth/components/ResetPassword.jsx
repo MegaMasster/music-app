@@ -1,17 +1,14 @@
-import { Link , useLocation } from 'react-router-dom'
+import { useLocation , useParams , Link  } from 'react-router-dom'
 import { useForm } from "react-hook-form"
-import { useEffect } from 'react'
+import { useEffect , useState } from 'react'
 
 import passwordIcon from "../../../assets/images/password-icon.png"
-import emailIcon from "../../../assets/images/email-icon.png"
 import AuthAnim from '../../../shared/ui/authAnimation/authAnim'
 import useAuthStore from '../../../shared/stores/useAuthStore'
 import { authApi } from '../api/authApi'
 import AuthErrorHandler from "../../utils/auth/authErrorHandler"
 
-const SignUp = () => {
-
-    const location = useLocation()
+const ResetPassword = () => {
 
     const {
         setIsAuthenticated,
@@ -22,13 +19,30 @@ const SignUp = () => {
         serverError,
         isError,
         setUserEmail,
-        clearUserEmail
+        clearUserEmail,
+        userEmail,
+        isValidToken,
+        setIsValidToken,
+        setIsEmailFound,
+        isEmailFound
     } = useAuthStore()
 
+
+    const location = useLocation()
     useEffect(() => {
-        document.title = "Sign Up - AuroraSounds"
+        document.title = "Reset error - AuroraSounds"
         resetError()
     } , [location])
+
+
+    const { token } = useParams()
+    useEffect(() => {
+        const checkTokenData = {
+            token: token
+        }
+        checkUrlToken(checkTokenData)
+    } , [token])
+
 
     const {
         register,
@@ -36,31 +50,96 @@ const SignUp = () => {
         watch,
         formState: {errors}
     } = useForm({mode: "onChange"})
-
     const watchPassword = watch("password")
+
+
+    const checkUrlToken = async (checkTokenData) => {
+        setLoading(true)
+        try {
+            const result = await authApi.checkResetToken(checkTokenData)
+            if (result.success) {
+                setIsValidToken(true)
+            } else {
+                const errorMessage = AuthErrorHandler.handleCheckResetToken(result)
+                setServerError(errorMessage)
+                setIsValidToken(false)
+            }
+        } catch (error) {
+            const errorMessage = AuthErrorHandler.handleCheckResetToken(result)
+            setServerError(errorMessage)
+            setIsValidToken(false)
+        } finally {
+            setLoading(false)
+        }
+    }
+
 
     const onSubmit = async (userData) => {
         resetError()
         setLoading(true)
         try {
-            const result = await authApi.signUp(userData)
+            const resetPasswordData = {
+                email: userEmail,
+                new_password: userData.password
+            }
+            const result = await authApi.resetPassword(resetPasswordData)
             if (result.success) {
-                setUserEmail(userData.email)
-                setIsAuthenticated(true)
+                setServerError("OK")
             } else {
-                clearUserEmail()
-                const errorMessage = AuthErrorHandler.handlerSignUpError(result)
+                const errorMessage = AuthErrorHandler.handleResetPassword(result)
                 setServerError(errorMessage)
             }
         } catch(error) {
-            clearUserEmail()
-            const errorMessage = AuthErrorHandler.handlerSignUpError(error)
+            const errorMessage = AuthErrorHandler.handleResetPassword(error)
             setServerError(errorMessage)
         } finally {
             setLoading(false)
         }
-
     }
+
+
+    // if (!isEmailFound) {
+    //     return (
+    //         <div className='wrapper'>
+    //             <div className='flex flex-col justify-center items-center'>
+    //                 <div className="flex justify-center items-center">
+    //                     <h1 className="">Error</h1>
+    //                     <div className="h-20 w-px bg-white"></div>
+    //                     <p className="">Unknown error, your email was not found, <br/> please enter your email again.</p>
+    //                 </div>
+    //                 <Link to="/forgot-pass" className="opacity-40 underline hover:text-amber-600 transition-colors">
+    //                     Enter your email again
+    //                 </Link>
+    //             </div>
+    //         </div>
+    //     )
+    // }
+
+
+    if (!isValidToken) {
+        return (
+            <div className='wrapper'>
+
+                {isLoading && (
+                    <div className="fixed inset-0 bg-opacity-5 backdrop-blur-md flex justify-center items-center z-50">
+                        <div className="w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin"></div>
+                    </div>
+                )}
+
+                <div className="flex flex-col items-center gap-5">
+                    <div className="flex items-center gap-5">
+                        <h1 className="">Invalid or Expired Link</h1>
+                        <div className="h-20 w-px bg-white"></div>
+                        <p className="">The reset link may have expired, or has<br></br> already been used.</p>
+                    </div>
+                    <Link to="/forgot-pass" className="opacity-40 underline hover:text-amber-600 transition-colors">
+                        Request new reset link
+                    </Link>
+                </div>
+            </div>
+        )
+    }
+
 
     return (
         <main className="wrapper">
@@ -71,16 +150,10 @@ const SignUp = () => {
                 </div>
             )}
 
-            <AuthAnim className="flex flex-col justify-evenly w-90 h-105 rounded-2x">
+            <AuthAnim className="flex flex-col justify-evenly w-90 h-85 rounded-2x">
 
-                <div className="flex justify-between items-center">
-                    <h1 className="text-2xl">Sign up</h1>
-                    <div className='flex justify-center items-end h-7 rounded'>
-                        <Link to="/sign-in" className="underline opacity-40
-                            hover:text-amber-600 transition-colors"> 
-                            Sign in
-                        </Link>
-                    </div>
+                <div className="flex justify-center items-center">
+                    <h1 className="text-2xl">Reset password</h1>
                 </div>
 
                 {isError && (
@@ -89,35 +162,7 @@ const SignUp = () => {
                     </div>
                 )} 
 
-                <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col justify-evenly items-center h-[65%] ">
-                    <div className='flex flex-col w-full'>
-                        <div className='flex items-center relative w-full 
-                            focus-within:translate-x-2 transition-all duration-250'
-                        >
-                            <img 
-                                src={emailIcon}
-                                alt="password icon"
-                                className='absolute w-5 h-5 left-4 select-none'
-                                style={{ filter: 'invert(1)' }}
-                            />
-                            <input 
-                                type="email"
-                                placeholder='Email'
-                                disabled={isLoading}
-                                className="w-full h-11 pl-12 rounded border border-gray-600 outline-0 
-                                focus:border-gray-500 transition-all duration-300" 
-                                {...register("email" , {
-                                    required: "Enter email address",
-                                    pattern: {
-                                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                                        message: "Invalid email address"
-                                    }
-                                })}
-                            />
-                        </div>
-                        {errors.email && <p className="text-sm text-red-600">{errors.email.message}</p>}
-                    </div>
-                    
+                <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col justify-evenly items-center h-[65%] ">  
                     <div className='flex flex-col w-full'>
                         <div className='flex items-center relative w-full 
                             focus-within:translate-x-2 transition-all duration-250'
@@ -126,7 +171,7 @@ const SignUp = () => {
                                 src={passwordIcon}
                                 alt="password icon"
                                 className='absolute w-5 h-5 left-4 select-none'
-                                style={{ filter: 'invert(1)' }}
+                                style={{filter: 'invert(1)'}}
                             />
                             <input 
                                 type="password" 
@@ -183,7 +228,7 @@ const SignUp = () => {
                         hover:bg-amber-400 hover:translate-x-2 hover:cursor-pointer active:scale-95
                         transition-all duration-250'
                     >
-                        {isLoading ? "Signing Up..." : "Continue"}
+                        {isLoading ? "Reseting..." : "Continue"}
                     </button>
                 </form>
             </AuthAnim>
@@ -192,4 +237,4 @@ const SignUp = () => {
 
     )
 }
-export default SignUp 
+export default ResetPassword 

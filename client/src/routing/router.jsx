@@ -15,21 +15,23 @@ const ForgotPassPage = lazy(() => import("../pages/authPages/ForgotPassPage"))
 const NotFoundPage = lazy(() => import("../pages/errorPages/NotFoundPage"))
 const IndexPage = lazy(() => import("../pages/indexPage/IndexPage"))
 const VerifyEmailPage = lazy(() => import("../pages/authPages/VerifyEmailPage"))
+const ResetPasswordPage = lazy(() => import("../pages/authPages/ResetPasswordPage"))
 
 const Router = () => { 
     const {
         setIsAuthenticated,
-        setIsEmailVerified
+        setIsEmailVerified,
+        clearUserEmail,
     } = useAuthStore()
 
     useEffect(() => {
         const verifyToken = async () => {
             try {
                 const result = await authApi.verifyToken()
-
                 if (result.success) {
                     setIsAuthenticated(true)
                     setIsEmailVerified(true)
+                    clearUserEmail()
                 } else {
                     setIsAuthenticated(false)
                     setIsEmailVerified(false)
@@ -78,7 +80,7 @@ const Router = () => {
                     />
 
                     <Route
-                        path={ROUTES.FORGOT}
+                        path={ROUTES.FORGOT_PASSWORD}
                         element = {
                             <PublicRoute>
                                 <ForgotPassPage />
@@ -92,6 +94,15 @@ const Router = () => {
                             <VerifyEmailRoute>
                                 <VerifyEmailPage />
                             </VerifyEmailRoute>
+                        }
+                    />
+
+                    <Route
+                        path={ROUTES.RESET_PASSWORD}
+                        element = {
+                            <PublicRoute>
+                                <ResetPasswordPage />
+                            </PublicRoute>
                         }
                     />
 

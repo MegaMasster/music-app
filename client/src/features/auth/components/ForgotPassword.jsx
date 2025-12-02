@@ -5,18 +5,25 @@ import { useEffect } from 'react'
 import emailIcon from "../../../assets/images/email-icon.png"
 import AuthAnim from '../../../shared/ui/authAnimation/authAnim'
 import useAuthStore from '../../../shared/stores/useAuthStore'
+import { authApi } from '../api/authApi'
+import AuthErrorHandler from '../../utils/auth/authErrorHandler'
 
 const ForgotPassword = () => {
 
     const location = useLocation()
 
     const {
-        setLoading , 
-        setIsSendingEmail,
-        isSendingEmail,
-        userEmail,
+        setLoading,
+        isLoading,
+        resetError,
+        setServerError,
+        serverError,
+        isError,
         setUserEmail,
-        resetError
+        clearUserEmail,
+        isSendingEmail,
+        setIsSendingEmail,
+        userEmail
     } = useAuthStore()
 
     useEffect(() => {
@@ -30,14 +37,42 @@ const ForgotPassword = () => {
         formState: {errors}
     } = useForm({mode: "onChange"})
 
-    const onSubmit = (data) => {
-        setIsSendingEmail(true)
-        setUserEmail(data.email)
-        console.log(data)
+    const onSubmit = async (userData) => {
+        resetError()
+        setLoading(true)
+        try {
+            console.log(userData)
+            const result = await authApi.forgotPassword(userData)
+            if (result.success) {
+                setIsSendingEmail(true)
+                setUserEmail(userData.email)
+            } else {
+                const errorMessage = AuthErrorHandler.handleForgotPasswordError(result)
+                setServerError(errorMessage)
+                clearUserEmail()
+            }
+        } catch (error) {
+            const errorMessage = AuthErrorHandler.handleForgotPasswordError(error)
+            setServerError(errorMessage)
+            clearUserEmail()
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const tryAnotherEmail = () => {
+        setIsSendingEmail(false)
     }
 
     return (
         <main className="wrapper">
+
+            {isLoading && (
+                <div className="fixed inset-0 bg-opacity-5 backdrop-blur-md flex justify-center items-center z-50">
+                    <div className="w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin"></div>
+                </div>
+            )}
+
             {isSendingEmail ? (
                 <div className='wrapper'>
 
@@ -46,7 +81,7 @@ const ForgotPassword = () => {
                         <strong className="text-amber-200">{userEmail}</strong>
                         <p className="text-amber-100">Please check your inbox and follow the link in the email.</p>        
                         <button 
-                            onClick={() => setIsSendingEmail(false)}
+                            onClick={tryAnotherEmail}
                             className="text-lg w-[60%] h-11 bg-amber-500 rounded 
                             hover:bg-amber-400 hover:translate-x-2 hover:cursor-pointer active:scale-95
                             transition-all duration-250"
@@ -63,6 +98,7 @@ const ForgotPassword = () => {
             ) : (
 
                 <AuthAnim className="flex flex-col justify-evenly w-90 h-80 rounded-2x">
+
                     <div className="flex justify-between items-center">
                         <h1 className="text-2xl">Forgot<br></br> password?</h1>
                         <div className='flex justify-center items-end h-7 w-35 rounded'>
@@ -72,6 +108,12 @@ const ForgotPassword = () => {
                             </Link>
                         </div>
                     </div>
+
+                    {isError && (
+                        <div className='flex w-full justify-center items-center mt-5'>
+                            <p className='text-md text-rose-600'>{serverError}</p>
+                        </div>
+                    )}
 
                     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col justify-evenly items-center h-[65%] ">
                         <div className='flex flex-col w-full'>
@@ -100,14 +142,14 @@ const ForgotPassword = () => {
                             </div>
                             {errors.email && <p className="text-sm text-red-600">{errors.email.message}</p>}
                         </div>
-
+                        
                         <button
                             type='submit' 
                             className='text-lg w-full h-11 bg-amber-500 rounded 
                             hover:bg-amber-400 hover:translate-x-2 hover:cursor-pointer active:scale-95
                             transition-all duration-250'
                         >
-                            Continue
+                            {isLoading ? "Forgoting..." : "Continue"}
                         </button>
                     </form>
                 </AuthAnim>

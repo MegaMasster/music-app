@@ -39,9 +39,9 @@ const VerifyEmail = () => {
             return
         }
 
-        setLoading(true)
         resetError()
-
+        setLoading(true)
+        
         try {
             const requestData = {
                 email: userEmail,
@@ -117,7 +117,7 @@ const VerifyEmail = () => {
                     <div className='flex w-full justify-center items-center mt-5'>
                         <p className='text-md text-rose-600'>{serverError}</p>
                     </div>
-                )} 
+                )}
 
                 <form onSubmit={handleSubmit} className="flex flex-col justify-evenly items-center h-[65%]">
                     
@@ -129,7 +129,7 @@ const VerifyEmail = () => {
                         hover:bg-amber-400 hover:translate-x-2 hover:cursor-pointer active:scale-95
                         transition-all duration-250'
                     >
-                        Continue
+                        {isLoading ? "Veryfying..." : "Continue"}
                     </button>
                 </form>
             </AuthAnim>

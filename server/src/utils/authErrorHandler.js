@@ -57,6 +57,57 @@ class AuthErrorHandler {
                 message: errorMessage
             })
         }
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        })
+    }
+
+    static forgotPasswordHandler(error , res) {
+        const errorMessage = error.message
+        if (errorMessage.includes("Email must be filled in")  
+            || errorMessage.includes("Invalid email format")
+            || errorMessage.includes("User not found")) {
+            return res.status(400).json({
+                success: false,
+                message: errorMessage
+            })
+        }
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        })
+    }
+
+    static checkResetTokenHandler(error , res) {
+        const errorMessage = error.message
+        if (errorMessage.includes("Invalid or expired link")) {
+            return res.status(400).json({
+                success: false,
+                message: errorMessage
+            })
+        }
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        })
+    }
+
+    static resetPasswordHandler(error , res) {
+        const errorMessage = error.message
+        if (errorMessage.includes("User not found")
+            || errorMessage.includes("Email must be filled in")
+            || errorMessage.includes("Invalid email format")
+            || errorMessage.includes("Password must be at least 8 characters")) {
+            return res.status(400).json({
+                success: false,
+                message: errorMessage
+            })
+        }
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        })
     }
 
 }

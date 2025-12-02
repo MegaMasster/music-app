@@ -14,22 +14,31 @@ const transporter = nodemailer.createTransport({
     }
 })
 
-const sendVerificationCode = (email , code) => {
+const sendPasswordResetLink = async (email , resetToken) => {
     try {
+        const resetLink = `http://localhost:5173/reset-password?token=${resetToken}`
+
         transporter.sendMail({
             from: `"Aurora Music" <${process.env.EMAIL_USER}>`,
             to: email,
-            subject: 'Verification code',
+            subject: 'Reset Your Password - Aurora Music',
             html: `
-                <h2>Your verification code</h2>
-                <h1 style="font-size: 32px; color: #2563eb;">${code}</h1>
-                <p>Сode is valid for 15 minutes</p>
+                <h3><strong>Reset your Aurora Music password:</strong></h3>
+                <p>
+                    <a href="${resetLink}" style="color: #2563eb;">
+                        ${resetLink}
+                    </a>
+                </p>
+                <p>Link expires in 15 minutes</p>
             `,
             timeout: 5000
         })
+        return {
+            success: true
+        }
     } catch (error) {
         console.error('Ошибка отправки email:', error)
         throw new Error('Не удалось отправить код')
     }
 }
-export default sendVerificationCode
+export default sendPasswordResetLink

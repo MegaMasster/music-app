@@ -1,25 +1,19 @@
 import jwt from "jsonwebtoken"
 
-const verifyToken = async (req , res) => {
+const authenticateToken = async (req, res, next) => {
     try {
         const token = req.cookies.jwt
-
-        if(!token) {
-            res.status(401).json({
+        
+        if (!token) {
+            return res.status(401).json({
                 success: false,
-                message: 'No token'
+                message: 'No token provided'
             })
         }
 
-        const decoded = jwt.verify(token , process.env.JWT_SECRET)
-
-        res.status(200).json({
-            success: true, 
-            id: decoded.id,
-            email: decoded.email
-        })
-        
-
+        const decoded = jwt.verify(token, process.env.JWT_SECRET)
+        req.user = decoded
+        next()
     } catch (error) {
         if (error.name === 'TokenExpiredError') {
             return res.status(401).json({
@@ -27,11 +21,10 @@ const verifyToken = async (req , res) => {
                 message: 'Token expired'
             })
         }
-        
-        res.status(401).json({
+        return res.status(401).json({
             success: false,
             message: 'Invalid token'
         })
     }
 }
-export default verifyToken
+export default authenticateToken

@@ -34,5 +34,34 @@ class AuthErrorHandler {
         }
     }
 
+    static handleForgotPasswordError (error) {
+        if (error.status === 400) {
+            return error.message
+        } else if (error.status === 408) {
+            return "Server is busy, please try again later."
+        } else {
+            return "Server error. Try again later."
+        }
+    }
+
+    static handleCheckResetToken (error) {
+        if (error.status === 400) {
+            return error.message
+        } else if (error.status === 408) {
+            return "Server is busy, please try again later."
+        } else {
+            return "Server error. Try again later."
+        }
+    }
+
+    static handleResetPassword (error) {
+        if (error.status === 400) {
+            return error.message
+        } else if (error.status === 408) {
+            return "Server is busy, please try again later."
+        } else {
+            return "Server error. Try again later."
+        }
+    }
 }
 export default AuthErrorHandler

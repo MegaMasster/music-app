@@ -57,17 +57,23 @@ const request = async (endpoint , options={}) => {
 
 export const api = {
 
-    post: (endpoint , data) => 
+    post: (endpoint , userData) => 
         request(endpoint , {
             method: "POST",
             credentials: "include",
-            body: JSON.stringify(data)
+            body: JSON.stringify(userData)
         }),
     
     get: (endpoint) => 
         request(endpoint , {
             method: "GET",
             credentials: "include"
+        }),
+    
+    patch: (endpoint , userData) =>
+        request(endpoint , {
+            method: "PATCH",
+            body: JSON.stringify(userData)
         })
     
 

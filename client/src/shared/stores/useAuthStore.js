@@ -3,16 +3,16 @@ import { persist } from "zustand/middleware"
 
 const useAuthStore = create(
     persist (( set ) => 
-
         ({
             isLoading: false,
             isSendingEmail: false, 
             userEmail: null,
             isAuthenticated: false,
             isEmailVerified: false,
-            isUserNameSet: false,
             serverError: "",
             isError: false,
+            isValidToken: false,
+            isEmailFound: false,
 
             setLoading: (loadingState) => set({isLoading: loadingState}),
             
@@ -22,13 +22,15 @@ const useAuthStore = create(
             setIsAuthenticated: (isAuthenticatedState) => set({isAuthenticated: isAuthenticatedState}),
             setIsEmailVerified: (isEmailVerifiedState) => set({isEmailVerified: isEmailVerifiedState}),
 
-            setUserName: (isUserNameState) => set({isUserNameSet: isUserNameState}),
-
             setServerError: (error) => set({serverError: error , isError: true}),
             resetError: () => set({serverError: "" , isError: false}),
 
             setUserEmail: (email) => set({userEmail: email}),
             clearUserEmail: () => set({userEmail : null}),
+
+            setIsValidToken: (isValid) => set({isValidToken: isValid}),
+
+            setIsEmailFound: (isFound) => set({isEmailFound: isFound})
     
         }) , {
             name: "temp_email_verification",
@@ -36,7 +38,6 @@ const useAuthStore = create(
                 userEmail: state.userEmail
             })
         }
-
     )
 )
 export default useAuthStore
