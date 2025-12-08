@@ -149,10 +149,12 @@ const ResetPassword = () => {
             
             <Loader/>
 
-            <AuthAnim className="flex flex-col justify-evenly w-90 h-85 rounded-2x">
+            <AuthAnim className="flex flex-col justify-evenly rounded-2x
+                w-80 h-70 md:w-85 md:h-75 lg:w-90 lg:h-80"
+            >
 
                 <div className="flex justify-center items-center">
-                    <h1 className="text-2xl">Reset password</h1>
+                    <h1 className="text-lg md:text-xl lg:text-2xl">Reset password</h1>
                 </div>
 
                 {isError && (
@@ -176,7 +178,7 @@ const ResetPassword = () => {
                                 type="password" 
                                 placeholder='Password'
                                 disabled={isLoading}
-                                className="w-full h-11 pl-12 rounded border border-gray-600 outline-0
+                                className="w-full h-10 lg:h-11 pl-12 rounded border border-gray-600 outline-0
                                 focus:border-gray-500 transition-all duration-250" 
                                 {...register("password" , {
                                     required: "This field is required",
@@ -208,7 +210,7 @@ const ResetPassword = () => {
                                 type="password" 
                                 placeholder='Repeat password'
                                 disabled={isLoading}
-                                className="w-full h-11 pl-12 rounded border border-gray-600 outline-0
+                                className="w-full h-10 lg:h-11 pl-12 rounded border border-gray-600 outline-0
                                 focus:border-gray-500 transition-all duration-250" 
                                 {...register("repeatPassword" , {
                                     required: "Repeat your password",
@@ -223,7 +225,7 @@ const ResetPassword = () => {
                     <button 
                         type='submit' 
                         disabled={isLoading}
-                        className='text-lg w-full h-11 bg-amber-500 rounded 
+                        className='text-[16px] md:text-lg w-full h-10 lg:h-11 bg-amber-500 rounded 
                         hover:bg-amber-400 hover:translate-x-2 hover:cursor-pointer active:scale-95
                         transition-all duration-250'
                     >

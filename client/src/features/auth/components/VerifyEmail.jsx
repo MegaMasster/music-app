@@ -76,12 +76,14 @@ const VerifyEmail = () => {
 
             <Loader/>
 
-            <AuthAnim className="flex flex-col justify-evenly w-90 h-90 rounded-2x">
+            <AuthAnim className="flex flex-col justify-evenly rounded-2x border
+                w-80 h-80 md:w-85 md:h-85 lg:w-90 lg:h-90"
+            >
 
                 <div className="flex flex-col justify-between items-center">
 
                     <div className='flex justify-between items-center w-full'>
-                        <h1 className="text-2xl">Verify email</h1>
+                        <h1 className="text-lg md:text-xl lg:text-2xl">Verify email</h1>
                         <button
                             onClick={setIsAuthenticatedFunction}
                         >    
@@ -111,7 +113,7 @@ const VerifyEmail = () => {
 
                     <button
                         type='submit' 
-                        className='text-lg w-full h-11 bg-amber-500 rounded 
+                        className='text-[16px] md:text-lg w-full h-10 lg:h-11 bg-amber-500 rounded 
                         hover:bg-amber-400 hover:translate-x-2 hover:cursor-pointer active:scale-95
                         transition-all duration-250'
                     >

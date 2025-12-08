@@ -71,13 +71,13 @@ const ForgotPassword = () => {
             {isSendingEmail ? (
                 <div className='wrapper'>
 
-                    <div className='flex flex-col justify-center items-center gap-4'>
-                        <p className="text-amber-100">We've sent password reset instructions to your email address .</p>
-                        <strong className="text-amber-200">{userEmail}</strong>
-                        <p className="text-amber-100">Please check your inbox and follow the link in the email.</p>        
+                    <div className='flex flex-col justify-center text-center items-center gap-4'>
+                        <p className="text-sm md:text-lg  text-amber-100">We've sent password reset instructions to your email address .</p>
+                        <strong className="text-sm md:text-lg text-amber-200">{userEmail}</strong>
+                        <p className="text-sm md:text-lg text-amber-100">Please check your inbox and follow the link in the email.</p>        
                         <button 
                             onClick={tryAnotherEmail}
-                            className="text-lg w-[60%] h-11 bg-amber-500 rounded 
+                            className="text-[16px] w-[60%] h-10 md:text-lg md:h-11 lg:h-11 min-w-[175px] bg-amber-500 rounded 
                             hover:bg-amber-400 hover:translate-x-2 hover:cursor-pointer active:scale-95
                             transition-all duration-250"
                         >
@@ -92,10 +92,12 @@ const ForgotPassword = () => {
                 </div>
             ) : (
 
-                <AuthAnim className="flex flex-col justify-evenly w-90 h-80 rounded-2x">
+                <AuthAnim className="flex flex-col justify-evenly rounded-2x
+                    w-77 h-65 md:w-82 md:h-72 lg:w-90 lg:h-80"
+                >
 
                     <div className="flex justify-between items-center">
-                        <h1 className="text-2xl">Forgot<br></br> password?</h1>
+                        <h1 className="text-lg md:text-xl lg:text-2xl">Forgot<br></br> password?</h1>
                         <div className='flex justify-center items-end h-7 w-35 rounded'>
                             <Link to="/sign-in" className="underline opacity-40
                                 hover:text-amber-600 transition-colors"> 
@@ -124,7 +126,7 @@ const ForgotPassword = () => {
                                 <input 
                                     type="email"
                                     placeholder='Email'
-                                    className="w-full h-11 pl-12 rounded border border-gray-600 outline-0 
+                                    className="w-full h-10 lg:h-11 pl-12 rounded border border-gray-600 outline-0 
                                     focus:border-gray-500 transition-all duration-300" 
                                     {...register("email" , {
                                         required: "Enter email address",
@@ -140,7 +142,7 @@ const ForgotPassword = () => {
                         
                         <button
                             type='submit' 
-                            className='text-lg w-full h-11 bg-amber-500 rounded 
+                            className='text-[16px] md:text-lg w-full h-10 lg:h-11 bg-amber-500 rounded 
                             hover:bg-amber-400 hover:translate-x-2 hover:cursor-pointer active:scale-95
                             transition-all duration-250'
                         >
