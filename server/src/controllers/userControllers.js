@@ -30,7 +30,6 @@ const verifyEmail = async (req , res) => {
         })
         res.status(201).json({
             success: true, 
-            id: result.id,
             email: result.email
         })
         console.log("Success verify: " , result)
@@ -50,7 +49,6 @@ const signIn = async (req , res) => {
         })
         res.status(201).json({
             success: true, 
-            id: result.id,
             email: result.email
         })
         console.log("Success sign in: " , result)

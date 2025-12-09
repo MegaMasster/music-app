@@ -14,7 +14,8 @@ body, html  {
     font-family: "Mons";
 }
 ::selection {
-    background: rgb(68, 0, 253); 
+    background: rgb(110, 124, 255); 
+    color: white;
 }
 .wrapper {
     height: 100vh;

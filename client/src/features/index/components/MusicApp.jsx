@@ -1,7 +1,13 @@
+import Header from "./Header"
+import PlayerController from "./PlayerController"
+import MainContent from "./MainContent"
+
 const MusicApp = () => {
     return(
-        <div className="wrapper">
-            <h1>INDEX</h1>
+        <div className="indexWrapper">
+            <Header/>
+            <PlayerController/>
+            <MainContent/>
         </div>
     )
 }

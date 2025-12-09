@@ -34,7 +34,8 @@ const CodeInput = ({ onCodeComplete }) => {
                         key={index}
                         type="text"
                         maxLength="1"
-                        className="w-12 h-12 text-center text-xl border-2 border-gray-600 rounded-lg focus:border-amber-500 outline-none bg-transparent"
+                        className="w-10 h-10 md:w-11 md:h-11 lg:w-12 lg:h-12 text-center text-xl border-2 border-gray-600 rounded-lg 
+                        focus:border-amber-500 outline-none bg-transparent"
                         ref={el => inputRefs.current[index] = el}
                         onChange={(e) => {
                             e.target.value = e.target.value.replace(/[^0-9]/g, '')

@@ -76,7 +76,7 @@ const VerifyEmail = () => {
 
             <Loader/>
 
-            <AuthAnim className="flex flex-col justify-evenly rounded-2x border
+            <AuthAnim className="flex flex-col justify-evenly rounded-2x
                 w-80 h-80 md:w-85 md:h-85 lg:w-90 lg:h-90"
             >
 

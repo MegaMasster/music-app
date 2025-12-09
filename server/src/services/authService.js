@@ -101,7 +101,6 @@ class UserService {
             return {
                 success: true,
                 access_token: token,
-                id: newUser.id,
                 email: newUser.email
             }
         } catch (error) {
@@ -134,7 +133,6 @@ class UserService {
             return {
                 success: true,
                 access_token: token,
-                id: result.user.id,
                 email: result.user.email
             }
         } catch (error) {
@@ -173,7 +171,6 @@ class UserService {
 
             return {
                 success: true,
-                id: result.user.id,
                 email: email
             }
         } catch(error) {
