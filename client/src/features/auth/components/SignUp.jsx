@@ -1,6 +1,7 @@
 import { Link , useLocation } from 'react-router-dom'
 import { useForm } from "react-hook-form"
-import { useEffect } from 'react'
+import { useEffect , useState } from 'react'
+import ReCAPTCHA from "react-google-recaptcha"
 
 import passwordIcon from "../../../assets/images/password-icon.png"
 import emailIcon from "../../../assets/images/email-icon.png"
@@ -24,6 +25,8 @@ const SignUp = () => {
         clearUserEmail
     } = useAuthStore()
 
+    const [captchaToken, setCaptchaToken] = useState(null)
+
     const location = useLocation()
     useEffect(() => {
         document.title = "Sign Up - AuroraSounds"
@@ -39,7 +42,17 @@ const SignUp = () => {
     
     const watchPassword = watch("password")
 
+    const handleCaptchaChange = (value) => {
+        setCaptchaToken(value)
+    }
+
     const onSubmit = async (userData) => {
+
+        if (!captchaToken) {
+            setServerError("Сomplete the reCAPTCHA verification.")
+            return
+        }
+
         resetError()
         setLoading(true)
         try {
@@ -68,7 +81,7 @@ const SignUp = () => {
             <Loader/>
 
             <AuthAnim className="flex flex-col justify-evenly rounded-2x
-                w-80 h-90 md:w-85 md:h-95 lg:w-90 lg:h-105"
+                w-80 h-105 md:w-85 md:h-110 lg:w-90 lg:h-120"
             >
 
                 <div className="flex justify-between items-center">
@@ -87,7 +100,7 @@ const SignUp = () => {
                     </div>
                 )} 
 
-                <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col justify-evenly items-center h-[65%]">
+                <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col justify-evenly items-center h-[80%] md:h-[75%] lg:h-[75%]">
                     <div className='flex flex-col w-full'>
                         <div className='flex items-center relative w-full 
                             focus-within:translate-x-2 transition-all duration-250'
@@ -95,15 +108,15 @@ const SignUp = () => {
                             <img 
                                 src={emailIcon}
                                 alt="password icon"
-                                className='absolute w-5 h-5 left-4 select-none'
+                                className={`absolute w-5 h-5 left-4 select-none ${!captchaToken ? 'opacity-50' : ''}`}
                                 style={{ filter: 'invert(1)' }}
                             />
                             <input 
                                 type="email"
                                 placeholder='Email'
-                                disabled={isLoading}
                                 className="w-full h-10 lg:h-11 pl-12 rounded border border-gray-600 outline-0 
-                                focus:border-gray-500 transition-all duration-300" 
+                                focus:border-gray-500 transition-all duration-300
+                                disabled:cursor-not-allowed disabled:opacity-50" 
                                 {...register("email" , {
                                     required: "Enter email address",
                                     pattern: {
@@ -111,6 +124,7 @@ const SignUp = () => {
                                         message: "Invalid email address"
                                     }
                                 })}
+                                disabled={!captchaToken}
                             />
                         </div>
                         {errors.email && <p className="text-sm text-red-600">{errors.email.message}</p>}
@@ -123,15 +137,15 @@ const SignUp = () => {
                             <img 
                                 src={passwordIcon}
                                 alt="password icon"
-                                className='absolute w-5 h-5 left-4 select-none'
+                                className={`absolute w-5 h-5 left-4 select-none ${!captchaToken ? 'opacity-50' : ''}`}
                                 style={{ filter: 'invert(1)' }}
                             />
                             <input 
                                 type="password" 
                                 placeholder='Password'
-                                disabled={isLoading}
                                 className="w-full h-10 lg:h-11 pl-12 rounded border border-gray-600 outline-0
-                                focus:border-gray-500 transition-all duration-250" 
+                                focus:border-gray-500 transition-all duration-250
+                                disabled:cursor-not-allowed disabled:opacity-50" 
                                 {...register("password" , {
                                     required: "This field is required",
                                     minLength: {
@@ -143,6 +157,7 @@ const SignUp = () => {
                                         message: "Password is too long"
                                     }
                                 })}
+                                disabled={!captchaToken}
                             />
                         </div>
                         {errors.password && <p className="text-sm text-red-600">{errors.password.message}</p>}
@@ -155,20 +170,21 @@ const SignUp = () => {
                             <img 
                                 src={passwordIcon}
                                 alt="password icon"
-                                className='absolute w-5 h-5 left-4 select-none'
+                                className={`absolute w-5 h-5 left-4 select-none ${!captchaToken ? 'opacity-50' : ''}`}
                                 style={{ filter: 'invert(1)' }}
                             />
                             <input 
                                 type="password" 
                                 placeholder='Repeat password'
-                                disabled={isLoading}
                                 className="w-full h-10 lg:h-11 pl-12 rounded border border-gray-600 outline-0
-                                focus:border-gray-500 transition-all duration-250" 
+                                focus:border-gray-500 transition-all duration-250
+                                disabled:cursor-not-allowed disabled:opacity-50" 
                                 {...register("repeatPassword" , {
                                     required: "Repeat your password",
                                     validate: (value) => 
                                         value === watchPassword || "Passwords do not match"
                                 })}
+                                disabled={!captchaToken}
                             />
                         </div>
                         {errors.repeatPassword && <p className="text-sm text-red-600">{errors.repeatPassword.message}</p>}
@@ -176,13 +192,26 @@ const SignUp = () => {
 
                     <button 
                         type='submit' 
-                        disabled={isLoading}
                         className='text-[16px] md:text-lg w-full h-10 lg:h-11 bg-amber-500 rounded 
                         hover:bg-amber-400 hover:translate-x-2 hover:cursor-pointer active:scale-95
-                        transition-all duration-250'
+                        transition-all duration-250
+                        
+                        disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 
+                        disabled:hover:bg-amber-500
+                        disabled:active:scale-100'
+                        disabled = {isLoading || !captchaToken}
                     >
                         {isLoading ? "Signing Up..." : "Continue"}
                     </button>
+
+                    <div className='flex justify-center items-center w-full'>
+                        <ReCAPTCHA
+                            size="normal"
+                            sitekey="6LeItCosAAAAAISOsInS99z2FykMQh2N32Qz61Sd"
+                            onChange={handleCaptchaChange}
+                        />
+                    </div>
+
                 </form>
             </AuthAnim>
 

@@ -24,7 +24,7 @@ const PlayerController = () => {
                     <img 
                         className="opacity-100 hover:opacity-65 duration-150" 
                         src={leftSkip} 
-                        alt="leftSkip" 
+                        alt="leftSkip"
                         style={{ filter: 'invert(1)' }}
                     />
                 </button>

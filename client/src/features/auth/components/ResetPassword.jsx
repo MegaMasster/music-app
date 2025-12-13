@@ -177,7 +177,6 @@ const ResetPassword = () => {
                             <input 
                                 type="password" 
                                 placeholder='Password'
-                                disabled={isLoading}
                                 className="w-full h-10 lg:h-11 pl-12 rounded border border-gray-600 outline-0
                                 focus:border-gray-500 transition-all duration-250" 
                                 {...register("password" , {
@@ -209,7 +208,6 @@ const ResetPassword = () => {
                             <input 
                                 type="password" 
                                 placeholder='Repeat password'
-                                disabled={isLoading}
                                 className="w-full h-10 lg:h-11 pl-12 rounded border border-gray-600 outline-0
                                 focus:border-gray-500 transition-all duration-250" 
                                 {...register("repeatPassword" , {

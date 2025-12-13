@@ -116,6 +116,7 @@ const VerifyEmail = () => {
                         className='text-[16px] md:text-lg w-full h-10 lg:h-11 bg-amber-500 rounded 
                         hover:bg-amber-400 hover:translate-x-2 hover:cursor-pointer active:scale-95
                         transition-all duration-250'
+                        disabled={isLoading}
                     >
                         {isLoading ? "Veryfying..." : "Continue"}
                     </button>
