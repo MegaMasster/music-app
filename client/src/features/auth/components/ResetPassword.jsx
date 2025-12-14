@@ -28,7 +28,7 @@ const ResetPassword = () => {
 
     const location = useLocation()
     useEffect(() => {
-        document.title = "Reset error - AuroraSounds"
+        document.title = "Reset error - AuroraMusics"
         resetError()
     } , [location])
 

@@ -29,7 +29,7 @@ const SignIn = () => {
 
     const location = useLocation()
     useEffect(() => {
-        document.title = "Sign In - AuroraSounds"
+        document.title = "Sign In - AuroraMusics"
         resetError()
     } , [location])
 
@@ -44,6 +44,10 @@ const SignIn = () => {
     }
 
     const onSubmit = async (userData) => {
+        const userDataWhithCaptchaToken = {
+            ...userData,
+            captchaToken: captchaToken
+        }
 
         if (!captchaToken) {
             setServerError("Сomplete the reCAPTCHA verification.")
@@ -54,7 +58,7 @@ const SignIn = () => {
         resetError()
         setLoading(true)
         try {
-            const result = await authApi.signIn(userData)
+            const result = await authApi.signIn(userDataWhithCaptchaToken)
             if (result.success) {
                 setIsAuthenticated(true)
                 setIsEmailVerified(true)
@@ -172,8 +176,9 @@ const SignIn = () => {
                         {isLoading ? "Signing In..." : "Continue"}
                     </button>
 
-                    <div className='flex justify-center items-center w-full'>
+                    <div className='flex items-center w-full'>
                         <ReCAPTCHA
+                            hl="en"
                             size="normal"
                             sitekey="6LeItCosAAAAAISOsInS99z2FykMQh2N32Qz61Sd"
                             onChange={handleCaptchaChange}

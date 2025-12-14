@@ -25,7 +25,7 @@ const VerifyEmail = () => {
 
     const location = useLocation()
     useEffect(() => {
-        document.title = "Verify email - AuroraSounds"
+        document.title = "Verify email - AuroraMusics"
         resetError()
     } , [location])
 

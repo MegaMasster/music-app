@@ -8,6 +8,37 @@ const userService = new UserService()
 
 const signUp = async (req , res) => {
     try {
+        const { captchaToken } = req.body
+        const RECAPTCHA_SECRET_KEY = process.env.GOOGLE_RECAPTCHA_SECRET_KEY
+
+        if (!captchaToken) {
+            return res.status(400).json({
+                success: false,
+                message: 'ReCAPTCHA token is missing.'
+            })
+        }
+
+        const verificationUrl = 'https://www.google.com/recaptcha/api/siteverify';
+
+        const postData = new URLSearchParams();
+        postData.append('secret', RECAPTCHA_SECRET_KEY);
+        postData.append('response', captchaToken);
+
+        const googleResponse = await fetch(verificationUrl, {
+            method: 'POST',
+            body: postData 
+        })
+
+        const responseData = await googleResponse.json()
+
+        if (!responseData.success) {
+            console.error('ReCAPTCHA verification failed:', responseData['error-codes'])
+            return res.status(403).json({
+                success: false,
+                message: 'Верификация reCAPTCHA не пройдена. Пожалуйста, попробуйте еще раз.'
+            })
+        }
+
         const result = await userService.signUp(req.body)
         sendVerificationCode(req.body.email , result.verifyCode)
         res.status(201).json({
@@ -40,6 +71,37 @@ const verifyEmail = async (req , res) => {
 
 const signIn = async (req , res) => {
     try {
+        const { captchaToken } = req.body
+        const RECAPTCHA_SECRET_KEY = process.env.GOOGLE_RECAPTCHA_SECRET_KEY
+
+        if (!captchaToken) {
+            return res.status(400).json({
+                success: false,
+                message: 'ReCAPTCHA token is missing.'
+            })
+        }
+
+        const verificationUrl = 'https://www.google.com/recaptcha/api/siteverify';
+
+        const postData = new URLSearchParams();
+        postData.append('secret', RECAPTCHA_SECRET_KEY);
+        postData.append('response', captchaToken);
+
+        const googleResponse = await fetch(verificationUrl, {
+            method: 'POST',
+            body: postData 
+        })
+
+        const responseData = await googleResponse.json()
+
+        if (!responseData.success) {
+            console.error('ReCAPTCHA verification failed:', responseData['error-codes'])
+            return res.status(403).json({
+                success: false,
+                message: 'Верификация reCAPTCHA не пройдена. Пожалуйста, попробуйте еще раз.'
+            })
+        }
+
         const result = await userService.signIn(req.body)
         res.cookie("jwt" , result.access_token , {
             httpOnly: true,
