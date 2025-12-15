@@ -72,7 +72,7 @@ const ForgotPassword = () => {
                 <div className='wrapper'>
 
                     <div className='flex flex-col justify-center text-center items-center gap-4'>
-                        <p className="text-sm md:text-lg  text-amber-100">We've sent password reset instructions to your email address .</p>
+                        <p className="text-sm md:text-lg text-amber-100">We've sent password reset instructions to your email address .</p>
                         <strong className="text-sm md:text-lg text-amber-200">{userEmail}</strong>
                         <p className="text-sm md:text-lg text-amber-100">Please check your inbox and follow the link in the email.</p>        
                         <button 

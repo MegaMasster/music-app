@@ -15,9 +15,9 @@ const PlayerController = () => {
     const currentPlayPauseIcon = isMusicPaused ? playController : pauseController 
 
     return (
-        <section className="flex justify-between items-cemter w-[40%] h-[5.5%] border border-white rounded-lg">
+        <section className="flex justify-between items-cemter w-[40%] h-[5.5%] bg-[#0f101a] border border-gray-600 rounded-lg">
             
-            <div className="flex items-center w-[30%] gap-2.5 border border-white">
+            <div className="flex items-center w-[30%] gap-2.5">
                 <button className="w-[18px] h-[18px] select-none
                     transition-all hover:cursor-pointer"
                 >

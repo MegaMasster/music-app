@@ -1,12 +1,16 @@
 import SearchMusicSide from "./SearchMusicSide"
 import PlayListSide from "./PlayListSide"
+import NavBar from "./NavBar"
 
 const MainContent = () => {
     return (
-        <div className="flex flex-col items-center w-[40%] h-[75%] border border-white rounded-lg">
+        <section className="flex flex-col items-center w-[40%] h-[75%] 
+            border border-gray-600 rounded-lg bg-[#0f101a]"
+        >
+            <NavBar/>
             <SearchMusicSide/>
             <PlayListSide/>
-        </div>
+        </section>
     )
 }
 export default MainContent
