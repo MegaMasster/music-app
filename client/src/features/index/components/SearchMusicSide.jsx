@@ -134,7 +134,7 @@ const SearchMusicSide = () => {
 
             <div>
                 {musicLoading ? (
-                    <div className='flex justify-center w-full'>
+                    <div className='flex justify-center w-full mt-3'>
                         <SearchMusicsLoader/>
                     </div>
                 ) : (
