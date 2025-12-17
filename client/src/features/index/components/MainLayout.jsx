@@ -1,19 +1,18 @@
 import { useEffect } from "react"
+import { Outlet } from 'react-router-dom'
 
 import Header from "./Header"
 import PlayerController from "./PlayerController"
-import MainContent from "./MainContent"
 import useAuthStore from "../../../shared/stores/useAuthStore"
 import useIndexStore from "../../../shared/stores/useIndexStore"
 import Loader from "../../../shared/ui/loader/Loader"
 
-const MusicApp = () => {
+const MainLayout = () => {
 
     const {
         setLoading,
         resetError,
-        setServerError,
-        serverError
+        setServerError
     } = useAuthStore()
 
     const {
@@ -21,6 +20,7 @@ const MusicApp = () => {
         setSpotifyAccessToken
     } = useIndexStore()
 
+    // знаю, так делать нельзя, но для пет проекта сделаю исключение
     const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID
     const clientSecret = import.meta.env.VITE_SPOTIFY_CLIENT_SECRET
 
@@ -71,13 +71,11 @@ const MusicApp = () => {
 
     return(
         <main className="indexWrapper">
-
-            <Loader/>
-            
-            <Header/>
-            <PlayerController/>
-            <MainContent/>
+            <Loader />
+            <Header />
+            <PlayerController />
+            <Outlet />
         </main>
     )
 }
-export default MusicApp
+export default MainLayout

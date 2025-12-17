@@ -5,5 +5,6 @@ export const ROUTES = {
     SIGN_IN: "/sign-in",
     VERIFY_EMAIL: "/verify-email",
     FORGOT_PASSWORD: "/forgot-pass",
-    RESET_PASSWORD: "/reset-password/:token"
+    RESET_PASSWORD: "/reset-password/:token",
+    PLAY_LIST: "/play-list/:id"
 }

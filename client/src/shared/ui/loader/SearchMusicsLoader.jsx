@@ -10,7 +10,7 @@ const SearchMusicsLoader = () => {
         <>
             {musicLoading && (
                 <div className="fixed flex justify-center items-center z-50">
-                    <div className="w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full animate-spin"></div>
+                    <div className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
                 </div>
             )}
         </>

@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
-import { motion, AnimatePresence, useScroll } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 
 import searchIcon from "../../../assets/images/indexIcons/searchIcon.png"
+import leaveIcon from "../../../assets/images/indexIcons/leaveIcon.png"
 import useIndexStore from "../../../shared/stores/useIndexStore"
 import useAuthStore from "../../../shared/stores/useAuthStore"
 import searchMusic from '../api/searchMusicsApi'
@@ -15,12 +16,15 @@ const SearchMusicSide = () => {
         setIsSearchPanelOpen,
         musicLoading,
         setMusicLoading,
-        spotifyAccessToken
+        spotifyAccessToken,
+        isMusicSearching,
+        setIsMusicSearching
     } = useIndexStore()
 
     const {
         setServerError,
         serverError,
+        isError,
         resetError
     } = useAuthStore()
 
@@ -67,9 +71,12 @@ const SearchMusicSide = () => {
     }
 
     const onSubmit = async () => {
-        if (!searchInputValue.trim())
+        if (!searchInputValue.trim()){
+            return
+        }
         resetError()
         setMusicLoading(true)
+        setIsMusicSearching(true)
         try {
             const result = await searchMusic(spotifyAccessToken , searchInputValue)
             if (result.success){
@@ -80,14 +87,14 @@ const SearchMusicSide = () => {
             } 
         } catch (error) {
             const errorMessage = MainErrorHandler.handleSearchMusics(error)
-                setServerError(errorMessage)
+            setServerError(errorMessage)
         } finally {
             setMusicLoading(false)
         }
     }
 
     const handleInputChange = (e) => {
-        setSearchInputValue(e.target.value);
+        setSearchInputValue(e.target.value)
     }
 
     return (
@@ -97,12 +104,27 @@ const SearchMusicSide = () => {
                     ref={inputRef}
                     type="text" 
                     placeholder="Music search"
-                    className="w-full text-white text-sm px-4 outline-0 
-                    bg-[#151324]"
+                    className="w-full text-fuchsia-100 text-sm px-4 outline-0 
+                    bg-[#151324] disabled:cursor-not-allowed disabled:opacity-50"
                     onClick={handleInputClick}
                     onChange={handleInputChange}
                     value={searchInputValue}
+                    disabled={musicLoading}
                 />
+
+                <div className="flex items-center pr-5 justify-center w-8 h-full bg-[#151324]">
+                    {musicLoading && <SearchMusicsLoader /> }
+                    <button 
+                        className='flex'
+                        // onClick={}
+                    >
+                        {isMusicSearching && <img className="w-4 h-4 select-none"
+                            style={{ filter: 'invert(1)' }} 
+                            src={leaveIcon} 
+                            alt="go to main"
+                        />}
+                    </button>
+                </div>
 
                 <AnimatePresence>
                     {isSearchPanelOpen && (
@@ -118,29 +140,59 @@ const SearchMusicSide = () => {
                         </motion.div>
                     )}
                 </AnimatePresence>
-
+                
                 <button className="flex justify-center items-center w-[8%] rounded border-l border-gray-600
-                    bg-[#1d1d1d] hover:cursor-pointer hover:bg-[#242424]"
-                    onClick={onSubmit}
-                >
-                    <img 
-                        src={searchIcon}
-                        alt="password icon"
-                        className="w-4 h-4 select-none"
-                        style={{ filter: 'invert(1)' }}
-                    />
+                        bg-[#1d1d1d] hover:cursor-pointer hover:bg-[#242424] disabled:cursor-not-allowed disabled:opacity-50"
+                        onClick={onSubmit}
+                        disabled={musicLoading}
+                    >
+                        <img 
+                            src={searchIcon}
+                            alt="password icon"
+                            className="w-4 h-4 select-none"
+                            style={{ filter: 'invert(1)' }}
+                        />
                 </button>
             </div>
 
-            <div>
-                {musicLoading ? (
-                    <div className='flex justify-center w-full mt-3'>
-                        <SearchMusicsLoader/>
-                    </div>
+            <div className='flex flex-col w-full mt-5'>
+                {isMusicSearching ? (
+                    <p>Found tracks</p>
                 ) : (
-                    <article className='text-white'>
-                        хуй хуй хуй
-                    </article>
+                    <>
+                        <p className='text-white font-bold'>Recently listened</p>
+                        {isError ? (
+                            <div className='flex text-center'>
+                                <p className='text-sm text-rose-600'>{serverError}</p>
+                            </div>
+                        ) : (
+                            <div className='flex w-full mt-5 justify-between'>
+                                <div className='flex flex-col'>
+                                    <article className='text-white'>
+                                        Трэк 1
+                                    </article>
+                                    <article className='text-white'>
+                                        Трэк 2
+                                    </article>
+                                    <article className='text-white'>
+                                        Трэк 3
+                                    </article>
+                                </div>
+
+                                <div className='flex flex-col'>
+                                    <article className='text-white'>
+                                        Трэк 1
+                                    </article>
+                                    <article className='text-white'>
+                                        Трэк 2
+                                    </article>
+                                    <article className='text-white'>
+                                        Трэк 3
+                                    </article>
+                                </div>
+                            </div>
+                        )}
+                    </>
                 )}
             </div>
         </section>

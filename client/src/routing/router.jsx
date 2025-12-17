@@ -13,11 +13,15 @@ const SignInPage = lazy(() => import("../pages/authPages/SignInPage"))
 const SignUpPage = lazy(() => import("../pages/authPages/SignUpPage"))
 const ForgotPassPage = lazy(() => import("../pages/authPages/ForgotPassPage"))
 const NotFoundPage = lazy(() => import("../pages/errorPages/NotFoundPage"))
-const IndexPage = lazy(() => import("../pages/indexPage/IndexPage"))
 const VerifyEmailPage = lazy(() => import("../pages/authPages/VerifyEmailPage"))
 const ResetPasswordPage = lazy(() => import("../pages/authPages/ResetPasswordPage"))
 
+const MainLayoutPage = lazy(() => import("../pages/MainLayoutPages/MainLayoutPage"))
+const PlayListPage = lazy(() => import("../pages/MainLayoutPages/PlayListPage"))
+const IndexPage = lazy(() => import("../pages/MainLayoutPages/IndexPage"))
+
 const Router = () => { 
+
     const {
         setIsAuthenticated,
         setIsEmailVerified,
@@ -106,14 +110,12 @@ const Router = () => {
                         }
                     />
 
-                    <Route
-                        path={ROUTES.INDEX}
-                        element = {
-                            <ProtectedRoute>
-                                <IndexPage />
-                            </ProtectedRoute>
-                        }
-                    />
+                    <Route element={<ProtectedRoute />}>
+                        <Route element={<MainLayoutPage />}>
+                            <Route path={ROUTES.INDEX} element={<IndexPage />} />
+                            <Route path={ROUTES.PLAY_LIST} element={<PlayListPage />} />
+                        </Route>
+                    </Route>
 
                     <Route
                         path="*"

@@ -1,9 +1,9 @@
-import { Navigate } from "react-router-dom"
+import { Navigate , Outlet} from "react-router-dom"
 
 import useAuthStore from "../../shared/stores/useAuthStore"
 import { ROUTES } from "../routes";
 
-const ProtectedRoute = ({children}) => {
+const ProtectedRoute = () => {
     const {
         isAuthenticated, 
         isEmailVerified
@@ -16,6 +16,6 @@ const ProtectedRoute = ({children}) => {
         return <Navigate to = {ROUTES.VERIFY_EMAIL} replace/>
     }
 
-    return children
+    return <Outlet />
 }
 export default ProtectedRoute

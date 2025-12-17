@@ -11,7 +11,7 @@ const searchMusic = async (spotifyAccessToken , query) => {
         const searchUrl = new URL('https://api.spotify.com/v1/search')
         searchUrl.searchParams.append('q', query)
         searchUrl.searchParams.append('type', 'track')
-        searchUrl.searchParams.append('limit', '10')
+        searchUrl.searchParams.append('limit', '18')
 
         const response = await fetch(searchUrl.toString() , {
             method: "GET" , 
