@@ -8,6 +8,11 @@ const useIndexStore = create(
             spotifyAccessToken: null,
             isSearchPanelOpen: false,
             isMusicSearching: false,
+            isMusicsFound: false,
+            
+            // musics data
+            foundTracks: [],
+            // 
 
             setMusicLoading: (isMusicLoading) => set({musicLoading: isMusicLoading}),
 
@@ -16,7 +21,15 @@ const useIndexStore = create(
 
             clearSpotifyAccessToken: () => set({ spotifyAccessToken: null}),
 
-            setIsMusicSearching: (isSearching) => set({isMusicSearching: isSearching})
+            setIsMusicSearching: (isSearching) => set({isMusicSearching: isSearching}),
+
+            setIsMusicsFound: (isFound) => set({isMusicsFound: isFound}),
+
+            // musics data
+            setFoundTracks: (tracks) => set({foundTracks: tracks}),
+            resetFoundTracks: () => set({foundTracks: []})
+            // 
+
         }) , {
             name: "spotify_access_token",
             partialize: (state) => ({

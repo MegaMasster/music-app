@@ -18,7 +18,12 @@ const SearchMusicSide = () => {
         setMusicLoading,
         spotifyAccessToken,
         isMusicSearching,
-        setIsMusicSearching
+        setIsMusicSearching,
+        isMusicsFound,
+        setIsMusicsFound,
+        foundTracks,
+        setFoundTracks,
+        resetFoundTracks
     } = useIndexStore()
 
     const {
@@ -28,7 +33,7 @@ const SearchMusicSide = () => {
         resetError
     } = useAuthStore()
 
-    const [searchInputValue , setSearchInputValue] = useState([])
+    const [searchInputValue , setSearchInputValue] = useState("")
 
     const inputRef = useRef(null)
     const panelRef = useRef(null)
@@ -76,25 +81,35 @@ const SearchMusicSide = () => {
         }
         resetError()
         setMusicLoading(true)
-        setIsMusicSearching(true)
+        setIsMusicSearching(false)
         try {
             const result = await searchMusic(spotifyAccessToken , searchInputValue)
             if (result.success){
                 console.log("SUCCESS LOADIN MUSICS" , result.data)
+                setFoundTracks(result.data)
+                setIsMusicsFound(true)
             } else {
                 const errorMessage = MainErrorHandler.handleSearchMusics(result)
+                setIsMusicsFound(false)
                 setServerError(errorMessage)
             } 
         } catch (error) {
             const errorMessage = MainErrorHandler.handleSearchMusics(error)
             setServerError(errorMessage)
         } finally {
+            setIsMusicSearching(true)
             setMusicLoading(false)
         }
     }
 
     const handleInputChange = (e) => {
         setSearchInputValue(e.target.value)
+    }
+
+    const handleLeaveFromSearch = () => {
+        setIsMusicSearching(false)
+        setIsMusicsFound(false)
+        setSearchInputValue("")
     }
 
     return (
@@ -112,18 +127,20 @@ const SearchMusicSide = () => {
                     disabled={musicLoading}
                 />
 
-                <div className="flex items-center pr-5 justify-center w-8 h-full bg-[#151324]">
+                <div className="flex items-center pr-5 justify-center w-11 h-full bg-[#151324]">
                     {musicLoading && <SearchMusicsLoader /> }
-                    <button 
-                        className='flex'
-                        // onClick={}
-                    >
-                        {isMusicSearching && <img className="w-4 h-4 select-none"
-                            style={{ filter: 'invert(1)' }} 
-                            src={leaveIcon} 
-                            alt="go to main"
-                        />}
-                    </button>
+                    {isMusicSearching && 
+                        <button 
+                            className='flex items-center justify-center w-5 h-full hover:cursor-pointer'
+                            onClick={handleLeaveFromSearch}
+                        >
+                            <img className="w-4 h-4 select-none"
+                                style={{ filter: 'invert(1)' }} 
+                                src={leaveIcon} 
+                                alt="go to main"
+                            />
+                        </button>
+                    }
                 </div>
 
                 <AnimatePresence>
@@ -156,41 +173,43 @@ const SearchMusicSide = () => {
             </div>
 
             <div className='flex flex-col w-full mt-5'>
-                {isMusicSearching ? (
-                    <p>Found tracks</p>
+                {isMusicsFound && foundTracks.length > 0 ? (
+                    {}
                 ) : (
                     <>
-                        <p className='text-white font-bold'>Recently listened</p>
                         {isError ? (
                             <div className='flex text-center'>
                                 <p className='text-sm text-rose-600'>{serverError}</p>
                             </div>
                         ) : (
-                            <div className='flex w-full mt-5 justify-between'>
-                                <div className='flex flex-col'>
-                                    <article className='text-white'>
-                                        Трэк 1
-                                    </article>
-                                    <article className='text-white'>
-                                        Трэк 2
-                                    </article>
-                                    <article className='text-white'>
-                                        Трэк 3
-                                    </article>
-                                </div>
+                            <>
+                                <p className='text-white font-bold'>Recently listened</p>
+                                <div className='flex w-full mt-5 justify-between'>
+                                    <div className='flex flex-col'>
+                                        <article className='text-white'>
+                                            Трэк 1
+                                        </article>
+                                        <article className='text-white'>
+                                            Трэк 2
+                                        </article>
+                                        <article className='text-white'>
+                                            Трэк 3
+                                        </article>
+                                    </div>
 
-                                <div className='flex flex-col'>
-                                    <article className='text-white'>
-                                        Трэк 1
-                                    </article>
-                                    <article className='text-white'>
-                                        Трэк 2
-                                    </article>
-                                    <article className='text-white'>
-                                        Трэк 3
-                                    </article>
+                                    <div className='flex flex-col'>
+                                        <article className='text-white'>
+                                            Трэк 1
+                                        </article>
+                                        <article className='text-white'>
+                                            Трэк 2
+                                        </article>
+                                        <article className='text-white'>
+                                            Трэк 3
+                                        </article>
+                                    </div>
                                 </div>
-                            </div>
+                            </>
                         )}
                     </>
                 )}
