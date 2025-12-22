@@ -1,11 +1,13 @@
 import { useEffect } from "react"
-import { Outlet } from 'react-router-dom'
+import { Outlet  } from 'react-router-dom'
 
 import Header from "./Header"
 import PlayerController from "./PlayerController"
 import useAuthStore from "../../../shared/stores/useAuthStore"
 import useIndexStore from "../../../shared/stores/useIndexStore"
 import Loader from "../../../shared/ui/loader/Loader"
+import SearchMusicSide from "./SearchMusicSide"
+import PlayListSide from "./PlayListSide"
 
 const MainLayout = () => {
 
@@ -74,7 +76,15 @@ const MainLayout = () => {
             <Loader />
             <Header />
             <PlayerController />
-            <Outlet />
+            
+            <section className="flex flex-col items-center mb-5 w-[40%] h-[75%] 
+                border border-gray-600 rounded-lg bg-[#0f101a]"
+            >
+                <Outlet />
+                <SearchMusicSide/>
+                <PlayListSide/>
+            </section>
+
         </main>
     )
 }

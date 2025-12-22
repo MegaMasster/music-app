@@ -1,13 +1,17 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useLocation } from 'react-router-dom'
 
 import searchIcon from "../../../assets/images/indexIcons/searchIcon.png"
 import leaveIcon from "../../../assets/images/indexIcons/leaveIcon.png"
+import track from "../../../assets/images/indexIcons/track.png"
 import useIndexStore from "../../../shared/stores/useIndexStore"
 import useAuthStore from "../../../shared/stores/useAuthStore"
 import searchMusic from '../api/searchMusicsApi'
 import MainErrorHandler from '../../utils/main/mainErrorHandler'
 import SearchMusicsLoader from '../../../shared/ui/loader/searchMusicsLoader'
+import { ROUTES } from "../../../routing/routes"
+
 
 const SearchMusicSide = () => {
 
@@ -23,7 +27,9 @@ const SearchMusicSide = () => {
         setIsMusicsFound,
         foundTracks,
         setFoundTracks,
-        resetFoundTracks
+        resetFoundTracks,
+        searchInputValue,
+        setSearchInputValue
     } = useIndexStore()
 
     const {
@@ -33,7 +39,8 @@ const SearchMusicSide = () => {
         resetError
     } = useAuthStore()
 
-    const [searchInputValue , setSearchInputValue] = useState("")
+    const location = useLocation()
+    const isAboutPage = location.pathname === ROUTES.ABOUT_AUTHOR
 
     const inputRef = useRef(null)
     const panelRef = useRef(null)
@@ -113,7 +120,7 @@ const SearchMusicSide = () => {
     }
 
     return (
-        <section className="relative flex flex-col items-center w-[90%] mt-0 p-3 rounded">
+        <section className={` ${isAboutPage ? 'hidden' : 'relative flex flex-col items-center w-[90%] mt-0 p-3 rounded'} `}>
             <div className="flex w-full h-8 rounded border border-gray-600">
                 <input 
                     ref={inputRef}
@@ -174,7 +181,23 @@ const SearchMusicSide = () => {
 
             <div className='flex flex-col w-full mt-5'>
                 {isMusicsFound && foundTracks.length > 0 ? (
-                    {}
+
+                    <div className="grid grid-cols-2 gap-4 w-full"> 
+                        {foundTracks.slice(0, 6).map((tracks) => (
+                            <div key={tracks.id} className="w-full">
+                                <iframe
+                                    title={`Spotify Player - ${tracks.id}`}
+                                    src={`https://open.spotify.com/embed/track/${tracks.id}?utm_source=generator&theme=0&view=list`}
+                                    width="100%"
+                                    height="80"
+                                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                                    loading="lazy"
+                                    className="rounded"
+                                ></iframe> 
+                            </div> 
+                        ))}
+                    </div>
+
                 ) : (
                     <>
                         {isError ? (

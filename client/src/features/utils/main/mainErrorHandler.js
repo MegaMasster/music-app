@@ -8,7 +8,7 @@ class MainErrorHandler {
         } else if (error.status === 401) {
             return "Try refreshing the page several times or re-visiting the site."
         }else if (error.status === 408) {
-            return "Server is busy, please try again later."
+            return "Server is busy, please reload the page."
         } else {
             return "Server error. Try again later."
         }
