@@ -77,12 +77,12 @@ const MainLayout = () => {
             <Header />
             <PlayerController />
             
-            <section className="flex flex-col items-center mb-5 w-[40%] h-[75%] 
-                border border-gray-600 rounded-lg bg-[#0f101a]"
+           <section className="relative z-10 flex flex-col items-center mb-5 w-[40%] h-[75%] bg-white/2 border
+                border-white/5 backdrop-blur-md rounded-[2rem] overflow-hidden"
             >
                 <Outlet />
-                <SearchMusicSide/>
-                <PlayListSide/>
+                <SearchMusicSide />
+                <PlayListSide />
             </section>
 
         </main>

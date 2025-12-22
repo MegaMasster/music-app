@@ -1,34 +1,55 @@
 import { NavLink } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 
 const NavBar = () => {
-    
     const links = [
         { path: '/index', label: 'Home' },
-        { path: '/about-author', label: 'About author' },
+        { path: '/about-project', label: 'About project' },
     ]
 
     return (
-        <nav className="flex justify-start w-[90%] p-3 gap-7 text-white">
+        <nav className="flex justify-start w-[95%] p-4 gap-2 text-white">
             {links.map((link) => (
                 <NavLink
                     key={link.path}
                     to={link.path}
-                    className="relative px-4 py-2" 
+                    className="relative px-5 py-2.5 transition-colors duration-300 group"
                 >
-                {({ isActive }) => (
-                    <>
-                        <span className="relative z-10">{link.label}</span>
+                    {({ isActive }) => (
+                        <>
+                            <span className={`relative z-10 text-sm font-medium tracking-wide transition-colors duration-300 ${
+                                isActive ? 'text-white' : 'text-gray-400 group-hover:text-gray-200'
+                            }`}>
+                                {link.label}
+                            </span>
 
-                        {isActive && (
-                            <motion.div
-                                initial={{ opacity: 0 }} 
-                                animate={{ opacity: 1 }} 
-                                className="absolute inset-0 bg-gray-500/30 rounded-md"
-                            />
-                        )}
-                    </>
-                )}
+                            {isActive && (
+                                <motion.div
+                                    layoutId="nav-active" 
+                                    className="absolute inset-0 bg-white/5 border border-white/10 rounded-xl shadow-[0_0_20px_rgba(255,255,255,0.03)]"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{
+                                        type: "spring",
+                                        stiffness: 380,
+                                        damping: 30
+                                    }}
+                                />
+                            )}
+
+                            {isActive && (
+                                <motion.div 
+                                    layoutId="nav-dot"
+                                    className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-blue-500 rounded-full shadow-[0_0_8px_#3b82f6]"
+                                    transition={{
+                                        type: "spring",
+                                        stiffness: 380,
+                                        damping: 30
+                                    }}
+                                />
+                            )}
+                        </>
+                    )}
                 </NavLink>
             ))}
         </nav>

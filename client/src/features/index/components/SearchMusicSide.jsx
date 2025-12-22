@@ -120,31 +120,35 @@ const SearchMusicSide = () => {
     }
 
     return (
-        <section className={` ${isAboutPage ? 'hidden' : 'relative flex flex-col items-center w-[90%] mt-0 p-3 rounded'} `}>
-            <div className="flex w-full h-8 rounded border border-gray-600">
+        <section className={` ${isAboutPage ? 'hidden' : 'relative flex flex-col items-center w-[90%] mt-0 p-6 rounded-[2.5rem] bg-white/2 border border-white/5 backdrop-blur-xl shadow-[0_30px_60px_-15px_rgba(0,0,0,0.7)] shadow-indigo-500/5 transition-all duration-500'} `}>
+            
+            {/* Декоративное свечение сверху для объема */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-px bg-linear-to-r from-transparent via-blue-500/20 to-transparent" />
+
+            {/* Контейнер поиска */}
+            <div className="flex w-full h-11 rounded-2xl border border-white/10 bg-black/40 overflow-hidden focus-within:border-blue-500/40 focus-within:shadow-[0_0_20px_rgba(59,130,246,0.1)] transition-all duration-300 shadow-inner">
                 <input 
                     ref={inputRef}
                     type="text" 
-                    placeholder="Music search"
-                    className="w-full text-fuchsia-100 text-sm px-4 outline-0 
-                    bg-[#151324] disabled:cursor-not-allowed disabled:opacity-50"
+                    placeholder="Search your favorite music..."
+                    className="w-full text-fuchsia-50 text-sm px-5 outline-0 bg-transparent disabled:cursor-not-allowed disabled:opacity-50 placeholder:text-gray-600 font-light tracking-wide"
                     onClick={handleInputClick}
                     onChange={handleInputChange}
                     value={searchInputValue}
                     disabled={musicLoading}
                 />
 
-                <div className="flex items-center pr-5 justify-center w-11 h-full bg-[#151324]">
+                <div className="flex items-center pr-5 justify-center w-11 h-full bg-transparent">
                     {musicLoading && <SearchMusicsLoader /> }
                     {isMusicSearching && 
                         <button 
-                            className='flex items-center justify-center w-5 h-full hover:cursor-pointer'
-                            onClick={handleLeaveFromSearch}
+                            className='flex items-center justify-center w-6 h-full hover:cursor-pointer hover:scale-110 transition-transform active:scale-95'
+                            onClick={handleLeaveFromSearch} 
                         >
-                            <img className="w-4 h-4 select-none"
+                            <img className="w-4 h-4 select-none opacity-60 hover:opacity-100"
                                 style={{ filter: 'invert(1)' }} 
                                 src={leaveIcon} 
-                                alt="go to main"
+                                alt="clear"
                             />
                         </button>
                     }
@@ -152,84 +156,88 @@ const SearchMusicSide = () => {
 
                 <AnimatePresence>
                     {isSearchPanelOpen && (
-                        <motion.div ref={panelRef} className="absolute text-sm h-30 top-11 left-3 right-3 z-10 
-                            flex flex-col text-white bg-[#383838] 
-                            border border-gray-600 rounded border-t-0 px-4"
-                            initial="hidden"
-                            animate="visible"
-                            exit="hidden"
-                            variants={panelAnimation}
+                        <motion.div 
+                            ref={panelRef} 
+                            className="absolute text-sm h-32 top-16 left-6 right-6 z-20 
+                            flex flex-col text-white bg-[#161722]/95 backdrop-blur-2xl
+                            border border-white/10 rounded-3xl shadow-[0_25px_50px_-12px_rgba(0,0,0,0.8)] px-5 py-4"
+                            initial={{ opacity: 0, y: -15 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -15 }}
+                            transition={{ duration: 0.2 }}
                         >
-                            <p>History is empty...</p>
+                            <div className="flex items-center gap-2 mb-2">
+                                <div className="w-1 h-1 bg-blue-500 rounded-full animate-pulse" />
+                                <p className="text-[10px] uppercase tracking-widest text-gray-500 font-bold">Recent History</p>
+                            </div>
+                            <p className="opacity-40 italic text-xs ml-3 font-light">Your history is currently empty...</p>
                         </motion.div>
                     )}
                 </AnimatePresence>
                 
-                <button className="flex justify-center items-center w-[8%] rounded border-l border-gray-600
-                        bg-[#1d1d1d] hover:cursor-pointer hover:bg-[#242424] disabled:cursor-not-allowed disabled:opacity-50"
+                <button className="flex justify-center items-center w-[12%] border-l border-white/10
+                        bg-white/5 hover:cursor-pointer hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50 transition-colors group"
                         onClick={onSubmit}
                         disabled={musicLoading}
                     >
                         <img 
                             src={searchIcon}
-                            alt="password icon"
-                            className="w-4 h-4 select-none"
+                            alt="search"
+                            className="w-4 h-4 select-none opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-all"
                             style={{ filter: 'invert(1)' }}
                         />
                 </button>
             </div>
 
-            <div className='flex flex-col w-full mt-5'>
+            {/* Секция результатов */}
+            <div className='flex flex-col w-full mt-8'>
                 {isMusicsFound && foundTracks.length > 0 ? (
-
-                    <div className="grid grid-cols-2 gap-4 w-full"> 
+                    <div className="grid grid-cols-2 gap-5 w-full"> 
                         {foundTracks.slice(0, 6).map((tracks) => (
-                            <div key={tracks.id} className="w-full">
+                            <div key={tracks.id} className="group w-full rounded-2xl overflow-hidden border border-white/5 bg-black/20 hover:border-blue-500/30 hover:shadow-[0_10px_30px_-10px_rgba(59,130,246,0.2)] transition-all duration-300">
                                 <iframe
                                     title={`Spotify Player - ${tracks.id}`}
                                     src={`https://open.spotify.com/embed/track/${tracks.id}?utm_source=generator&theme=0&view=list`}
                                     width="100%"
                                     height="80"
+                                    frameBorder="0"
                                     allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
                                     loading="lazy"
-                                    className="rounded"
+                                    className="opacity-90 group-hover:opacity-100 transition-opacity"
                                 ></iframe> 
                             </div> 
                         ))}
                     </div>
-
                 ) : (
                     <>
                         {isError ? (
-                            <div className='flex text-center'>
-                                <p className='text-sm text-rose-600'>{serverError}</p>
+                            <div className='flex items-center justify-center p-4 bg-rose-500/5 border border-rose-500/10 rounded-2xl shadow-inner'>
+                                <p className='text-xs text-rose-400 font-mono tracking-tight uppercase'>{serverError}</p>
                             </div>
                         ) : (
                             <>
-                                <p className='text-white font-bold'>Recently listened</p>
-                                <div className='flex w-full mt-5 justify-between'>
-                                    <div className='flex flex-col'>
-                                        <article className='text-white'>
-                                            Трэк 1
-                                        </article>
-                                        <article className='text-white'>
-                                            Трэк 2
-                                        </article>
-                                        <article className='text-white'>
-                                            Трэк 3
-                                        </article>
+                                <div className="flex items-center gap-2 mb-5 px-1">
+                                    <p className='text-white font-bold tracking-tight text-sm'>Recently listened</p>
+                                    <div className="h-px flex-1 bg-white/5" />
+                                </div>
+                                
+                                <div className='flex w-full justify-between gap-5'>
+                                    <div className='flex flex-col gap-2.5 flex-1'>
+                                        {[1, 2, 3].map((i) => (
+                                            <article key={i} className='text-gray-400 text-xs p-4 bg-white/3 border border-white/5 rounded-2xl hover:text-white hover:bg-white/5 hover:border-white/10 hover:shadow-lg transition-all cursor-default group flex justify-between items-center'>
+                                                <span>Track {i}</span>
+                                                <div className="w-1.5 h-1.5 rounded-full bg-blue-500/0 group-hover:bg-blue-500/50 transition-all shadow-[0_0_8px_#3b82f6]" />
+                                            </article>
+                                        ))}
                                     </div>
 
-                                    <div className='flex flex-col'>
-                                        <article className='text-white'>
-                                            Трэк 1
-                                        </article>
-                                        <article className='text-white'>
-                                            Трэк 2
-                                        </article>
-                                        <article className='text-white'>
-                                            Трэк 3
-                                        </article>
+                                    <div className='flex flex-col gap-2.5 flex-1'>
+                                        {[4, 5, 6].map((i) => (
+                                            <article key={i} className='text-gray-400 text-xs p-4 bg-white/3 border border-white/5 rounded-2xl hover:text-white hover:bg-white/5 hover:border-white/10 hover:shadow-lg transition-all cursor-default group flex justify-between items-center'>
+                                                <span>Track {i}</span>
+                                                <div className="w-1.5 h-1.5 rounded-full bg-indigo-500/0 group-hover:bg-indigo-500/50 transition-all shadow-[0_0_8px_#6366f1]" />
+                                            </article>
+                                        ))}
                                     </div>
                                 </div>
                             </>

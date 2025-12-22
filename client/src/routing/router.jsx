@@ -17,7 +17,7 @@ const VerifyEmailPage = lazy(() => import("../pages/authPages/VerifyEmailPage"))
 const ResetPasswordPage = lazy(() => import("../pages/authPages/ResetPasswordPage"))
 
 const MainLayoutPage = lazy(() => import("../pages/MainLayoutPages/MainLayoutPage"))
-const AboutAuthorPage = lazy(() => import("../pages/MainLayoutPages/AboutAuthorPage"))
+const AboutProjectPage = lazy(() => import("../pages/MainLayoutPages/AboutProjectPage"))
 const IndexPage = lazy(() => import("../pages/MainLayoutPages/IndexPage"))
 
 const Router = () => { 
@@ -113,7 +113,7 @@ const Router = () => {
                     <Route element={<ProtectedRoute />}>
                         <Route element={<MainLayoutPage />}>
                             <Route path={ROUTES.INDEX} element={<IndexPage />} />
-                            <Route path={ROUTES.ABOUT_AUTHOR} element={<AboutAuthorPage />} />
+                            <Route path={ROUTES.ABOUT_AUTHOR} element={<AboutProjectPage />} />
                         </Route>
                     </Route>
 

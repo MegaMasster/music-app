@@ -6,5 +6,5 @@ export const ROUTES = {
     VERIFY_EMAIL: "/verify-email",
     FORGOT_PASSWORD: "/forgot-pass",
     RESET_PASSWORD: "/reset-password/:token",
-    ABOUT_AUTHOR: "/about-author"
+    ABOUT_AUTHOR: "/about-project"
 }
