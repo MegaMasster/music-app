@@ -9,7 +9,9 @@ const useIndexStore = create(
             isSearchPanelOpen: false,
             isMusicSearching: false,
             isMusicsFound: false,
-            searchInputValue: null,
+            searchInputValue: "",
+            successFeedback: null,
+            isSuccessFeedback: false,
             
             // musics data
             foundTracks: [],
@@ -26,12 +28,14 @@ const useIndexStore = create(
 
             setIsMusicsFound: (isFound) => set({isMusicsFound: isFound}),
 
+            setSuccessFeedback: (isSuccess) => set({successFeedback: isSuccess , isSuccessFeedback: true}),
+
             // musics data
             setFoundTracks: (tracks) => set({foundTracks: tracks}),
             resetFoundTracks: () => set({foundTracks: []}),
             // 
 
-            setSearchInputValue: (value) => set({searchInputValue: value})
+            setSearchInputValue: (value) => set({searchInputValue: value}),
 
         }) , {
             name: "spotify_access_token",

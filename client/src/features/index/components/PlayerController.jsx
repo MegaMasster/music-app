@@ -43,7 +43,6 @@ const PlayerController = () => {
                 </button>
             </div>
 
-            {/* Центр: Прогресс-бар (заглушка) */}
             <div className="flex flex-col items-center justify-center flex-1 px-4">
                 <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
                     <div className="h-full w-[35%] bg-linear-to-r from-blue-500/60 to-indigo-500/60 shadow-[0_0_8px_rgba(59,130,246,0.2)]" />
@@ -51,7 +50,6 @@ const PlayerController = () => {
                 <p className="text-[9px] text-gray-500 font-mono mt-1 uppercase tracking-widest">Streaming Mode</p>
             </div>
 
-            {/* Правая часть: Доп инфа */}
             <div className="flex items-center justify-end w-[30%]">
                 <div className="text-right">
                     <p className="text-[10px] text-white/80 font-bold leading-none">Aurora Lab</p>

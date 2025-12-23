@@ -4,7 +4,6 @@ import { useLocation } from 'react-router-dom'
 
 import searchIcon from "../../../assets/images/indexIcons/searchIcon.png"
 import leaveIcon from "../../../assets/images/indexIcons/leaveIcon.png"
-import track from "../../../assets/images/indexIcons/track.png"
 import useIndexStore from "../../../shared/stores/useIndexStore"
 import useAuthStore from "../../../shared/stores/useAuthStore"
 import searchMusic from '../api/searchMusicsApi'
@@ -66,21 +65,6 @@ const SearchMusicSide = () => {
         }
     }, [setIsSearchPanelOpen])
 
-    const panelAnimation = {
-        hidden: { 
-            opacity: 0, 
-            transition: { 
-                duration: 0.12
-            } 
-        },
-        visible: {
-            opacity: 1,
-            transition: {
-                duration: 0.12, 
-                ease: "easeOut"
-            }
-        }
-    }
 
     const onSubmit = async () => {
         if (!searchInputValue.trim()){
@@ -118,20 +102,24 @@ const SearchMusicSide = () => {
         setIsMusicsFound(false)
         setSearchInputValue("")
     }
+    const ass = () => {
+        console.log("asdaddad")
+    }
 
     return (
         <section className={` ${isAboutPage ? 'hidden' : 'relative flex flex-col items-center w-[90%] mt-0 p-6 rounded-[2.5rem] bg-white/2 border border-white/5 backdrop-blur-xl shadow-[0_30px_60px_-15px_rgba(0,0,0,0.7)] shadow-indigo-500/5 transition-all duration-500'} `}>
             
-            {/* Декоративное свечение сверху для объема */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-px bg-linear-to-r from-transparent via-blue-500/20 to-transparent" />
 
-            {/* Контейнер поиска */}
-            <div className="flex w-full h-11 rounded-2xl border border-white/10 bg-black/40 overflow-hidden focus-within:border-blue-500/40 focus-within:shadow-[0_0_20px_rgba(59,130,246,0.1)] transition-all duration-300 shadow-inner">
+            <div className="flex w-full h-11 rounded-2xl border border-white/10 bg-black/40 overflow-hidden focus-within:border-blue-500/40 
+                focus-within:shadow-[0_0_20px_rgba(59,130,246,0.1)] transition-all duration-300 shadow-inner"
+            >
                 <input 
                     ref={inputRef}
                     type="text" 
                     placeholder="Search your favorite music..."
-                    className="w-full text-fuchsia-50 text-sm px-5 outline-0 bg-transparent disabled:cursor-not-allowed disabled:opacity-50 placeholder:text-gray-600 font-light tracking-wide"
+                    className="w-full text-fuchsia-50 text-sm px-5 outline-0 bg-transparent disabled:cursor-not-allowed disabled:opacity-50 
+                    placeholder:text-gray-600 font-light tracking-wide"
                     onClick={handleInputClick}
                     onChange={handleInputChange}
                     value={searchInputValue}
@@ -194,7 +182,9 @@ const SearchMusicSide = () => {
                 {isMusicsFound && foundTracks.length > 0 ? (
                     <div className="grid grid-cols-2 gap-5 w-full"> 
                         {foundTracks.slice(0, 6).map((tracks) => (
-                            <div key={tracks.id} className="group w-full rounded-2xl overflow-hidden border border-white/5 bg-black/20 hover:border-blue-500/30 hover:shadow-[0_10px_30px_-10px_rgba(59,130,246,0.2)] transition-all duration-300">
+                            <div key={tracks.id} className="group w-full rounded-2xl overflow-hidden border border-white/5 bg-black/20 
+                                hover:border-blue-500/30 hover:shadow-[0_10px_30px_-10px_rgba(59,130,246,0.2)] transition-all duration-300"
+                            >
                                 <iframe
                                     title={`Spotify Player - ${tracks.id}`}
                                     src={`https://open.spotify.com/embed/track/${tracks.id}?utm_source=generator&theme=0&view=list`}
@@ -203,7 +193,7 @@ const SearchMusicSide = () => {
                                     frameBorder="0"
                                     allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
                                     loading="lazy"
-                                    className="opacity-90 group-hover:opacity-100 transition-opacity"
+                                    className="transition-opacity"
                                 ></iframe> 
                             </div> 
                         ))}
@@ -224,7 +214,9 @@ const SearchMusicSide = () => {
                                 <div className='flex w-full justify-between gap-5'>
                                     <div className='flex flex-col gap-2.5 flex-1'>
                                         {[1, 2, 3].map((i) => (
-                                            <article key={i} className='text-gray-400 text-xs p-4 bg-white/3 border border-white/5 rounded-2xl hover:text-white hover:bg-white/5 hover:border-white/10 hover:shadow-lg transition-all cursor-default group flex justify-between items-center'>
+                                            <article key={i} className='text-gray-400 text-xs p-4 bg-white/3 border border-white/5 rounded-2xl hover:text-white 
+                                                over:bg-white/5 hover:border-white/10 hover:shadow-lg transition-all cursor-default group flex justify-between items-center'
+                                            >
                                                 <span>Track {i}</span>
                                                 <div className="w-1.5 h-1.5 rounded-full bg-blue-500/0 group-hover:bg-blue-500/50 transition-all shadow-[0_0_8px_#3b82f6]" />
                                             </article>
@@ -233,7 +225,9 @@ const SearchMusicSide = () => {
 
                                     <div className='flex flex-col gap-2.5 flex-1'>
                                         {[4, 5, 6].map((i) => (
-                                            <article key={i} className='text-gray-400 text-xs p-4 bg-white/3 border border-white/5 rounded-2xl hover:text-white hover:bg-white/5 hover:border-white/10 hover:shadow-lg transition-all cursor-default group flex justify-between items-center'>
+                                            <article key={i} className='text-gray-400 text-xs p-4 bg-white/3 border border-white/5 rounded-2xl hover:text-white
+                                                hover:bg-white/5 hover:border-white/10 hover:shadow-lg transition-all cursor-default group flex justify-between items-center'
+                                            >
                                                 <span>Track {i}</span>
                                                 <div className="w-1.5 h-1.5 rounded-full bg-indigo-500/0 group-hover:bg-indigo-500/50 transition-all shadow-[0_0_8px_#6366f1]" />
                                             </article>

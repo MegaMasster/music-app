@@ -1,4 +1,4 @@
-import useIndexStore from "../../../shared/stores/useIndexStore"; 
+import useIndexStore from "../../../shared/stores/useIndexStore"
 
 const searchMusic = async (spotifyAccessToken , query) => {
 

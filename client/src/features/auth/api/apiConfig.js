@@ -10,7 +10,7 @@ const request = async (endpoint , options={}) => {
 
     const config = {
         headers: {
-        'Content-Type': "application/json",
+        'Content-Type' : "application/json",
         ...options.headers
         },
         signal: controller.signal,

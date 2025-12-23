@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken"
 import UserService from "../services/authService.js"
 import AuthErrorHandler from "../utils/authErrorHandler.js"
 import sendVerificationCode from "../services/emailService.js"
+import feedbackService from "../services/feedbackService.js"
 
 const userService = new UserService()
 
@@ -18,9 +19,9 @@ const signUp = async (req , res) => {
             })
         }
 
-        const verificationUrl = 'https://www.google.com/recaptcha/api/siteverify';
+        const verificationUrl = 'https://www.google.com/recaptcha/api/siteverify'
 
-        const postData = new URLSearchParams();
+        const postData = new URLSearchParams()
         postData.append('secret', RECAPTCHA_SECRET_KEY);
         postData.append('response', captchaToken);
 
@@ -180,9 +181,23 @@ const resetPassword = async (req , res) => {
         return res.status(200).json({
             success: true
         })
-        console.log("Success reset pass: " , result)
     } catch (error) {
         AuthErrorHandler.resetPasswordHandler(error , res)
+    }
+}
+
+const feedback = async (req , res) => {
+    try {
+        console.log("Feedback data: " , req.body)
+        await feedbackService(req.body)
+        return res.status(200).json({
+            success: true
+        })
+    } catch (error) {
+       return res.status(500).json({
+            success: false,
+            message: "Iternal server error"
+        })
     }
 }
 
@@ -193,5 +208,6 @@ export {
     forgotPassword,
     checkResetToken,
     verifyTokenController,
-    resetPassword
+    resetPassword,
+    feedback
 }

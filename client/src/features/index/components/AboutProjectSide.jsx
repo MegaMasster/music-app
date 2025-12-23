@@ -1,9 +1,8 @@
+import { useForm } from 'react-hook-form'
 import { motion } from 'framer-motion'
 import { 
     Github, 
-    Code2, 
     ExternalLink, 
-    ShieldCheck,  
     Send, 
     Sparkles, 
     Globe, 
@@ -11,15 +10,39 @@ import {
     Cpu, 
     Server 
 } from 'lucide-react'
-import { useForm } from 'react-hook-form'
+
 import NavBar from "./NavBar"
+import feedbackApi from "../api/feedbackApi"
+import useAuthStore from "../../../shared/stores/useAuthStore"
+import useIndexStore from "../../../shared/stores/useIndexStore"
+import Loader from "../../../shared/ui/loader/Loader"
 
 const AboutProjectSide = () => {
-    const { register, handleSubmit, formState: { errors } } = useForm()
+
+    const {
+        serverError,
+        setServerError,
+        isError,
+        isLoading,
+        setLoading
+    } = useAuthStore()
+    
+    const {
+        setSuccessFeedback,
+        successFeedback,
+        isSuccessFeedback,
+    } = useIndexStore()
+
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: {errors}
+    } = useForm({mode: "onChange"})
 
     const frontendStack = [
-        { name: "JavaScript (ES6+)", color: "bg-yellow-400" },
         { name: "React 19 / vite", color: "bg-blue-400" },
+        { name: "JavaScript (ES6+)", color: "bg-yellow-400" },
         { name: "FSD Architecture", color: "bg-orange-500" },
         { name: "React Hook Form", color: "bg-[#ec5990]" },
         { name: "Zustand", color: "bg-purple-500" },
@@ -31,13 +54,33 @@ const AboutProjectSide = () => {
         { name: "Node.js / Express", color: "bg-amber-500" },
         { name: "PostgreSQL", color: "bg-blue-700" }, 
         { name: "Spotify Web API", color: "bg-green-500" },
-        { name: "reCAPTCHA v3", color: "bg-blue-400" },
+        { name: "reCAPTCHA v2", color: "bg-blue-400" },
     ]
 
-    const onSubmit = (data) => console.log("Message received:", data);
+    const onSubmit = async (data) => {
+        try {
+            setLoading(true)
+            const result = await feedbackApi(data)
+            if (result.success) {
+                reset()
+                setServerError("")
+                setSuccessFeedback("Successfully sent to the author")
+            } else {
+                setServerError("There are some problems, try again later.")
+                setSuccessFeedback("")
+            }
+        } catch (error) {
+            setServerError("There are some problems, try again later.")
+            setSuccessFeedback("")
+        } finally {
+            setLoading(false)
+        }
+    }
 
     return (
         <section className="relative flex flex-col items-center w-full h-full bg-[#0f101a] text-gray-200 overflow-y-auto no-scrollbar scroll-smooth">
+
+            <Loader/>
 
             <div className="absolute top-[-5%] left-[-5%] w-[400px] h-[400px] bg-blue-600/5 blur-[100px] rounded-full pointer-events-none" />
             
@@ -71,7 +114,7 @@ const AboutProjectSide = () => {
                 </div>
 
                 <div className="flex items-start gap-10">
-                    
+
                     <div className="w-[65%] space-y-10">
                         
                         <div className="space-y-4">
@@ -135,28 +178,43 @@ const AboutProjectSide = () => {
                         <div className="bg-[#161722] p-8 rounded-3xl border border-white/10 space-y-6">
                             <div className="space-y-1">
                                 <h3 className="text-white font-bold flex items-center gap-2 text-xl">
-                                    <Send size={20} className="text-blue-500" /> Bugs / Feedback
+                                    <Send size={30} className="text-blue-500" /> Bugs / Feedback
                                 </h3>
                                 <p className="text-[10px] text-gray-500 uppercase tracking-tight">Report any glitches or share ideas</p>
                             </div>
+                            
                             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                                 <input 
-                                    {...register("email", { required: true })}
+                                    {...register("userEmail" , {
+                                        required: "Enter email address",
+                                        pattern: {
+                                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                                            message: "Invalid email address"
+                                        }
+                                    })}
                                     placeholder="Email"
-                                    className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-4 text-sm focus:border-blue-500/50 outline-none transition-all"
+                                    className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-4 text-sm 
+                                    focus:border-blue-500/50 outline-none transition-all"
                                 />
+                                {errors.userEmail && <p className="text-sm p-0 text-red-600">{errors.userEmail.message}</p>}
                                 <textarea 
-                                    {...register("message", { required: true })}
+                                    {...register("problemText" , {
+                                        required: "Enter bugs or innovations"
+                                    })}
                                     placeholder="What's wrong or what to add?"
                                     className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-4 text-sm h-36 focus:border-blue-500/50 
                                     outline-none resize-none transition-all"
                                 />
+                                {errors.problemText && <p className="text-sm p-0 text-red-600">{errors.problemText.message}</p>}
                                 <button className="w-full py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-all shadow-lg 
                                     shadow-blue-600/20 active:scale-95 hover:cursor-pointer"
                                 >
                                     Submit Report
                                 </button>
+                                {isError && <p className='text-sm text-red-600'>{serverError}</p>}
+                                {isSuccessFeedback && <p className='text-sm text-green-500'>{successFeedback}</p>}
                             </form>
+
                         </div>
                     </aside>
                 </div>
