@@ -6,7 +6,9 @@ import playController from "../../../assets/images/indexIcons/playController.png
 import useControllerStore from "../../../shared/stores/useControllerStore"
 
 const PlayerController = () => {
-    const { isMusicPaused, setIsMusicPaused } = useControllerStore()
+    const isMusicPaused = useControllerStore(state => state.isMusicPaused)
+    const setIsMusicPaused = useControllerStore(state => state.setIsMusicPaused)
+
     const currentPlayPauseIcon = isMusicPaused ? playController : pauseController 
 
     return (

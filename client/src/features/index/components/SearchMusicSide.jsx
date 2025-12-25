@@ -14,29 +14,25 @@ import { ROUTES } from "../../../routing/routes"
 
 const SearchMusicSide = () => {
 
-    const {
-        isSearchPanelOpen,
-        setIsSearchPanelOpen,
-        musicLoading,
-        setMusicLoading,
-        spotifyAccessToken,
-        isMusicSearching,
-        setIsMusicSearching,
-        isMusicsFound,
-        setIsMusicsFound,
-        foundTracks,
-        setFoundTracks,
-        resetFoundTracks,
-        searchInputValue,
-        setSearchInputValue
-    } = useIndexStore()
+    const isSearchPanelOpen = useIndexStore(state => state.isSearchPanelOpen)
+    const setIsSearchPanelOpen = useIndexStore(state => state.setIsSearchPanelOpen)
+    const musicLoading = useIndexStore(state => state.musicLoading)
+    const setMusicLoading = useIndexStore(state => state.setMusicLoading)
+    const spotifyAccessToken = useIndexStore(state => state.spotifyAccessToken)
+    const isMusicSearching = useIndexStore(state => state.isMusicSearching)
+    const setIsMusicSearching = useIndexStore(state => state.setIsMusicSearching)
+    const isMusicsFound = useIndexStore(state => state.isMusicsFound)
+    const setIsMusicsFound = useIndexStore(state => state.setIsMusicsFound)
+    const foundTracks = useIndexStore(state => state.foundTracks)
+    const setFoundTracks = useIndexStore(state => state.setFoundTracks)
+    const resetFoundTracks = useIndexStore(state => state.resetFoundTracks)
+    const searchInputValue = useIndexStore(state => state.searchInputValue)
+    const setSearchInputValue = useIndexStore(state => state.setSearchInputValue)
 
-    const {
-        setServerError,
-        serverError,
-        isError,
-        resetError
-    } = useAuthStore()
+    const setServerError = useAuthStore(state => state.setServerError)
+    const serverError = useAuthStore(state => state.serverError)
+    const isError = useAuthStore(state => state.isError)
+    const resetError = useAuthStore(state => state.resetError)
 
     const location = useLocation()
     const isAboutPage = location.pathname === ROUTES.ABOUT_AUTHOR
@@ -102,6 +98,7 @@ const SearchMusicSide = () => {
         setIsMusicsFound(false)
         setSearchInputValue("")
     }
+    
     const ass = () => {
         console.log("asdaddad")
     }
@@ -177,7 +174,6 @@ const SearchMusicSide = () => {
                 </button>
             </div>
 
-            {/* Секция результатов */}
             <div className='flex flex-col w-full mt-8'>
                 {isMusicsFound && foundTracks.length > 0 ? (
                     <div className="grid grid-cols-2 gap-5 w-full"> 

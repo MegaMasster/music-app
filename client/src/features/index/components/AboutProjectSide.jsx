@@ -38,7 +38,7 @@ const AboutProjectSide = () => {
         handleSubmit,
         reset,
         formState: {errors}
-    } = useForm({mode: "onChange"})
+    } = useForm({mode: "onTouched"})
 
     const frontendStack = [
         { name: "React 19 / vite", color: "bg-blue-400" },

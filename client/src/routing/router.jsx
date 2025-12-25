@@ -21,12 +21,11 @@ const AboutProjectPage = lazy(() => import("../pages/MainLayoutPages/AboutProjec
 const IndexPage = lazy(() => import("../pages/MainLayoutPages/IndexPage"))
 
 const Router = () => { 
+    console.log("RENDER: ROUTER")
 
-    const {
-        setIsAuthenticated,
-        setIsEmailVerified,
-        clearUserEmail,
-    } = useAuthStore()
+    const setIsAuthenticated = useAuthStore(state => state.setIsAuthenticated)
+    const setIsEmailVerified = useAuthStore(state => state.setIsEmailVerified)
+    const clearUserEmail = useAuthStore(state => state.clearUserEmail)
 
     useEffect(() => {
         const verifyToken = async () => {
@@ -54,7 +53,7 @@ const Router = () => {
 
             <Suspense fallback={
                 <div className="wrapper">
-                    <p className="text-lg text-amber-600">Loading...</p>
+                    <p className="text-lg text-blue-500">Loading...</p>
                 </div>
             }>
 

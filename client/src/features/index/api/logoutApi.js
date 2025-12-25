@@ -1,9 +1,9 @@
 import { MAIN_ENDPOINTS } from "./mainEndpoints"
 const BASE_URL = import.meta.env.VITE_API_URL
 
-const feedbackApi = async (feedbackData) => {
+const logout = async (tokenData) => {
 
-    const url = `${BASE_URL}${MAIN_ENDPOINTS.FEEDBACK}`
+    const url = `${BASE_URL}${MAIN_ENDPOINTS.LOGOUT}`
 
     const controller = new AbortController()
     const timer = setTimeout(() => {
@@ -12,17 +12,17 @@ const feedbackApi = async (feedbackData) => {
 
     try {
         const response = await fetch(url , {
-            method: "POST" , 
+            method: "POST",
+            credentials: "include",
             headers: {"Content-Type" : "application/json"},
-            body: JSON.stringify(feedbackData),
             signal: controller.signal
-        })
+        })  
 
         clearTimeout(timer)
 
         if (!response.ok) {
             const errorData = await response.json()
-            const error = new Error(errorData.message || "Server error")
+            const error = new Error(errorData.message)
             error.status = response.status
             throw error
         }
@@ -50,4 +50,4 @@ const feedbackApi = async (feedbackData) => {
         }
     }
 }
-export default feedbackApi
+export default logout

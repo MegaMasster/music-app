@@ -7,6 +7,8 @@ class AuthErrorHandler {
             return "Server is busy, please try again later."
         } else if (error.status === 400) {
             return error.message
+        } else if (error.status === 403) {
+            return "Suspicious activity detected. Please refresh the page and enter the captcha again."
         } else {
             return "Server error. Try again later."
         }
@@ -29,6 +31,8 @@ class AuthErrorHandler {
             return error.message
         } else if (error.status === 408) {
             return "Server is busy, please try again later."
+        } else if (error.status === 403) {
+            return "Suspicious activity detected. Please refresh the page and enter the captcha again."
         } else {
             return "Server error. Try again later."
         }

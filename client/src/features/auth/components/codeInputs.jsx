@@ -9,12 +9,10 @@ const CodeInput = ({ onCodeComplete }) => {
         newValues[index] = value
         setValues(newValues)
 
-        // Автоматически переходим к следующему инпуту
         if (value && index < 5) {
             inputRefs.current[index + 1].focus()
         }
 
-        // Если все поля заполнены, вызываем колбэк
         if (newValues.every(val => val !== '')) {
             onCodeComplete(newValues.join(''))
         }
@@ -28,14 +26,14 @@ const CodeInput = ({ onCodeComplete }) => {
 
     return (
         <div className='flex flex-col w-full items-center'>
-            <div className="flex justify-center space-x-3 mb-4">
-                {[0,1,2,3,4,5].map(index => (
+            <div className="flex justify-center space-x-2 md:space-x-3 mb-4">
+                {[0, 1, 2, 3, 4, 5].map(index => (
                     <input
                         key={index}
                         type="text"
                         maxLength="1"
-                        className="w-10 h-10 md:w-11 md:h-11 lg:w-12 lg:h-12 text-center text-xl border-2 border-gray-600 rounded-lg 
-                        focus:border-amber-500 outline-none bg-transparent"
+                        className="w-10 h-12 md:w-12 md:h-14 text-center text-xl font-bold border border-white/10 rounded-xl 
+                        focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 outline-none bg-[#0f101a] text-white transition-all duration-200"
                         ref={el => inputRefs.current[index] = el}
                         onChange={(e) => {
                             e.target.value = e.target.value.replace(/[^0-9]/g, '')
@@ -46,7 +44,7 @@ const CodeInput = ({ onCodeComplete }) => {
                 ))}
             </div>
             {values.some(value => value === '') && (
-                <p className="text-sm text-red-600">Please enter all 6 digits</p>
+                <p className="text-[11px] text-rose-500/80 font-medium tracking-wide">Please enter all 6 digits</p>
             )}
         </div>
     )

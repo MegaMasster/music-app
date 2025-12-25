@@ -36,7 +36,7 @@ const signUp = async (req , res) => {
             console.error('ReCAPTCHA verification failed:', responseData['error-codes'])
             return res.status(403).json({
                 success: false,
-                message: 'Верификация reCAPTCHA не пройдена. Пожалуйста, попробуйте еще раз.'
+                message: 'Suspicious activity detected. Please refresh the page and try again.'
             })
         }
 
@@ -99,7 +99,7 @@ const signIn = async (req , res) => {
             console.error('ReCAPTCHA verification failed:', responseData['error-codes'])
             return res.status(403).json({
                 success: false,
-                message: 'Верификация reCAPTCHA не пройдена. Пожалуйста, попробуйте еще раз.'
+                message: 'Suspicious activity detected. Please refresh the page and try again.'
             })
         }
 
@@ -201,6 +201,21 @@ const feedback = async (req , res) => {
     }
 }
 
+const logout = async (req , res) => {
+    try {
+        console.log("JWT data: " , req.body)
+        const { token } = req.body
+        res.cookie("jwt" , "" , {
+            httpOnly: true,
+            expires: new Date(0),
+            domain: 'localhost'
+        })
+        res.status(200).json({success: true, message: 'Logged out successfully'})
+    } catch (error) {
+        res.status(500).json({success: false, message: 'Logged out is not successfully'})
+    }
+}
+
 export {
     signUp,
     verifyEmail,
@@ -209,5 +224,6 @@ export {
     checkResetToken,
     verifyTokenController,
     resetPassword,
-    feedback
+    feedback,
+    logout
 }

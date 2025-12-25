@@ -11,16 +11,12 @@ import PlayListSide from "./PlayListSide"
 
 const MainLayout = () => {
 
-    const {
-        setLoading,
-        resetError,
-        setServerError
-    } = useAuthStore()
+    const setLoading = useAuthStore(state => state.setLoading)
+    const resetError = useAuthStore(state => state.resetError)
+    const setServerError = useAuthStore(state => state.setServerError)
 
-    const {
-        spotifyAccessToken,
-        setSpotifyAccessToken
-    } = useIndexStore()
+    const spotifyAccessToken = useIndexStore(state => state.spotifyAccessToken)
+    const setSpotifyAccessToken = useIndexStore(state => state.setSpotifyAccessToken)
 
     // знаю, так делать нельзя, но для пет проекта сделаю исключение
     const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID
@@ -84,7 +80,6 @@ const MainLayout = () => {
                 <SearchMusicSide />
                 <PlayListSide />
             </section>
-
         </main>
     )
 }

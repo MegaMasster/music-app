@@ -230,7 +230,7 @@ class UserService {
     }
 
     async generateToken(user) {
-       try {
+        try {
             const payload = {
                 id: user.id,
                 email: user.email
