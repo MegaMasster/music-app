@@ -2,17 +2,29 @@ import { useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useLocation } from 'react-router-dom'
 
-import searchIcon from "../../../assets/images/indexIcons/searchIcon.png"
 import leaveIcon from "../../../assets/images/indexIcons/leaveIcon.png"
+import { Clock, History } from 'lucide-react'
+
 import useIndexStore from "../../../shared/stores/useIndexStore"
 import useAuthStore from "../../../shared/stores/useAuthStore"
-import searchMusic from '../api/searchMusicsApi'
-import MainErrorHandler from '../../utils/main/mainErrorHandler'
 import SearchMusicsLoader from '../../../shared/ui/loader/searchMusicsLoader'
 import { ROUTES } from "../../../routing/routes"
+import debounceSearch from '../../utils/main/debounce'
+import useDebounceSearchStore from '../../../shared/stores/useDebounceSearchStore'
+import useSearchHistoryStore from '../../../shared/stores/useSearchHistoryStore'
+import saveSearchHistory from '../../utils/main/saveSearchHistory'
 
 
 const SearchMusicSide = () => {
+
+    debounceSearch()
+
+    const userSearchHistory = useSearchHistoryStore(state => state.userSearchHistory)
+
+    const query = useDebounceSearchStore(state => state.query)
+    const setQuery = useDebounceSearchStore(state => state.setQuery)
+    const results = useDebounceSearchStore(state => state.results)
+    const setResults = useDebounceSearchStore(state => state.setResults)
 
     const isSearchPanelOpen = useIndexStore(state => state.isSearchPanelOpen)
     const setIsSearchPanelOpen = useIndexStore(state => state.setIsSearchPanelOpen)
@@ -23,13 +35,7 @@ const SearchMusicSide = () => {
     const setIsMusicSearching = useIndexStore(state => state.setIsMusicSearching)
     const isMusicsFound = useIndexStore(state => state.isMusicsFound)
     const setIsMusicsFound = useIndexStore(state => state.setIsMusicsFound)
-    const foundTracks = useIndexStore(state => state.foundTracks)
-    const setFoundTracks = useIndexStore(state => state.setFoundTracks)
-    const resetFoundTracks = useIndexStore(state => state.resetFoundTracks)
-    const searchInputValue = useIndexStore(state => state.searchInputValue)
-    const setSearchInputValue = useIndexStore(state => state.setSearchInputValue)
 
-    const setServerError = useAuthStore(state => state.setServerError)
     const serverError = useAuthStore(state => state.serverError)
     const isError = useAuthStore(state => state.isError)
     const resetError = useAuthStore(state => state.resetError)
@@ -55,52 +61,41 @@ const SearchMusicSide = () => {
                 setIsSearchPanelOpen(false)
             }
         }
-        document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener('mousedown', handleClickOutside)
         return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('mousedown', handleClickOutside)
         }
     }, [setIsSearchPanelOpen])
 
 
     const onSubmit = async () => {
-        if (!searchInputValue.trim()){
+        if (!query.trim()) {
+            setResults([])
             return
         }
+        setIsSearchPanelOpen(false)
         resetError()
         setMusicLoading(true)
-        setIsMusicSearching(false)
-        try {
-            const result = await searchMusic(spotifyAccessToken , searchInputValue)
-            if (result.success){
-                console.log("SUCCESS LOADIN MUSICS" , result.data)
-                setFoundTracks(result.data)
-                setIsMusicsFound(true)
-            } else {
-                const errorMessage = MainErrorHandler.handleSearchMusics(result)
-                setIsMusicsFound(false)
-                setServerError(errorMessage)
-            } 
-        } catch (error) {
-            const errorMessage = MainErrorHandler.handleSearchMusics(error)
-            setServerError(errorMessage)
-        } finally {
-            setIsMusicSearching(true)
+        setIsMusicSearching(false) 
+        saveSearchHistory()
+        if (results.length > 0) {
+            setIsMusicsFound(true)
             setMusicLoading(false)
+            setIsMusicSearching(true) 
+        } else {
+            setIsMusicsFound(false)
         }
     }
 
     const handleInputChange = (e) => {
-        setSearchInputValue(e.target.value)
+        setQuery(e.target.value)
     }
 
     const handleLeaveFromSearch = () => {
+        setResults([])
         setIsMusicSearching(false)
         setIsMusicsFound(false)
-        setSearchInputValue("")
-    }
-    
-    const ass = () => {
-        console.log("asdaddad")
+        setQuery("")
     }
 
     return (
@@ -119,18 +114,17 @@ const SearchMusicSide = () => {
                     placeholder:text-gray-600 font-light tracking-wide"
                     onClick={handleInputClick}
                     onChange={handleInputChange}
-                    value={searchInputValue}
-                    disabled={musicLoading}
+                    value={query}
                 />
 
                 <div className="flex items-center pr-5 justify-center w-11 h-full bg-transparent">
                     {musicLoading && <SearchMusicsLoader /> }
-                    {isMusicSearching && 
+                    {isMusicSearching && !musicLoading && 
                         <button 
-                            className='flex items-center justify-center w-6 h-full hover:cursor-pointer hover:scale-110 transition-transform active:scale-95'
+                            className='flex items-center justify-center w-6 h-full '
                             onClick={handleLeaveFromSearch} 
                         >
-                            <img className="w-4 h-4 select-none opacity-60 hover:opacity-100"
+                            <img className="w-4 h-4 select-none opacity-60 hover:opacity-100 hover:cursor-pointer hover:scale-110 transition-transform active:scale-95"
                                 style={{ filter: 'invert(1)' }} 
                                 src={leaveIcon} 
                                 alt="clear"
@@ -143,41 +137,102 @@ const SearchMusicSide = () => {
                     {isSearchPanelOpen && (
                         <motion.div 
                             ref={panelRef} 
-                            className="absolute text-sm h-32 top-16 left-6 right-6 z-20 
+                            className="absolute top-16 left-6 right-6 z-50 
                             flex flex-col text-white bg-[#161722]/95 backdrop-blur-2xl
-                            border border-white/10 rounded-3xl shadow-[0_25px_50px_-12px_rgba(0,0,0,0.8)] px-5 py-4"
+                            border border-white/10 rounded-3xl shadow-[0_25px_50px_-12px_rgba(0,0,0,0.8)] 
+                            px-5 py-4 h-auto min-h-[100px]" 
                             initial={{ opacity: 0, y: -15 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -15 }}
                             transition={{ duration: 0.2 }}
                         >
-                            <div className="flex items-center gap-2 mb-2">
+
+                            <div className="flex items-center gap-2 mb-3">
                                 <div className="w-1 h-1 bg-blue-500 rounded-full animate-pulse" />
-                                <p className="text-[10px] uppercase tracking-widest text-gray-500 font-bold">Recent History</p>
+                                <p className="text-[10px] uppercase tracking-widest text-gray-500 font-bold">
+                                    {!query.trim() ? "Search History" : "Search Results"}
+                                </p>
                             </div>
-                            <p className="opacity-40 italic text-xs ml-3 font-light">Your history is currently empty...</p>
+
+                            {results.length > 0 ? (
+                                <div className='grid grid-cols-1 sm:grid-cols-2 gap-2 w-full'>
+                                    {results.slice(0 , 6).map((track) => (
+                                        <button 
+                                            key={track.id} 
+                                            className='group flex items-center gap-3 p-2 w-full bg-white/5 hover:bg-white/10 border border-white/5 rounded-2xl 
+                                            transition-all duration-300 active:scale-95 text-left'
+                                            onClick={onSubmit} 
+                                        >
+                                            <div className="relative w-10 h-10 flex-shrink-0 overflow-hidden rounded-xl shadow-md">
+                                                <img 
+                                                    src={track.album.images[0]?.url} 
+                                                    alt={track.name}
+                                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                                />
+                                            </div>
+
+                                            <div className="flex flex-col items-start overflow-hidden w-full">
+                                                <span className="text-white text-sm font-medium truncate w-full group-hover:text-fuchsia-400 transition-colors">
+                                                    {track.name}
+                                                </span>
+                                                <span className="text-gray-500 text-[10px] truncate w-full">
+                                                    {track.artists[0]?.name}
+                                                </span>
+                                            </div>
+                                        </button>
+                                    ))}
+                                </div>
+                            ) : (
+                                !query.trim() ? (
+                                    userSearchHistory.length > 0 ? (
+                                        <div className="grid grid-cols-1 sm:grid-cols-2  gap-2 w-full">
+                                            {userSearchHistory.map((q, index) => (
+                                                <button 
+                                                    key={index}
+                                                    onClick={() => {
+                                                        setQuery(q)
+                                                    }}
+                                                    className='group flex items-center gap-3 p-3 w-full bg-white/[0.03] hover:bg-white/[0.08] 
+                                                    border border-white/5 rounded-2xl h-12 transition-all duration-300 active:scale-95 text-left hover:cursor-pointer'
+                                                >
+                                                    <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-black/20 rounded-xl border border-white/5 
+                                                        group-hover:border-blue-500/30 transition-colors"
+                                                    >
+                                                        <Clock size={14} className="text-gray-500 group-hover:text-blue-400 transition-colors" />
+                                                    </div>
+
+                                                    <div className="flex flex-col overflow-hidden">
+                                                        <span className="text-[12px] text-gray-300 font-medium truncate group-hover:text-white transition-colors">
+                                                            {q}
+                                                        </span>
+                                                        <span className="text-[9px] text-gray-600 uppercase tracking-widest font-bold group-hover:text-blue-500/50 
+                                                            transition-colors"
+                                                        >
+                                                            Recent Search
+                                                        </span>
+                                                    </div>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <p className="opacity-40 italic text-xs ml-3 font-light py-2">Your history is currently empty...</p>
+                                    )
+                                ) : (
+                                    <p className="opacity-40 italic text-xs ml-3 font-light py-2">
+                                        {musicLoading ? "Searching magic..." : "Nothing found..."}
+                                    </p>
+                                )
+                            )}
                         </motion.div>
                     )}
                 </AnimatePresence>
                 
-                <button className="flex justify-center items-center w-[12%] border-l border-white/10
-                        bg-white/5 hover:cursor-pointer hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50 transition-colors group"
-                        onClick={onSubmit}
-                        disabled={musicLoading}
-                    >
-                        <img 
-                            src={searchIcon}
-                            alt="search"
-                            className="w-4 h-4 select-none opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-all"
-                            style={{ filter: 'invert(1)' }}
-                        />
-                </button>
             </div>
 
             <div className='flex flex-col w-full mt-8'>
-                {isMusicsFound && foundTracks.length > 0 ? (
+                {isMusicsFound && results.length > 0 ? (
                     <div className="grid grid-cols-2 gap-5 w-full"> 
-                        {foundTracks.slice(0, 6).map((tracks) => (
+                        {results.slice(0, 6).map((tracks) => (
                             <div key={tracks.id} className="group w-full rounded-2xl overflow-hidden border border-white/5 bg-black/20 
                                 hover:border-blue-500/30 hover:shadow-[0_10px_30px_-10px_rgba(59,130,246,0.2)] transition-all duration-300"
                             >
@@ -186,7 +241,7 @@ const SearchMusicSide = () => {
                                     src={`https://open.spotify.com/embed/track/${tracks.id}?utm_source=generator&theme=0&view=list`}
                                     width="100%"
                                     height="80"
-                                    frameBorder="0"
+                                    frameBorder = "0"
                                     allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
                                     loading="lazy"
                                     className="transition-opacity"
@@ -222,10 +277,13 @@ const SearchMusicSide = () => {
                                     <div className='flex flex-col gap-2.5 flex-1'>
                                         {[4, 5, 6].map((i) => (
                                             <article key={i} className='text-gray-400 text-xs p-4 bg-white/3 border border-white/5 rounded-2xl hover:text-white
-                                                hover:bg-white/5 hover:border-white/10 hover:shadow-lg transition-all cursor-default group flex justify-between items-center'
+                                                hover:bg-white/5 hover:border-white/10 hover:shadow-lg transition-all cursor-default group flex 
+                                                justify-between items-center'
                                             >
                                                 <span>Track {i}</span>
-                                                <div className="w-1.5 h-1.5 rounded-full bg-indigo-500/0 group-hover:bg-indigo-500/50 transition-all shadow-[0_0_8px_#6366f1]" />
+                                                <div className="w-1.5 h-1.5 rounded-full bg-indigo-500/0 group-hover:bg-indigo-500/50 transition-all 
+                                                    shadow-[0_0_8px_#6366f1]" 
+                                                />
                                             </article>
                                         ))}
                                     </div>
