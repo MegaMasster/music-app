@@ -1,10 +1,18 @@
 import { create } from "zustand"
+import { persist } from "zustand/middleware"
 
 const useControllerStore = create(
-    (set) => ({
-        isMusicPaused: true,
+    persist(
+        (set) => ({
+            activeTrackId: null,
 
-        setIsMusicPaused: () => set((state) => ({isMusicPaused: !state.isMusicPaused}))
-    })
+            setActiveTrackId: (id) => set({activeTrackId: id})
+        }) , {
+            name: "last_track_id",
+            partialize: (state) => ({
+                activeTrackId: state.activeTrackId
+            })
+        }
+    )
 )
 export default useControllerStore

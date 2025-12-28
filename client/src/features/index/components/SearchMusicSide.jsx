@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useLocation } from 'react-router-dom'
 
 import leaveIcon from "../../../assets/images/indexIcons/leaveIcon.png"
-import { Clock, History } from 'lucide-react'
+import { Clock } from 'lucide-react'
 
 import useIndexStore from "../../../shared/stores/useIndexStore"
 import useAuthStore from "../../../shared/stores/useAuthStore"
@@ -13,6 +13,7 @@ import debounceSearch from '../../utils/main/debounce'
 import useDebounceSearchStore from '../../../shared/stores/useDebounceSearchStore'
 import useSearchHistoryStore from '../../../shared/stores/useSearchHistoryStore'
 import saveSearchHistory from '../../utils/main/saveSearchHistory'
+import useControllerStore from '../../../shared/stores/useControllerStore'
 
 
 const SearchMusicSide = () => {
@@ -20,6 +21,9 @@ const SearchMusicSide = () => {
     debounceSearch()
 
     const userSearchHistory = useSearchHistoryStore(state => state.userSearchHistory)
+
+    const setActiveTrackId = useControllerStore(state => state.setActiveTrackId)
+    const activeTrackId = useControllerStore(state => state.activeTrackId)
 
     const query = useDebounceSearchStore(state => state.query)
     const setQuery = useDebounceSearchStore(state => state.setQuery)
@@ -160,8 +164,11 @@ const SearchMusicSide = () => {
                                         <button 
                                             key={track.id} 
                                             className='group flex items-center gap-3 p-2 w-full bg-white/5 hover:bg-white/10 border border-white/5 rounded-2xl 
-                                            transition-all duration-300 active:scale-95 text-left'
-                                            onClick={onSubmit} 
+                                            transition-all duration-300 active:scale-95 text-left hover:cursor-pointer'
+                                            onClick={() => {
+                                                onSubmit()
+                                                setActiveTrackId(track.id)
+                                            }} 
                                         >
                                             <div className="relative w-10 h-10 flex-shrink-0 overflow-hidden rounded-xl shadow-md">
                                                 <img 
@@ -185,7 +192,7 @@ const SearchMusicSide = () => {
                             ) : (
                                 !query.trim() ? (
                                     userSearchHistory.length > 0 ? (
-                                        <div className="grid grid-cols-1 sm:grid-cols-2  gap-2 w-full">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full">
                                             {userSearchHistory.map((q, index) => (
                                                 <button 
                                                     key={index}
@@ -218,36 +225,100 @@ const SearchMusicSide = () => {
                                         <p className="opacity-40 italic text-xs ml-3 font-light py-2">Your history is currently empty...</p>
                                     )
                                 ) : (
-                                    <p className="opacity-40 italic text-xs ml-3 font-light py-2">
-                                        {musicLoading ? "Searching magic..." : "Nothing found..."}
-                                    </p>
+                                    <div className="flex items-center py-2 ml-3">
+                                        {musicLoading ? (
+                                            <motion.p 
+                                                animate={{ 
+                                                    opacity: [0.3, 0.8, 0.3],
+                                                }}
+                                                transition={{ 
+                                                    duration: 1.5,       
+                                                    repeat: Infinity,      
+                                                    ease: "easeInOut"      
+                                                }}
+                                                className="text-blue-400 italic text-xs font-light tracking-wide"
+                                            >
+                                                Searching magic...
+                                            </motion.p>
+                                        ) : (
+                                            <p className="opacity-40 italic text-xs font-light">
+                                                Nothing found...
+                                            </p>
+                                        )}
+                                    </div>
                                 )
                             )}
                         </motion.div>
                     )}
                 </AnimatePresence>
-                
             </div>
 
             <div className='flex flex-col w-full mt-8'>
                 {isMusicsFound && results.length > 0 ? (
-                    <div className="grid grid-cols-2 gap-5 w-full"> 
-                        {results.slice(0, 6).map((tracks) => (
-                            <div key={tracks.id} className="group w-full rounded-2xl overflow-hidden border border-white/5 bg-black/20 
-                                hover:border-blue-500/30 hover:shadow-[0_10px_30px_-10px_rgba(59,130,246,0.2)] transition-all duration-300"
-                            >
-                                <iframe
-                                    title={`Spotify Player - ${tracks.id}`}
-                                    src={`https://open.spotify.com/embed/track/${tracks.id}?utm_source=generator&theme=0&view=list`}
-                                    width="100%"
-                                    height="80"
-                                    frameBorder = "0"
-                                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                                    loading="lazy"
-                                    className="transition-opacity"
-                                ></iframe> 
-                            </div> 
-                        ))}
+                    <div className="grid grid-cols-2 gap-4 w-full"> 
+                        {results.slice(0, 6).map((track) => {
+                            const isActive = activeTrackId === track.id;
+
+                            return (
+                                <div 
+                                    key={track.id} 
+                                    onClick={() => setActiveTrackId(track.id)}
+                                    className={`group relative flex items-center gap-4 p-3 w-full rounded-2xl border transition-all duration-500 cursor-pointer overflow-hidden
+                                    ${isActive 
+                                        ? 'bg-blue-600/10 border-blue-500/40 shadow-[0_0_25px_rgba(59,130,246,0.15)]' 
+                                        : 'bg-white/[0.03] border-white/5 hover:border-blue-500/30 hover:bg-white/[0.08]'
+                                    }`}
+                                >
+
+                                    {isActive && (
+                                        <div className="absolute inset-0 bg-linear-to-r from-blue-500/10 via-transparent to-transparent pointer-events-none" />
+                                    )}
+
+                                    <div className="relative w-14 h-14 flex-shrink-0 rounded-xl overflow-hidden shadow-xl bg-black/40">
+                                        <img 
+                                            src={track.album.images[0]?.url} 
+                                            alt={track.name}
+                                            className={`w-full h-full object-cover transition-transform duration-700 
+                                                ${isActive ? 'scale-110' : 'group-hover:scale-110'}`}
+                                        />
+                                        
+                                        <div className={`absolute inset-0 flex items-center justify-center bg-black/50 transition-opacity duration-300
+                                            ${isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
+                                        >
+                                            {isActive ? (
+                                                <div className="flex gap-0.5 items-end h-3">
+                                                    <div className="w-1 bg-blue-400 animate-[bounce_1s_infinite_0.1s] shadow-[0_0_8px_#60a5fa]" />
+                                                    <div className="w-1 bg-blue-400 animate-[bounce_1s_infinite_0.3s] shadow-[0_0_8px_#60a5fa]" />
+                                                    <div className="w-1 bg-blue-400 animate-[bounce_1s_infinite_0.5s] shadow-[0_0_8px_#60a5fa]" />
+                                                </div>
+                                            ) : (
+                                                <div className="w-0 h-0 border-y-[6px] border-y-transparent border-l-[10px] border-l-white ml-1" />
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div className="flex flex-col flex-1 min-w-0">
+                                        <h4 className={`text-sm font-bold truncate transition-colors duration-300
+                                            ${isActive ? 'text-blue-400' : 'text-white'}`}>
+                                            {track.name}
+                                        </h4>
+                                        <p className="text-[11px] text-gray-500 truncate mt-0.5">
+                                            {track.artists[0]?.name}
+                                        </p>
+                                        
+                                        {isActive && (
+                                            <span className="text-[8px] text-blue-500/80 font-black tracking-[0.2em] mt-1.5 animate-pulse">
+                                                NOW PLAYING
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    <div className={`w-1.5 h-1.5 rounded-full transition-all duration-500
+                                        ${isActive ? 'bg-blue-500 shadow-[0_0_10px_#3b82f6]' : 'bg-transparent'}`} 
+                                    />
+                                </div>
+                            )
+                        })}
                     </div>
                 ) : (
                     <>

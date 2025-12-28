@@ -11,10 +11,6 @@ const useIndexStore = create(
             isMusicsFound: false,
             successFeedback: null,
             isSuccessFeedback: false,
-            
-            // musics data
-            foundTracks: [],
-            // 
 
             setMusicLoading: (isMusicLoading) => set({musicLoading: isMusicLoading}),
 
@@ -28,11 +24,6 @@ const useIndexStore = create(
             setIsMusicsFound: (isFound) => set({isMusicsFound: isFound}),
 
             setSuccessFeedback: (isSuccess) => set({successFeedback: isSuccess , isSuccessFeedback: true}),
-
-            // musics data
-            setFoundTracks: (tracks) => set({foundTracks: tracks}),
-            resetFoundTracks: () => set({foundTracks: []}),
-            // 
 
         }) , {
             name: "spotify_access_token",

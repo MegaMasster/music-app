@@ -1,64 +1,54 @@
-import leftSkip from "../../../assets/images/indexIcons/leftSkip.png"
-import rightSkip from "../../../assets/images/indexIcons/rightSkip.png"
-import pauseController from "../../../assets/images/indexIcons/pauseController.png"
-import playController from "../../../assets/images/indexIcons/playController.png"
+import { AnimatePresence , motion } from "framer-motion"
 
 import useControllerStore from "../../../shared/stores/useControllerStore"
 
 const PlayerController = () => {
-    const isMusicPaused = useControllerStore(state => state.isMusicPaused)
-    const setIsMusicPaused = useControllerStore(state => state.setIsMusicPaused)
 
-    const currentPlayPauseIcon = isMusicPaused ? playController : pauseController 
+    const activeTrackId = useControllerStore(state => state.activeTrackId)
 
     return (
-        <section className="flex justify-between items-center w-[40%] h-[6%] px-6 
-            bg-white/2 border border-white/5 backdrop-blur-md rounded-2xl "
-        >
-            
-            <div className="flex items-center w-[30%] gap-5">
-                <button className="w-4 h-4 select-none hover:cursor-pointer group active:scale-90 transition-all">
-                    <img 
-                        className="opacity-60 group-hover:opacity-100 duration-200" 
-                        src={leftSkip} 
-                        alt="leftSkip"
-                        style={{ filter: 'invert(1)' }}
-                    />
-                </button>
-
-                <button onClick={setIsMusicPaused} className="w-5 h-5 select-none hover:cursor-pointer group active:scale-90 transition-all">
-                    <img 
-                        className="opacity-80 group-hover:opacity-100 duration-200" 
-                        src={currentPlayPauseIcon} 
-                        alt="Play/Pause"
-                        style={{ filter: 'invert(1)' }}
-                    />
-                </button>
-
-                <button className="w-4 h-4 select-none hover:cursor-pointer group active:scale-90 transition-all">
-                    <img 
-                        className="opacity-60 group-hover:opacity-100 duration-200" 
-                        src={rightSkip} 
-                        alt="rightSkip" 
-                        style={{ filter: 'invert(1)' }}
-                    />
-                </button>
-            </div>
-
-            <div className="flex flex-col items-center justify-center flex-1 px-4">
-                <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
-                    <div className="h-full w-[35%] bg-linear-to-r from-blue-500/60 to-indigo-500/60 shadow-[0_0_8px_rgba(59,130,246,0.2)]" />
-                </div>
-                <p className="text-[9px] text-gray-500 font-mono mt-1 uppercase tracking-widest">Streaming Mode</p>
-            </div>
-
-            <div className="flex items-center justify-end w-[30%]">
-                <div className="text-right">
-                    <p className="text-[10px] text-white/80 font-bold leading-none">Aurora Lab</p>
-                    <p className="text-[8px] text-gray-600 font-mono uppercase tracking-tighter">Active</p>
-                </div>
-            </div>
-
+        <section className={`relative flex items-center w-[40%] h-[8.7%] bg-white/2 border border-white/5 backdrop-blur-md rounded-2xl overflow-hidden transition-all duration-300 ${!activeTrackId ? 'px-6' : 'px-2'}`}>
+            <AnimatePresence mode="wait">
+                {activeTrackId ? (
+                    <motion.div
+                        key={activeTrackId}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="w-full h-full flex items-center justify-center"
+                    >
+                        <iframe
+                            title="Spotify Player"
+                            src={`https://open.spotify.com/embed/track/${activeTrackId}?utm_source=generator&theme=0&autoplay=1`}
+                            width="100%" 
+                            height="80" 
+                            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                            loading="lazy"
+                            style={{ 
+                                border: 'none', 
+                                borderRadius: '16px',
+                                display: 'block',
+                                margin: '0 auto',
+                                padding: '0 auto',
+                                filter: 'contrast(1.1) brightness(1.1)'
+                            }}
+                        />
+                    </motion.div>
+                ) : (
+                    <motion.div className="flex items-center justify-between w-full h-full opacity-40">
+                        <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 bg-white/10 rounded-xl animate-pulse" />
+                            <div className="flex flex-col gap-2">
+                                <div className="w-24 h-2 bg-white/10 rounded-full animate-pulse" />
+                                <div className="w-16 h-1.5 bg-white/10 rounded-full animate-pulse" />
+                            </div>
+                        </div>
+                        <p className="text-[10px] uppercase tracking-[0.2em] font-medium text-gray-400">
+                            Select track to play
+                        </p>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </section>
     )
 }
