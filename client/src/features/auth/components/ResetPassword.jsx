@@ -231,7 +231,7 @@ const ResetPassword = () => {
                                     })}
                                 />
                             </div>
-                            {errors.repeatPassword && <p className="text-[11px] text-rose-600 mt-1 ml-1 font-medium">{errors.repeatPassword.message}</p>}
+                            {errors.repeatPassword && <p className="text-[11px] text-rose-600 mt-1 ml-1 font-medium animate-pulse">{errors.repeatPassword.message}</p>}
                         </div>
 
                         <button 

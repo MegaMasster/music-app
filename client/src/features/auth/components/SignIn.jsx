@@ -121,7 +121,7 @@ const SignIn = () => {
                                     disabled={!captchaToken}
                                 />
                             </div>
-                            {errors.email && <p className="text-[11px] text-rose-600 mt-1 ml-1">{errors.email.message}</p>}
+                            {errors.email && <p className="text-[11px] text-rose-600 mt-1 ml-1 animate-pulse">{errors.email.message}</p>}
                         </div>
                         
                         <div className='flex flex-col w-full space-y-2'>
@@ -141,7 +141,7 @@ const SignIn = () => {
                                     disabled={!captchaToken}
                                 />
                             </div>
-                            {errors.password && <p className="text-[11px] text-rose-600 mt-1 ml-1">{errors.password.message}</p>}
+                            {errors.password && <p className="text-[11px] text-rose-600 mt-1 ml-1 animate-pulse">{errors.password.message}</p>}
                         </div>
 
                         <button 

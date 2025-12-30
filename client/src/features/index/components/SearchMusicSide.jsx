@@ -1,9 +1,9 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef  } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useLocation } from 'react-router-dom'
 
 import leaveIcon from "../../../assets/images/indexIcons/leaveIcon.png"
-import { Clock } from 'lucide-react'
+import { Clock , ListPlus , Plus } from 'lucide-react'
 
 import useIndexStore from "../../../shared/stores/useIndexStore"
 import useAuthStore from "../../../shared/stores/useAuthStore"
@@ -34,7 +34,6 @@ const SearchMusicSide = () => {
     const setIsSearchPanelOpen = useIndexStore(state => state.setIsSearchPanelOpen)
     const musicLoading = useIndexStore(state => state.musicLoading)
     const setMusicLoading = useIndexStore(state => state.setMusicLoading)
-    const spotifyAccessToken = useIndexStore(state => state.spotifyAccessToken)
     const isMusicSearching = useIndexStore(state => state.isMusicSearching)
     const setIsMusicSearching = useIndexStore(state => state.setIsMusicSearching)
     const isMusicsFound = useIndexStore(state => state.isMusicsFound)
@@ -162,7 +161,7 @@ const SearchMusicSide = () => {
                                 <div className='grid grid-cols-1 sm:grid-cols-2 gap-2 w-full'>
                                     {results.slice(0 , 6).map((track) => (
                                         <button 
-                                            key={track.id} 
+                                            key={track.id}
                                             className='group flex items-center gap-3 p-2 w-full bg-white/5 hover:bg-white/10 border border-white/5 rounded-2xl 
                                             transition-all duration-300 active:scale-95 text-left hover:cursor-pointer'
                                             onClick={() => {
@@ -253,17 +252,17 @@ const SearchMusicSide = () => {
                 </AnimatePresence>
             </div>
 
-            <div className='flex flex-col w-full mt-8'>
+            <div className='flex flex-col w-full mt-8 '>
                 {isMusicsFound && results.length > 0 ? (
-                    <div className="grid grid-cols-2 gap-4 w-full"> 
+                    <div className="grid grid-cols-2 gap-3 w-full "> 
                         {results.slice(0, 6).map((track) => {
-                            const isActive = activeTrackId === track.id;
+                            const isActive = activeTrackId === track.id
 
                             return (
                                 <div 
                                     key={track.id} 
-                                    onClick={() => setActiveTrackId(track.id)}
-                                    className={`group relative flex items-center gap-4 p-3 w-full rounded-2xl border transition-all duration-500 cursor-pointer overflow-hidden
+                                    onClick={(e) => setActiveTrackId(track.id)}
+                                    className={`group relative flex items-center h-17 gap-2 p-2 w-full rounded-2xl border transition-all duration-500 cursor-pointer 
                                     ${isActive 
                                         ? 'bg-blue-600/10 border-blue-500/40 shadow-[0_0_25px_rgba(59,130,246,0.15)]' 
                                         : 'bg-white/[0.03] border-white/5 hover:border-blue-500/30 hover:bg-white/[0.08]'
@@ -312,6 +311,23 @@ const SearchMusicSide = () => {
                                             </span>
                                         )}
                                     </div>
+                                    <button className="relative p-1 rounded bg-white/5 border border-white/10 hover:bg-blue-500/20 
+                                        transition-all hover:opacity-100 hover:cursor-pointer peer"
+                                        onClick={(e) => {
+                                            e.stopPropagation()
+                                        }}
+                                    >
+                                        <ListPlus size={18} className="text-white opacity-70 hover:opacity-100" />
+
+                                        <span className="absolute bottom-[calc(100%+6px)] left-1/2 -translate-x-1/2 
+                                            opacity-0 [button:hover_&]:opacity-100 transition-all duration-200
+                                            bg-gray-900 backdrop-blur-md border border-white/15 
+                                            text-[11px] text-white font-medium px-2 py-0.5 rounded shadow-xl
+                                            pointer-events-none tracking-tight z-50">
+                                            Add to playlist
+                                        </span>
+                                    </button>
+                                    
 
                                     <div className={`w-1.5 h-1.5 rounded-full transition-all duration-500
                                         ${isActive ? 'bg-blue-500 shadow-[0_0_10px_#3b82f6]' : 'bg-transparent'}`} 

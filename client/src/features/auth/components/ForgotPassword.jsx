@@ -150,7 +150,7 @@ const ForgotPassword = () => {
                                         })}
                                     />
                                 </div>
-                                {errors.email && <p className="text-[11px] text-rose-600 mt-1 ml-1 font-medium">{errors.email.message}</p>}
+                                {errors.email && <p className="text-[11px] text-rose-600 mt-1 ml-1 font-medium animate-pulse">{errors.email.message}</p>}
                             </div>
                             
                             <button

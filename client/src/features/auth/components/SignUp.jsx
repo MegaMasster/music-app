@@ -112,7 +112,8 @@ const SignUp = () => {
                                 <input 
                                     type="email"
                                     placeholder='Email'
-                                    className="w-full h-11 pl-11 rounded-xl border border-white/10 bg-black/20 outline-none focus:border-white/20 transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50 text-sm" 
+                                    className="w-full h-11 pl-11 rounded-xl border border-white/10 bg-black/20 outline-none focus:border-white/20 
+                                    transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50 text-sm" 
                                     {...register("email" , {
                                         required: "Enter email address",
                                         pattern: {
@@ -123,7 +124,7 @@ const SignUp = () => {
                                     disabled={!captchaToken}
                                 />
                             </div>
-                            {errors.email && <p className="text-[11px] text-rose-600 mt-1 ml-1 font-medium">{errors.email.message}</p>}
+                            {errors.email && <p className="text-[11px] text-rose-600 mt-1 ml-1 font-medium animate-pulse">{errors.email.message}</p>}
                         </div>
                         
                         <div className='flex flex-col w-full space-y-2'>
@@ -142,7 +143,7 @@ const SignUp = () => {
                                     disabled={!captchaToken}
                                 />
                             </div>
-                            {errors.password && <p className="text-[11px] text-rose-600 mt-1 ml-1 font-medium">{errors.password.message}</p>}
+                            {errors.password && <p className="text-[11px] text-rose-600 mt-1 ml-1 font-medium animate-pulse">{errors.password.message}</p>}
                         </div>
 
                         <div className='flex flex-col w-full space-y-2'>
@@ -160,7 +161,7 @@ const SignUp = () => {
                                     disabled={!captchaToken}
                                 />
                             </div>
-                            {errors.repeatPassword && <p className="text-[11px] text-rose-600 mt-1 ml-1 font-medium">{errors.repeatPassword.message}</p>}
+                            {errors.repeatPassword && <p className="text-[11px] text-rose-600 mt-1 ml-1 font-medium animate-pulse">{errors.repeatPassword.message}</p>}
                         </div>
 
                         <button 

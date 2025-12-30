@@ -44,7 +44,7 @@ const CodeInput = ({ onCodeComplete }) => {
                 ))}
             </div>
             {values.some(value => value === '') && (
-                <p className="text-[11px] text-rose-500/80 font-medium tracking-wide">Please enter all 6 digits</p>
+                <p className="text-[11px] text-rose-500/80 font-medium tracking-wide animate-pulse">Please enter all 6 digits</p>
             )}
         </div>
     )
