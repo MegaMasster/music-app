@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useLocation } from 'react-router-dom'
 
 import leaveIcon from "../../../assets/images/indexIcons/leaveIcon.png"
-import { Clock , ListPlus , Plus } from 'lucide-react'
+import { Clock , ListPlus , Check } from 'lucide-react'
 
 import useIndexStore from "../../../shared/stores/useIndexStore"
 import useAuthStore from "../../../shared/stores/useAuthStore"
@@ -14,12 +14,19 @@ import useDebounceSearchStore from '../../../shared/stores/useDebounceSearchStor
 import useSearchHistoryStore from '../../../shared/stores/useSearchHistoryStore'
 import saveSearchHistory from '../../utils/main/saveSearchHistory'
 import useControllerStore from '../../../shared/stores/useControllerStore'
+import usePlayListStore from '../../../shared/stores/usePlayListStore'
 
 
 const SearchMusicSide = () => {
 
     debounceSearch()
 
+    const setTrackId = usePlayListStore(state => state.setTrackId)
+    const hasMusic = usePlayListStore(state => state.hasMusic)
+    const setHasMusic = usePlayListStore(state => state.setHasMusic)
+    const isPlaylistsExist = usePlayListStore(state => state.isPlaylistsExist)
+    const setIsCreatePlayListWindowOpen = usePlayListStore(state => state.setIsCreatePlayListWindowOpen)
+    
     const userSearchHistory = useSearchHistoryStore(state => state.userSearchHistory)
 
     const setActiveTrackId = useControllerStore(state => state.setActiveTrackId)
@@ -101,6 +108,12 @@ const SearchMusicSide = () => {
         setQuery("")
     }
 
+    const modalWindowFunc = () => {
+        if (!isPlaylistsExist) {
+            setIsCreatePlayListWindowOpen(true)
+        }
+    }
+
     return (
         <section className={` ${isAboutPage ? 'hidden' : 'relative flex flex-col items-center w-[90%] mt-0 p-6 rounded-[2.5rem] bg-white/2 border border-white/5 backdrop-blur-xl shadow-[0_30px_60px_-15px_rgba(0,0,0,0.7)] shadow-indigo-500/5 transition-all duration-500'} `}>
             
@@ -158,7 +171,7 @@ const SearchMusicSide = () => {
                             </div>
 
                             {results.length > 0 ? (
-                                <div className='grid grid-cols-1 sm:grid-cols-2 gap-2 w-full'>
+                                <article className='grid grid-cols-1 sm:grid-cols-2 gap-2 w-full'>
                                     {results.slice(0 , 6).map((track) => (
                                         <button 
                                             key={track.id}
@@ -187,11 +200,11 @@ const SearchMusicSide = () => {
                                             </div>
                                         </button>
                                     ))}
-                                </div>
+                                </article>
                             ) : (
                                 !query.trim() ? (
                                     userSearchHistory.length > 0 ? (
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full">
+                                        <article className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full">
                                             {userSearchHistory.map((q, index) => (
                                                 <button 
                                                     key={index}
@@ -219,7 +232,7 @@ const SearchMusicSide = () => {
                                                     </div>
                                                 </button>
                                             ))}
-                                        </div>
+                                        </article>
                                     ) : (
                                         <p className="opacity-40 italic text-xs ml-3 font-light py-2">Your history is currently empty...</p>
                                     )
@@ -273,7 +286,7 @@ const SearchMusicSide = () => {
                                         <div className="absolute inset-0 bg-linear-to-r from-blue-500/10 via-transparent to-transparent pointer-events-none" />
                                     )}
 
-                                    <div className="relative w-14 h-14 flex-shrink-0 rounded-xl overflow-hidden shadow-xl bg-black/40">
+                                    <div className="relative w-12 h-12 flex-shrink-0 rounded-xl overflow-hidden shadow-xl bg-black/40">
                                         <img 
                                             src={track.album.images[0]?.url} 
                                             alt={track.name}
@@ -297,7 +310,7 @@ const SearchMusicSide = () => {
                                     </div>
 
                                     <div className="flex flex-col flex-1 min-w-0">
-                                        <h4 className={`text-sm font-bold truncate transition-colors duration-300
+                                        <h4 className={`text-[12px] font-bold truncate transition-colors duration-300
                                             ${isActive ? 'text-blue-400' : 'text-white'}`}>
                                             {track.name}
                                         </h4>
@@ -311,23 +324,47 @@ const SearchMusicSide = () => {
                                             </span>
                                         )}
                                     </div>
-                                    <button className="relative p-1 rounded bg-white/5 border border-white/10 hover:bg-blue-500/20 
-                                        transition-all hover:opacity-100 hover:cursor-pointer peer"
-                                        onClick={(e) => {
-                                            e.stopPropagation()
-                                        }}
-                                    >
-                                        <ListPlus size={18} className="text-white opacity-70 hover:opacity-100" />
-
-                                        <span className="absolute bottom-[calc(100%+6px)] left-1/2 -translate-x-1/2 
-                                            opacity-0 [button:hover_&]:opacity-100 transition-all duration-200
-                                            bg-gray-900 backdrop-blur-md border border-white/15 
-                                            text-[11px] text-white font-medium px-2 py-0.5 rounded shadow-xl
-                                            pointer-events-none tracking-tight z-50">
-                                            Add to playlist
-                                        </span>
-                                    </button>
                                     
+                                    {hasMusic ? (
+                                        <button 
+                                            className="relative p-1 rounded bg-white/5 border border-white/10 hover:bg-blue-500/20 
+                                            transition-all hover:opacity-100 hover:cursor-pointer active:scale-[93%] peer"
+                                            onClick={(e) => {
+                                                e.stopPropagation()
+                                            }}
+                                        >
+                                            <Check size={18} className="text-white opacity-70 hover:opacity-100" />
+
+                                            <span className="absolute bottom-[calc(100%+6px)] left-1/2 -translate-x-1/2 
+                                                opacity-0 [button:hover_&]:opacity-100 transition-all duration-200
+                                                bg-gray-900 backdrop-blur-md border border-white/15 
+                                                text-[11px] text-white font-medium px-2 py-0.5 rounded shadow-xl
+                                                pointer-events-none tracking-tight z-50">
+                                                Delete from playlist
+                                            </span>
+                                        </button>
+                                    ) : (
+                                        <button 
+                                            className="relative p-1 rounded bg-white/5 border border-white/10 hover:bg-blue-500/20 
+                                            transition-all hover:opacity-100 hover:cursor-pointer active:scale-[93%] peer"
+                                            onClick={(e) => {
+                                                e.stopPropagation()
+                                                setTrackId(track.id)
+                                                modalWindowFunc()
+                                            }}
+                                        >
+                                            <ListPlus size={18} className="text-white opacity-70 hover:opacity-100" />
+
+                                            <span className="absolute bottom-[calc(100%+6px)] left-1/2 -translate-x-1/2 
+                                                opacity-0 [button:hover_&]:opacity-100 transition-all duration-200
+                                                bg-gray-900 backdrop-blur-md border border-white/15 
+                                                text-[11px] text-white font-medium px-2 py-0.5 rounded shadow-xl
+                                                pointer-events-none tracking-tight z-50">
+                                                Add to playlist
+                                            </span>
+                                        </button>
+                                    )}
+
 
                                     <div className={`w-1.5 h-1.5 rounded-full transition-all duration-500
                                         ${isActive ? 'bg-blue-500 shadow-[0_0_10px_#3b82f6]' : 'bg-transparent'}`} 

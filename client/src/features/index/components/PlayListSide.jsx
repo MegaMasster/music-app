@@ -1,11 +1,15 @@
 import { useLocation } from "react-router-dom"
 import { Music, Plus, X, Camera, Sparkles } from 'lucide-react'
-import { useRef } from 'react'
+import { useRef , useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { useForm } from "react-hook-form"
 
 import { ROUTES } from "../../../routing/routes"
 import usePlayListStore from "../../../shared/stores/usePlayListStore"
+import createPlayList from "../api/createPlayListApi"
+import useAuthStore from "../../../shared/stores/useAuthStore"
+import fetchPlayList from "../api/fetchPlayListApi"
+
 
 const PlayListSide = () => {
 
@@ -14,6 +18,41 @@ const PlayListSide = () => {
     const image = usePlayListStore(state => state.image)
     const setImage = usePlayListStore(state => state.setImage)
     const resetImage = usePlayListStore(state => state.resetImage)
+    const trackId = usePlayListStore(state => state.trackId)
+
+    const setLoading = useAuthStore(state => state.setLoading)
+    const serverError = usePlayListStore(state => state.serverError)
+    const setServerError = usePlayListStore(state => state.setServerError)
+    const isError = usePlayListStore(state => state.isError)
+    const resetError = usePlayListStore(state => state.resetError)
+    const setIsPlaylistsExist = usePlayListStore(state => state.setIsPlaylistsExist)
+    const isPlaylistsExist = usePlayListStore(state => state.isPlaylistsExist)
+    const playListName = usePlayListStore(state => state.playListName)
+    const setPlayListName = usePlayListStore(state => state.setPlayListName)
+    const imageUrl = usePlayListStore(state => state.imageUrl)
+    const setImageUrl = usePlayListStore(state => state.setImageUrl)
+
+    useEffect(() => {
+        const loadPlayList = async () => {
+            try {
+                const result = await fetchPlayList()
+                if (result.success) {
+                    if (result.data.length > 0) {
+                        setImageUrl(result.data[0].image_url)
+                        setPlayListName(result.data[0].name)
+                        setIsPlaylistsExist(true)
+                    } else {
+                        setIsPlaylistsExist(false)
+                    }
+                } else {
+                    throw Error("Не получилось получить плейлист")
+                }
+            } catch(error) {
+                console.error("Не удалось загрузить плейлисты из БД:", error)
+            }
+        }
+        loadPlayList()
+    } , [])
 
     const {
         register,
@@ -46,11 +85,41 @@ const PlayListSide = () => {
     const location = useLocation()
     const isAboutPage = location.pathname === ROUTES.ABOUT_AUTHOR
 
-    const onSubmit = (data) => {
-        console.log("Данные формы:", data)
-        handleClose()
-        reset()
-        resetImage()
+    const onSubmit = async (data) => {
+        setLoading(true)
+        resetError()
+
+        const playlistData = {
+            ...data,
+            image: image,
+            trackId: trackId || null
+        }
+
+        try {
+            const result = await createPlayList(playlistData)
+            if (result.success) {
+                if (result.data && (Array.isArray(result.data) ? result.data.length > 0 : true)) {
+                    const created = Array.isArray(result.data) ? result.data[0] : result.data
+                    setImageUrl(created.image_url)
+                    setPlayListName(created.name)
+                    setIsPlaylistsExist(true)
+                    handleClose()
+                } else {
+                    setIsPlaylistsExist(false)
+                }
+            } else {
+                if (result.status === 400) {
+                    setServerError("You already have a playlist")
+                } else {
+                    setServerError("Server error")
+                }
+            }
+        } catch (error) {
+            console.log(error)
+            setServerError("Request Error")
+        } finally {
+            setLoading(false)
+        }
     }
 
     return (
@@ -71,10 +140,58 @@ const PlayListSide = () => {
                 </button>
             </div>
 
-            <div className="relative w-full h-44 rounded-[2.5rem] border border-white/5 bg-white/[0.02] backdrop-blur-sm flex flex-col items-center justify-center group">
-                <Music size={40} className="text-white/10" strokeWidth={1} />
-                <span className="text-[10px] uppercase tracking-[0.3em] text-gray-600 font-bold mt-2">No playlists yet</span>
-            </div>
+            {isPlaylistsExist ? (
+                <button 
+                    className="group relative flex flex-col items-start gap-2    p-2 rounded-2xl transition-all duration-300 hover:bg-white/[0.05] 
+                    active:scale-95 text-left w-[186px] hover:cursor-pointer"
+                >
+
+                    <div className="relative w-[160px] h-[140px] overflow-hidden rounded-xl border border-white/5 shadow-lg 
+                        group-hover:border-white/20 transition-colors"
+                    >
+                        {imageUrl ? (
+                            <img 
+                                src={imageUrl} 
+                                alt={playListName} 
+                                className="w-full h-full object-cover select-none transition-transform duration-500 group-hover:scale-110"
+                            />
+                        ) : (
+                            <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-neutral-800 to-neutral-950 transition-colors">
+                                <div className="relative">
+                                    <Music 
+                                        size={42} 
+                                        className="text-white/10 group-hover:text-blue-500/40 transition-colors duration-500" 
+                                        strokeWidth={1.5} 
+                                    />
+                                    <Music 
+                                        size={42} 
+                                        className="absolute inset-0 text-blue-500/0 group-hover:text-blue-500/20 blur-xl transition-colors duration-500" 
+                                        strokeWidth={1.5} 
+                                    />
+                                </div>
+                            </div>
+                        )}
+                                        
+                        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    </div>
+
+                    <div className="px-1 w-full">
+                        <p className="text-white font-medium text-sm truncate tracking-tight group-hover:text-blue-400 transition-colors">
+                            {playListName}
+                        </p>
+                        <p className="text-[10px] text-gray-500 uppercase font-bold tracking-widest mt-0.5">
+                            Playlist
+                        </p>
+                    </div>
+                </button>
+            ) : (
+                <div className="relative w-full h-44 rounded-[2.5rem] border border-white/5 bg-white/[0.02] backdrop-blur-sm flex 
+                    flex-col items-center justify-center group"
+                >
+                    <Music size={40} className="text-white/10" strokeWidth={1} />
+                    <span className="text-[10px] uppercase tracking-[0.3em] text-gray-600 font-bold mt-2">No playlists yet</span>
+                </div>
+            )}
 
             {isCreatePlayListWindowOpen && createPortal(
                 <div className="fixed inset-0 z-[10] flex items-center justify-center p-6 animate-in fade-in duration-300">
@@ -137,6 +254,11 @@ const PlayListSide = () => {
                                         className={`w-full bg-white/5 border ${errors.playlistName ? 'border-red-500/50' : 'border-white/10'} 
                                         rounded-2xl px-6 py-5 text-white outline-none focus:border-blue-500/50 focus:bg-white/10 transition-all text-sm`}
                                     />
+                                    {isError && (
+                                        <p className="text-[9px] text-red-500 uppercase font-bold ml-2 tracking-widest animate-pulse">
+                                            {serverError}
+                                        </p>
+                                    )}
                                     {errors.playlistName && (
                                         <p className="text-[9px] text-red-500 uppercase font-bold ml-2 tracking-widest animate-pulse">
                                             {errors.playlistName.message}
