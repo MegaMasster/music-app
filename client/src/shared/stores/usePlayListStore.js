@@ -9,6 +9,7 @@ const usePlayListStore = create((set) => ({
     hasMusic: false,
     serverError: null,
     isError: false,
+    playListId: null,
 
     // pl data
         playListName: null,
@@ -32,7 +33,8 @@ const usePlayListStore = create((set) => ({
 
     // set pl data
         setPlayListName: (name) => set({playListName: name}),
-        setImageUrl: (url) => set({imageUrl: url})
+        setImageUrl: (url) => set({imageUrl: url}),
+        setPlayListId: (id) => set({playListId: id})
     // 
 }))
 export default usePlayListStore

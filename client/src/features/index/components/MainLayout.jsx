@@ -8,6 +8,7 @@ import useIndexStore from "../../../shared/stores/useIndexStore"
 import Loader from "../../../shared/ui/loader/Loader"
 import SearchMusicSide from "./SearchMusicSide"
 import PlayListSide from "./PlayListSide"
+import TracksListPopup from "./TracksListPopup"
 
 const MainLayout = () => {
 
@@ -80,6 +81,8 @@ const MainLayout = () => {
                 <SearchMusicSide />
                 <PlayListSide />
             </section>
+
+            <TracksListPopup/>
         </main>
     )
 }

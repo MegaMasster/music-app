@@ -60,7 +60,28 @@ const getUserPlaylists = async (req, res) => {
     }
 }
 
+const deletePlayList = async (req , res) => {
+    try {
+        const { id } = req.body
+
+        const token = req.cookies.jwt
+        if (!token) {
+            return res.status(401).json({ message: "Не авторизован" })
+        }
+        const decoded = jwt.verify(token, process.env.JWT_SECRET)
+        const userId = decoded.id
+
+        const result = await playListService.deletePlayList(userId , id)
+
+        res.status(200).json(result)
+    } catch(error) {
+        console.error("Ошибка в deletePlayList контроллере:", error)
+        res.status(500).json({ message: "Ошибка сервера при удалении" })
+    }       
+}
+
 export {
     createPlayList,
-    getUserPlaylists
+    getUserPlaylists,
+    deletePlayList
 }

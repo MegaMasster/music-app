@@ -13,7 +13,7 @@ import {
     logout
 } from "../controllers/userControllers.js"
 
-import { createPlayList , getUserPlaylists } from "../controllers/playListController.js"
+import { createPlayList , getUserPlaylists , deletePlayList } from "../controllers/playListController.js"
 
 router.post("/signup" , signUp)
 router.post("/verify-email" , verifyEmail)
@@ -23,6 +23,8 @@ router.post("/check-reset-token" , checkResetToken)
 router.post("/feedback" , feedback)
 router.post("/logout" , logout)
 router.post("/playlist" , createPlayList)
+
+router.delete("/playlist/delete" , deletePlayList)
 
 router.patch("/reset-password" , resetPassword)
 

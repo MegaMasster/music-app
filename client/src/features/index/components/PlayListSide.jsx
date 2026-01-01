@@ -9,9 +9,12 @@ import usePlayListStore from "../../../shared/stores/usePlayListStore"
 import createPlayList from "../api/createPlayListApi"
 import useAuthStore from "../../../shared/stores/useAuthStore"
 import fetchPlayList from "../api/fetchPlayListApi"
-
+import useTracksListPopupStore from "../../../shared/stores/useTracksListPopupStore"
+import { useNavigate } from "react-router-dom"
 
 const PlayListSide = () => {
+
+    const navigate = useNavigate()
 
     const isCreatePlayListWindowOpen = usePlayListStore(state => state.isCreatePlayListWindowOpen)
     const setIsCreatePlayListWindowOpen = usePlayListStore(state => state.setIsCreatePlayListWindowOpen)
@@ -31,6 +34,10 @@ const PlayListSide = () => {
     const setPlayListName = usePlayListStore(state => state.setPlayListName)
     const imageUrl = usePlayListStore(state => state.imageUrl)
     const setImageUrl = usePlayListStore(state => state.setImageUrl)
+    const setPlayListId = usePlayListStore(state => state.setPlayListId)
+    const playListId = usePlayListStore(state => state.playListId)
+
+    const setIsTracksListPopupOpen = useTracksListPopupStore(state => state.setIsTracksListPopupOpen)
 
     useEffect(() => {
         const loadPlayList = async () => {
@@ -38,6 +45,8 @@ const PlayListSide = () => {
                 const result = await fetchPlayList()
                 if (result.success) {
                     if (result.data.length > 0) {
+                        console.log(result.data)
+                        setPlayListId(result.data[0].id)
                         setImageUrl(result.data[0].image_url)
                         setPlayListName(result.data[0].name)
                         setIsPlaylistsExist(true)
@@ -100,6 +109,7 @@ const PlayListSide = () => {
             if (result.success) {
                 if (result.data && (Array.isArray(result.data) ? result.data.length > 0 : true)) {
                     const created = Array.isArray(result.data) ? result.data[0] : result.data
+                    setPlayListId(created.id)
                     setImageUrl(created.image_url)
                     setPlayListName(created.name)
                     setIsPlaylistsExist(true)
@@ -122,10 +132,15 @@ const PlayListSide = () => {
         }
     }
 
+    const handleOpenPopup = () => {
+        setIsTracksListPopupOpen(true)
+        navigate(`/index/playlist/${playListId}`)
+    }
+
     return (
         <section className={`${isAboutPage ? "hidden" : "relative flex flex-col items-start w-[90%] mx-auto mt-6 mb-10"} z-10`}>
             
-            <div className="flex items-center justify-between w-full mb-6">
+            <div className="flex items-center justify-between w-full mb-5.5">
                 <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-3">
                     Playlists <Sparkles className="text-blue-500" size={20} />
                 </h1>
@@ -142,8 +157,9 @@ const PlayListSide = () => {
 
             {isPlaylistsExist ? (
                 <button 
-                    className="group relative flex flex-col items-start gap-2    p-2 rounded-2xl transition-all duration-300 hover:bg-white/[0.05] 
+                    className="group relative flex flex-col items-start gap-2 p-2 rounded-2xl transition-all duration-300 hover:bg-white/[0.05] 
                     active:scale-95 text-left w-[186px] hover:cursor-pointer"
+                    onClick={handleOpenPopup}
                 >
 
                     <div className="relative w-[160px] h-[140px] overflow-hidden rounded-xl border border-white/5 shadow-lg 

@@ -160,7 +160,7 @@ const SearchMusicSide = () => {
                             initial={{ opacity: 0, y: -15 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -15 }}
-                            transition={{ duration: 0.2 }}
+                            transition={{ duration: 0.15 }}
                         >
 
                             <div className="flex items-center gap-2 mb-3">

@@ -94,5 +94,25 @@ class PlayListService {
         }
     }
 
+    async deletePlayList(userId , id) {
+        try {
+            const result = await pool.query(
+                'DELETE FROM playlists WHERE id = $1 AND user_id = $2 RETURNING *',
+                [id, userId]
+            )
+
+            if (result.rowCount === 0) {
+                return { success: false, message: "Плейлист не найден или доступ запрещен" }
+            }
+
+            return {
+                success: true
+            }
+        } catch(error) {
+            console.error("Ошибка в PlayListService:", error);
+            throw error
+        }
+    }
+
 }
 export default PlayListService
