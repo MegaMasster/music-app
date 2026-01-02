@@ -104,6 +104,8 @@ const PlayListSide = () => {
             trackId: trackId || null
         }
 
+        console.log(playlistData)
+
         try {
             const result = await createPlayList(playlistData)
             if (result.success) {

@@ -4,52 +4,66 @@ import {pool} from "../../databaseConnection/db-connect.js"
 class PlayListService {
 
     async createPlayList(playListData) {
-        const { userId, playlistName, image, trackId } = playListData
+    const { userId, playlistName, image, trackId } = playListData;
+    const client = await pool.connect();
+
+    try {
+        await client.query('BEGIN');
+
+        // 1. Проверка лимита плейлистов
+        const checkRes = await client.query(
+            'SELECT COUNT(*) FROM playlists WHERE user_id = $1',
+            [userId]
+        );
         
-        const client = await pool.connect()
-        try {
-            await client.query('BEGIN')
+        if (parseInt(checkRes.rows[0].count) >= 1) {
+            throw new Error("LIMIT_REACHED");
+        }
 
-            const checkRes = await client.query(
-                'SELECT COUNT(*) FROM playlists WHERE user_id = $1',
-                [userId]
-            )
+        // 2. Загрузка изображения (если есть)
+        let imageUrl = null;
+        if (image && image !== null) {
+            imageUrl = await this.uploadPlaylistImage(image);
+        }
+
+        // 3. Создание плейлиста
+        const playlistRes = await client.query(
+            'INSERT INTO playlists (user_id, name, image_url) VALUES ($1, $2, $3) RETURNING id',
+            [userId, playlistName, imageUrl]
+        );
+        
+        const playlistId = playlistRes.rows[0].id;
+        console.log(`[Service] Плейлист создан с ID: ${playlistId}`);
+
+        // 4. Сохранение трека (исправленная логика)
+        // Приводим к строке на случай, если пришло число или объект
+        const normalizedTrackId = trackId ? String(trackId).trim() : null;
+
+        if (normalizedTrackId && normalizedTrackId !== "") {
+            console.log(`[Service] Пытаюсь добавить трек ${normalizedTrackId} в плейлист ${playlistId}`);
             
-            const playlistCount = parseInt(checkRes.rows[0].count)
-            if (playlistCount >= 1) {
-                throw new Error("LIMIT_REACHED") 
-            }
-
-            let imageUrl = null
-            if (image) {
-                imageUrl = await this.uploadPlaylistImage(image)
-            }
-
-            const playlistRes = await client.query(
-                'INSERT INTO playlists (user_id, name, image_url) VALUES ($1, $2, $3) RETURNING id',
-                [userId, playlistName, imageUrl]
-            )
+            await client.query(
+                'INSERT INTO playlists_tracks (playlist_id, spotify_track_id) VALUES ($1, $2)',
+                [playlistId, normalizedTrackId]
+            );
             
-            const playlistId = playlistRes.rows[0].id
+            console.log("[Service] Трек успешно сохранен в БД");
+        }
 
-            if (trackId && trackId.trim() !== "") {
-                await client.query(
-                    'INSERT INTO playlist_tracks (playlist_id, spotify_track_id) VALUES ($1, $2)',
-                    [playlistId, trackId]
-                )
-            }
+        await client.query('COMMIT');
+        
+        return { 
+            id: playlistId, 
+            name: playlistName,
+            image_url: imageUrl
+        };
 
-            await client.query('COMMIT')
-            return { 
-                id: playlistId, 
-                name: playlistName,
-                image_url: imageUrl
-            }
         } catch (dbError) {
-            await client.query('ROLLBACK')
-            throw dbError 
+            await client.query('ROLLBACK');
+            console.error("[Service Error] Ошибка в транзакции:", dbError.message);
+            throw dbError; 
         } finally {
-            client.release()
+            client.release();
         }
     }
 
@@ -80,7 +94,7 @@ class PlayListService {
                         '[]'
                     ) as tracks
                 FROM playlists p
-                LEFT JOIN playlist_tracks pt ON p.id = pt.playlist_id
+                LEFT JOIN playlists_tracks pt ON p.id = pt.playlist_id
                 WHERE p.user_id = $1
                 GROUP BY p.id
                 ORDER BY p.created_at DESC;

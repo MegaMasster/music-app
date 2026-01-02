@@ -6,6 +6,7 @@ const playListService = new PlayListService()
 
 const createPlayList = async (req , res) => {
     try {
+        console.log(req.body)
         const { playlistName, image, trackId } = req.body
 
         const token = req.cookies.jwt
