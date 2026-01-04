@@ -13,7 +13,12 @@ import {
     logout
 } from "../controllers/userControllers.js"
 
-import { createPlayList , getUserPlaylists , deletePlayList } from "../controllers/playListController.js"
+import { 
+    createPlayList , 
+    getUserPlaylists , 
+    deletePlayList ,
+    gerUserTracks
+} from "../controllers/playListController.js"
 
 router.post("/signup" , signUp)
 router.post("/verify-email" , verifyEmail)
@@ -30,5 +35,6 @@ router.patch("/reset-password" , resetPassword)
 
 router.get("/verifyToken" , verifyTokenController)
 router.get("/playlist" , getUserPlaylists)
+router.get("/playlist/gettracks" , gerUserTracks)
 
 export default router

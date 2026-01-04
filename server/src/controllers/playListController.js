@@ -81,8 +81,33 @@ const deletePlayList = async (req , res) => {
     }       
 }
 
+const gerUserTracks = async (req , res) => {
+    try {
+        const id = req.query.playlistId
+
+        const token = req.cookies.jwt
+        if (!token) {
+            return res.status(401).json({ message: "Не авторизован" })
+        }
+        const decoded = jwt.verify(token, process.env.JWT_SECRET)
+        const userId = decoded.id
+
+        const result = await playListService.gerUserTracks(userId , id)
+
+        if (!result.success) {
+            return res.status(403).json(result)
+        }
+
+        res.status(200).json(result)
+    } catch (error) {
+        console.error("Ошибка в getUserTracks контроллере:", error)
+        res.status(500).json({ message: "Ошибка сервера при получении трэков" })
+    }
+}
+
 export {
     createPlayList,
     getUserPlaylists,
-    deletePlayList
+    deletePlayList,
+    gerUserTracks
 }

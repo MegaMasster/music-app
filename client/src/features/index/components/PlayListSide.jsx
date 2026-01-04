@@ -1,4 +1,4 @@
-import { useLocation } from "react-router-dom"
+import { useLocation , useNavigate } from "react-router-dom"
 import { Music, Plus, X, Camera, Sparkles } from 'lucide-react'
 import { useRef , useEffect } from 'react'
 import { createPortal } from 'react-dom'
@@ -10,7 +10,7 @@ import createPlayList from "../api/createPlayListApi"
 import useAuthStore from "../../../shared/stores/useAuthStore"
 import fetchPlayList from "../api/fetchPlayListApi"
 import useTracksListPopupStore from "../../../shared/stores/useTracksListPopupStore"
-import { useNavigate } from "react-router-dom"
+import getTracksService from '../../utils/main/getTracksService'
 
 const PlayListSide = () => {
 
@@ -137,12 +137,13 @@ const PlayListSide = () => {
     const handleOpenPopup = () => {
         setIsTracksListPopupOpen(true)
         navigate(`/index/playlist/${playListId}`)
+        getTracksService(playListId)
     }
 
     return (
-        <section className={`${isAboutPage ? "hidden" : "relative flex flex-col items-start w-[90%] mx-auto mt-6 mb-10"} z-10`}>
+        <section className={`${isAboutPage ? "hidden" : "relative flex flex-col justify-between items-start w-[90%] h-full mx-auto mt-6 mb-5"} z-10`}>
             
-            <div className="flex items-center justify-between w-full mb-5.5">
+            <div className="flex items-center justify-between w-full">
                 <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-3">
                     Playlists <Sparkles className="text-blue-500" size={20} />
                 </h1>

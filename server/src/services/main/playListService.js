@@ -111,19 +111,55 @@ class PlayListService {
     async deletePlayList(userId , id) {
         try {
             const result = await pool.query(
-                'DELETE FROM playlists WHERE id = $1 AND user_id = $2 RETURNING *',
+                `WITH deleted_tracks AS (
+                    DELETE FROM playlists_tracks 
+                    WHERE playlist_id = $1
+                )
+                DELETE FROM playlists 
+                WHERE id = $1 AND user_id = $2 
+                RETURNING *`,
                 [id, userId]
             )
 
+        if (result.rowCount === 0) {
+            return { success: false, message: "Плейлист не найден или доступ запрещен" }
+        }
+
+        return { success: true }
+        } catch(error) {
+            console.error("Ошибка в PlayListService:", error)
+            throw error
+        }
+    }
+
+    async gerUserTracks(userId , id) {
+        try {
+            const query = `
+                SELECT pt.spotify_track_id 
+                FROM playlists_tracks pt
+                JOIN playlists p ON pt.playlist_id = p.id
+                WHERE pt.playlist_id = $1 AND p.user_id = $2
+                ORDER BY pt.added_at DESC
+            `
+
+            const result = await pool.query(query, [id, userId])
+
             if (result.rowCount === 0) {
-                return { success: false, message: "Плейлист не найден или доступ запрещен" }
+                return { 
+                    success: true, 
+                    tracks: [], 
+                    message: "Трэк не найден" 
+                }
             }
 
+            const trackIds = result.rows.map(row => row.spotify_track_id)
+
             return {
-                success: true
+                success: true,
+                tracks: trackIds
             }
-        } catch(error) {
-            console.error("Ошибка в PlayListService:", error);
+        } catch (error) {
+            console.error("Ошибка в PlayListService:", error)
             throw error
         }
     }

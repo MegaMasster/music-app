@@ -27,6 +27,8 @@ const TracksListPopup = () => {
     const setIsTracksListPopupOpen = useTracksListPopupStore(state => state.setIsTracksListPopupOpen)
     const isPlayListDeleted = useTracksListPopupStore(state => state.isPlayListDeleted)
     const setIsPlayListDeleted = useTracksListPopupStore(state => state.setIsPlayListDeleted)
+    const isPlayListClear = useTracksListPopupStore(state => state.isPlayListClear)
+    const info = useTracksListPopupStore(state => state.info)
 
     if (!id || !isTracksListPopupOpen) return null
 
@@ -152,31 +154,37 @@ const TracksListPopup = () => {
                 </div>
 
                 <div className="flex-1 overflow-y-auto px-6 pb-8 scrollbar-hide">
-                    <div className="flex items-center gap-3 mb-6 text-blue-400/20 uppercase text-[7px] font-black tracking-[0.4em]">
+                    <div className="flex items-center gap-3 mb-6 text-blue-100 uppercase text-[7px] font-black tracking-[0.4em]">
                         <ListMusic size={12} />
                         <span>Tracks</span>
                         <div className="h-[1px] flex-1 bg-blue-500/5" />
                     </div>
                     
-                    <div className="space-y-1">
-                        {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-                            <div key={i} className="flex items-center justify-between p-3 rounded-2xl hover:bg-blue-500/5 group transition-all cursor-pointer border border-transparent hover:border-blue-500/5">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 bg-blue-950/40 rounded-lg flex items-center justify-center border border-blue-500/10">
-                                        <Music size={12} className="text-blue-500/30" />
-                                    </div>
-                                    <div>
-                                        <p className="text-white/90 text-xs font-bold">Track Name #{i}</p>
-                                        <p className="text-blue-500/30 text-[8px] font-bold uppercase tracking-widest">Spotify Artist</p>
-                                    </div>
+                    <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
+                        {isPlayListClear ? (
+                            <div className="flex flex-col items-center animate-in fade-in zoom-in-95 duration-500">
+                                <div className="w-16 h-16 bg-blue-500/5 rounded-full flex items-center justify-center mb-4 border border-blue-500/10">
+                                    <ListMusic size={24} className="text-blue-500/20" />
                                 </div>
-                                <button className="opacity-0 group-hover:opacity-100 p-2 text-blue-500/20 hover:text-red-500 transition-all cursor-pointer">
-                                    <Trash2 size={14} />
-                                </button>
+                                
+                                <span className="text-[10px] uppercase tracking-[0.3em] text-blue-500/80 font-black mb-1">
+                                    Status: Empty
+                                </span>
+                                <p className="text-white/70 text-[11px] font-medium uppercase tracking-widest max-w-[180px] leading-relaxed">
+                                    {info || "Your playlist is clear"}
+                                </p>
                             </div>
-                        ))}
+                        ) : (
+                            <div className="w-full space-y-1">
+                                <span className="text-[7px] uppercase tracking-[0.4em] text-blue-500/80 font-black px-2">
+                                    Playlist Content
+                                </span>
+                                <p className='text-white uppercase tracking-tighter font-black text-sm px-2'>Tracks</p>
+                            </div>
+                        )}
                     </div>
                 </div>
+                
             </div>
         </section>,
         document.body
