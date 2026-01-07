@@ -1,4 +1,4 @@
-import { X, Trash2, Music, Play, ListMusic } from 'lucide-react'
+import { X, Trash2, Music, Play, ListMusic , ListPlus , Check} from 'lucide-react'
 import { createPortal } from "react-dom"
 import { useNavigate, useParams } from "react-router-dom"
 
@@ -6,6 +6,9 @@ import usePlayListStore from "../../../shared/stores/usePlayListStore"
 import useTracksListPopupStore from "../../../shared/stores/useTracksListPopupStore"
 import deletePlayList from "../api/deletePlayListApi"
 import useAuthStore from "../../../shared/stores/useAuthStore"
+import useControllerStore from '../../../shared/stores/useControllerStore'
+import removeTrackApi from '../api/removeTrackApi'
+import TracksLoader from "../../../shared/ui/loader/TracksLoader"
 
 const TracksListPopup = () => {
 
@@ -22,13 +25,25 @@ const TracksListPopup = () => {
     const playListName = usePlayListStore(state => state.playListName)
     const imageUrl = usePlayListStore(state => state.imageUrl)
     const setIsPlaylistsExist = usePlayListStore(state => state.setIsPlaylistsExist)
+    const isPlaylistsExist = usePlayListStore(state => state.isPlaylistsExist)
+    const setTrackId = usePlayListStore(state => state.setTrackId)
+    const playListId = usePlayListStore(state => state.playListId)
     
     const isTracksListPopupOpen = useTracksListPopupStore(state => state.isTracksListPopupOpen)
     const setIsTracksListPopupOpen = useTracksListPopupStore(state => state.setIsTracksListPopupOpen)
     const isPlayListDeleted = useTracksListPopupStore(state => state.isPlayListDeleted)
     const setIsPlayListDeleted = useTracksListPopupStore(state => state.setIsPlayListDeleted)
-    const isPlayListClear = useTracksListPopupStore(state => state.isPlayListClear)
     const info = useTracksListPopupStore(state => state.info)
+    const allTracks = useTracksListPopupStore(state => state.allTracks)
+    const ids = useTracksListPopupStore(state => state.ids)
+    const removeId = useTracksListPopupStore(state => state.removeId)
+    const removeTrackFromList = useTracksListPopupStore(state => state.removeTrackFromList)
+
+    const setTracksLoading = useTracksListPopupStore(state => state.setTracksLoading)
+    const tracksLoading = useTracksListPopupStore(state => state.tracksLoading)
+
+    const setActiveTrackId = useControllerStore(state => state.setActiveTrackId)
+    const activeTrackId = useControllerStore(state => state.activeTrackId)
 
     if (!id || !isTracksListPopupOpen) return null
 
@@ -58,6 +73,27 @@ const TracksListPopup = () => {
             setLoading(false)
         }
     }
+
+    const removeTrack = async (trackId) => {
+        setTracksLoading(true)
+        try {
+            const result = await removeTrackApi(trackId , playListId)
+            if (result.success) {
+                console.log("ВСЕ ОК")
+                removeId(trackId)
+                removeTrackFromList(trackId)
+            } else {
+                setServerError("Server error, try again later")
+            }
+        } catch (error) {
+            console.log("Fuck err: " , error)
+            setServerError("Server error, try again later")
+        } finally {
+            setTracksLoading(false)
+        }
+    }
+
+    const idsArray = ids ? ids.split(',') : []
 
     return createPortal(
         <section className="fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -134,7 +170,15 @@ const TracksListPopup = () => {
                     </div>
 
                     <div className="flex items-center gap-3 w-full mt-2 px-2">
-                        <button className="flex-1 flex items-center justify-center gap-2 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-black text-[9px] uppercase tracking-widest transition-all active:scale-95 shadow-lg shadow-blue-600/10 cursor-pointer">
+                        <button className="flex-1 flex items-center justify-center gap-2 py-4 bg-blue-600 
+                            hover:bg-blue-500 text-white rounded-2xl font-black text-[9px] uppercase tracking-widest transition-all active:scale-95 
+                            shadow-lg shadow-blue-600/10 cursor-pointer"
+                            onClick={() => {
+                                if (allTracks && allTracks.length > 0) {
+                                    setActiveTrackId(allTracks[0].id)
+                                }
+                            }}
+                        >
                             <Play size={12} fill="currentColor" /> Play Mix
                         </button>
                         <button 
@@ -146,22 +190,22 @@ const TracksListPopup = () => {
                     </div>
 
                     {isError && (
-                        <p className='text-[11px] text-rose-600 mt-1 ml-1 font-medium animate-pulse'>
+                        <p className='text-[13px] text-rose-600 mt-1 ml-1 font-medium animate-pulse'>
                            {serverError} 
                         </p>
                     )}
 
                 </div>
 
-                <div className="flex-1 overflow-y-auto px-6 pb-8 scrollbar-hide">
-                    <div className="flex items-center gap-3 mb-6 text-blue-100 uppercase text-[7px] font-black tracking-[0.4em]">
+                <div className="flex-1 overflow-y-auto px-6 scrollbar-hide">
+                    <div className="flex items-center gap-3 mb-0 text-blue-100 uppercase text-[7px] font-black tracking-[0.4em]">
                         <ListMusic size={12} />
                         <span>Tracks</span>
                         <div className="h-[1px] flex-1 bg-blue-500/5" />
                     </div>
                     
-                    <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
-                        {isPlayListClear ? (
+                    <div className="flex-1 flex flex-col items-center gap-2 justify-center p-1 text-center">
+                        {allTracks.length == 0 ? (
                             <div className="flex flex-col items-center animate-in fade-in zoom-in-95 duration-500">
                                 <div className="w-16 h-16 bg-blue-500/5 rounded-full flex items-center justify-center mb-4 border border-blue-500/10">
                                     <ListMusic size={24} className="text-blue-500/20" />
@@ -175,16 +219,125 @@ const TracksListPopup = () => {
                                 </p>
                             </div>
                         ) : (
-                            <div className="w-full space-y-1">
-                                <span className="text-[7px] uppercase tracking-[0.4em] text-blue-500/80 font-black px-2">
-                                    Playlist Content
-                                </span>
-                                <p className='text-white uppercase tracking-tighter font-black text-sm px-2'>Tracks</p>
-                            </div>
+                            tracksLoading ? (
+                                <TracksLoader/>
+                            ) : (
+                                <div className="w-full space-y-1">
+                                    <span className="text-[7px] uppercase tracking-[0.4em] text-blue-500/80 font-black px-2">
+                                        Playlist Content
+                                    </span>
+                                    {allTracks.map((track) => {
+                                        const isActive = activeTrackId === track.id
+                                        const isTrackAlreadyIn = idsArray.includes(track.id)
+
+                                        return (
+                                            <div 
+                                                key={track.id} 
+                                                onClick={() => setActiveTrackId(track.id)}
+                                                className={`group relative flex items-center h-17 gap-2 p-3 w-full rounded-2xl border transition-all 
+                                                duration-500 cursor-pointer 
+                                                ${isActive 
+                                                    ? 'bg-blue-600/10 border-blue-500/40 shadow-[0_0_25px_rgba(59,130,246,0.15)]' 
+                                                    : 'bg-white/[0.03] border-white/5 hover:border-blue-500/30 hover:bg-white/[0.08]'
+                                                }`}
+                                            >
+                                                {isActive && (
+                                                    <div className="absolute inset-0 bg-linear-to-r from-blue-500/10 via-transparent to-transparent pointer-events-none" />
+                                                )}
+
+                                                <div className="relative w-12 h-12 flex-shrink-0 rounded-xl overflow-hidden shadow-xl bg-black/40">
+                                                    <img 
+                                                        src={track.album?.images[0]?.url} 
+                                                        alt={track.name}
+                                                        className={`w-full h-full object-cover transition-transform duration-700 
+                                                            ${isActive ? 'scale-110' : 'group-hover:scale-110'}`}
+                                                    />
+                                                    
+                                                    <div className={`absolute inset-0 flex items-center justify-center bg-black/50 transition-opacity duration-300
+                                                        ${isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
+                                                    >
+                                                        {isActive ? (
+                                                            <div className="flex gap-0.5 items-end h-3">
+                                                                <div className="w-1 bg-blue-400 animate-[bounce_1s_infinite_0.1s] shadow-[0_0_8px_#60a5fa]" />
+                                                                <div className="w-1 bg-blue-400 animate-[bounce_1s_infinite_0.3s] shadow-[0_0_8px_#60a5fa]" />
+                                                                <div className="w-1 bg-blue-400 animate-[bounce_1s_infinite_0.5s] shadow-[0_0_8px_#60a5fa]" />
+                                                            </div>
+                                                        ) : (
+                                                            <div className="w-0 h-0 border-y-[6px] border-y-transparent border-l-[10px] border-l-white ml-1" />
+                                                        )}
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex flex-col flex-1 min-w-0">
+                                                    <h4 className={`text-[12px] font-bold truncate transition-colors duration-300
+                                                        ${isActive ? 'text-blue-400' : 'text-white'}`}>
+                                                        {track.name}
+                                                    </h4>
+                                                    <p className="text-[11px] text-gray-500 truncate mt-0.5">
+                                                        {track.artists[0]?.name}
+                                                    </p>
+                                                    
+                                                    {isActive && (
+                                                        <span className="text-[8px] text-blue-500/80 font-black tracking-[0.2em] mt-1.5 animate-pulse">
+                                                            NOW PLAYING
+                                                        </span>
+                                                    )}
+                                                </div>
+
+                                                {isTrackAlreadyIn && isPlaylistsExist ? (
+                                                    <button 
+                                                        className="relative p-1 rounded bg-blue-500/20 border border-blue-500/40 hover:bg-red-500/20 hover:border-red-500/40 
+                                                        transition-all hover:cursor-pointer active:scale-[93%] group/btn"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation()
+                                                            removeTrack(track.id)
+                                                            console.log("Remove click")
+                                                        }}
+                                                    >
+                                                        <Check size={18} className="text-blue-400 group-hover/btn:hidden" />
+                                                        <Trash2 size={18} className="hidden text-red-400 group-hover/btn:block" />
+                                                        
+                                                        <span className="absolute bottom-[calc(100%+6px)] left-1/2 -translate-x-1/2 
+                                                            opacity-0 group-hover/btn:opacity-100 transition-all duration-200
+                                                            bg-gray-900 backdrop-blur-md border border-white/15 
+                                                            text-[11px] text-white font-medium px-2 py-0.5 rounded shadow-xl
+                                                            pointer-events-none tracking-tight z-50">
+                                                            Remove from playlist
+                                                        </span>
+                                                    </button>
+                                                ) : (
+                                                    <button 
+                                                        className="relative p-1 rounded bg-white/5 border border-white/10 hover:bg-blue-500/20 
+                                                        transition-all hover:opacity-100 hover:cursor-pointer active:scale-[93%]"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation()
+                                                            setTrackId(track.id)
+                                                            modalWindowFunc()
+                                                        }}
+                                                    >
+                                                        <ListPlus size={18} className="text-white opacity-70 hover:opacity-100" />
+                                                        
+                                                        <span className="absolute bottom-[calc(100%+6px)] left-1/2 -translate-x-1/2 
+                                                            opacity-0 [button:hover_&]:opacity-100 transition-all duration-200
+                                                            bg-gray-900 backdrop-blur-md border border-white/15 
+                                                            text-[11px] text-white font-medium px-2 py-0.5 rounded shadow-xl
+                                                            pointer-events-none tracking-tight z-50">
+                                                            Add to playlist
+                                                        </span>
+                                                    </button>
+                                                )}
+
+                                                <div className={`w-1.5 h-1.5 rounded-full transition-all duration-500
+                                                    ${isActive ? 'bg-blue-500 shadow-[0_0_10px_#3b82f6]' : 'bg-transparent'}`} 
+                                                />
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                            )
                         )}
                     </div>
                 </div>
-                
             </div>
         </section>,
         document.body

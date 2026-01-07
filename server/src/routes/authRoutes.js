@@ -17,7 +17,9 @@ import {
     createPlayList , 
     getUserPlaylists , 
     deletePlayList ,
-    gerUserTracks
+    gerUserTracks ,
+    removeTrack , 
+    addTrackToPlayList
 } from "../controllers/playListController.js"
 
 router.post("/signup" , signUp)
@@ -28,8 +30,10 @@ router.post("/check-reset-token" , checkResetToken)
 router.post("/feedback" , feedback)
 router.post("/logout" , logout)
 router.post("/playlist" , createPlayList)
+router.post("/playlist/addtrack" ,     addTrackToPlayList)
 
 router.delete("/playlist/delete" , deletePlayList)
+router.delete("/playlist/removetrack" , removeTrack)
 
 router.patch("/reset-password" , resetPassword)
 

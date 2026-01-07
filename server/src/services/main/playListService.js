@@ -4,67 +4,62 @@ import {pool} from "../../databaseConnection/db-connect.js"
 class PlayListService {
 
     async createPlayList(playListData) {
-    const { userId, playlistName, image, trackId } = playListData;
-    const client = await pool.connect();
+        const { userId, playlistName, image, trackId } = playListData
+        const client = await pool.connect()
 
-    try {
-        await client.query('BEGIN');
+        try {
+            await client.query('BEGIN');
 
-        // 1. Проверка лимита плейлистов
-        const checkRes = await client.query(
-            'SELECT COUNT(*) FROM playlists WHERE user_id = $1',
-            [userId]
-        );
-        
-        if (parseInt(checkRes.rows[0].count) >= 1) {
-            throw new Error("LIMIT_REACHED");
-        }
-
-        // 2. Загрузка изображения (если есть)
-        let imageUrl = null;
-        if (image && image !== null) {
-            imageUrl = await this.uploadPlaylistImage(image);
-        }
-
-        // 3. Создание плейлиста
-        const playlistRes = await client.query(
-            'INSERT INTO playlists (user_id, name, image_url) VALUES ($1, $2, $3) RETURNING id',
-            [userId, playlistName, imageUrl]
-        );
-        
-        const playlistId = playlistRes.rows[0].id;
-        console.log(`[Service] Плейлист создан с ID: ${playlistId}`);
-
-        // 4. Сохранение трека (исправленная логика)
-        // Приводим к строке на случай, если пришло число или объект
-        const normalizedTrackId = trackId ? String(trackId).trim() : null;
-
-        if (normalizedTrackId && normalizedTrackId !== "") {
-            console.log(`[Service] Пытаюсь добавить трек ${normalizedTrackId} в плейлист ${playlistId}`);
+            const checkRes = await client.query(
+                'SELECT COUNT(*) FROM playlists WHERE user_id = $1',
+                [userId]
+            )
             
-            await client.query(
-                'INSERT INTO playlists_tracks (playlist_id, spotify_track_id) VALUES ($1, $2)',
-                [playlistId, normalizedTrackId]
-            );
+            if (parseInt(checkRes.rows[0].count) >= 1) {
+                throw new Error("LIMIT_REACHED");
+            }
+
+            let imageUrl = null;
+            if (image && image !== null) {
+                imageUrl = await this.uploadPlaylistImage(image);
+            }
+
+            const playlistRes = await client.query(
+                'INSERT INTO playlists (user_id, name, image_url) VALUES ($1, $2, $3) RETURNING id',
+                [userId, playlistName, imageUrl]
+            )
             
-            console.log("[Service] Трек успешно сохранен в БД");
-        }
+            const playlistId = playlistRes.rows[0].id;
+            console.log(`[Service] Плейлист создан с ID: ${playlistId}`)
 
-        await client.query('COMMIT');
-        
-        return { 
-            id: playlistId, 
-            name: playlistName,
-            image_url: imageUrl
-        };
+            const normalizedTrackId = trackId ? String(trackId).trim() : null
 
-        } catch (dbError) {
-            await client.query('ROLLBACK');
-            console.error("[Service Error] Ошибка в транзакции:", dbError.message);
-            throw dbError; 
-        } finally {
-            client.release();
-        }
+            if (normalizedTrackId && normalizedTrackId !== "") {
+                console.log(`[Service] Пытаюсь добавить трек ${normalizedTrackId} в плейлист ${playlistId}`)
+                
+                await client.query(
+                    'INSERT INTO playlists_tracks (playlist_id, spotify_track_id) VALUES ($1, $2)',
+                    [playlistId, normalizedTrackId]
+                )
+                
+                console.log("[Service] Трек успешно сохранен в БД");
+            }
+
+            await client.query('COMMIT')
+            
+            return { 
+                id: playlistId, 
+                name: playlistName,
+                image_url: imageUrl
+            }
+
+            } catch (dbError) {
+                await client.query('ROLLBACK')
+                console.error("[Service Error] Ошибка в транзакции:", dbError.message)
+                throw dbError
+            } finally {
+                client.release()
+            }
     }
 
     async uploadPlaylistImage (base64Image) {
@@ -160,6 +155,61 @@ class PlayListService {
             }
         } catch (error) {
             console.error("Ошибка в PlayListService:", error)
+            throw error
+        }
+    }
+
+    async removeTrack (trackId , playlistId) {
+        try {
+            console.log('Попытка удаления. PlaylistId:', playlistId, 'TrackId:', trackId)
+
+            const result = await pool.query(
+                `DELETE FROM playlists_tracks 
+                WHERE REPLACE(spotify_track_id, ' ', '') = REPLACE($1, ' ', '') 
+                AND playlist_id = $2::uuid`, 
+                [trackId.trim(), playlistId.trim()]
+            )
+            console.log("Удалено строк:", result.rowCount)
+
+        if (result.rowCount === 0) {
+            return { success: false, message: "Трэк не найден" }
+        }
+
+        return { success: true }
+        } catch(error) {
+            console.error("Ошибка в removeTrackService:", error)
+            throw error
+        }
+    }
+
+    async addTrackToPlayList (trackId , playlistId) {
+        try {
+            const query = `
+                INSERT INTO playlists_tracks (playlist_id, spotify_track_id) 
+                VALUES ($1, $2) 
+                ON CONFLICT (playlist_id, spotify_track_id) DO NOTHING
+                RETURNING id;
+            `
+
+            const result = await pool.query(query, [playlistId, trackId])
+
+            if (result.rowCount === 0) {
+                return { 
+                    success: false, 
+                    message: "Этот трек уже добавлен в плейлист" 
+                }
+            }
+
+            return { 
+                success: true, 
+                id: result.rows[0].id 
+            }
+
+        } catch (error) {
+            console.error("Ошибка БД при добавлении трека:", error)
+            if (error.code === '23503') {
+                return { success: false, message: "Плейлист не найден в базе" }
+            }
             throw error
         }
     }

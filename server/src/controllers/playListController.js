@@ -105,9 +105,37 @@ const gerUserTracks = async (req , res) => {
     }
 }
 
+const removeTrack = async (req , res) => {
+    try {
+        const { trackId , playlistId } = req.body
+
+        const result = await playListService.removeTrack(trackId , playlistId)
+
+        res.status(200).json(result)
+    } catch(error) {
+        console.error("Ошибка в removeTrack контроллере:", error)
+        res.status(500).json({ message: "Ошибка сервера при удалении ТРЭКА" })
+    }
+}
+
+const addTrackToPlayList = async (req , res) => {
+    try {
+        const { trackId , playlistId } = req.body
+
+        const result = await playListService.addTrackToPlayList(trackId , playlistId)
+
+        res.status(200).json(result)
+    } catch(error) {
+        console.error("Ошибка в addTrackToPlayList контроллере:", error)
+        res.status(500).json({ message: "Ошибка сервера при добавлении ТРЭКА" })
+    }
+}
+
 export {
     createPlayList,
     getUserPlaylists,
     deletePlayList,
-    gerUserTracks
+    gerUserTracks,
+    removeTrack,
+    addTrackToPlayList
 }

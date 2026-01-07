@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useLocation } from 'react-router-dom'
 
 import leaveIcon from "../../../assets/images/indexIcons/leaveIcon.png"
-import { Clock , ListPlus , Check } from 'lucide-react'
+import { Clock , ListPlus , Check , Trash2  } from 'lucide-react'
 
 import useIndexStore from "../../../shared/stores/useIndexStore"
 import useAuthStore from "../../../shared/stores/useAuthStore"
@@ -15,15 +15,21 @@ import useSearchHistoryStore from '../../../shared/stores/useSearchHistoryStore'
 import saveSearchHistory from '../../utils/main/saveSearchHistory'
 import useControllerStore from '../../../shared/stores/useControllerStore'
 import usePlayListStore from '../../../shared/stores/usePlayListStore'
+import addTrackToPlayListService from "../../utils/main/addTrackToPlayListService"
+import useTracksListPopupStore from '../../../shared/stores/useTracksListPopupStore'
+import removeTrackApi from '../api/removeTrackApi'
 
-
+// ну тут просто ебнуться можно
 const SearchMusicSide = () => {
 
     debounceSearch()
 
+    const ids = useTracksListPopupStore(state => state.ids)
+    const removeId = useTracksListPopupStore(state => state.removeId)
+    const removeTrackFromList = useTracksListPopupStore(state => state.removeTrackFromList)
+
     const setTrackId = usePlayListStore(state => state.setTrackId)
-    const hasMusic = usePlayListStore(state => state.hasMusic)
-    const setHasMusic = usePlayListStore(state => state.setHasMusic)
+    const playListId = usePlayListStore(state => state.playListId)
     const isPlaylistsExist = usePlayListStore(state => state.isPlaylistsExist)
     const setIsCreatePlayListWindowOpen = usePlayListStore(state => state.setIsCreatePlayListWindowOpen)
     
@@ -46,6 +52,7 @@ const SearchMusicSide = () => {
     const isMusicsFound = useIndexStore(state => state.isMusicsFound)
     const setIsMusicsFound = useIndexStore(state => state.setIsMusicsFound)
 
+    const setServerError = useAuthStore(state => state.setServerError)
     const serverError = useAuthStore(state => state.serverError)
     const isError = useAuthStore(state => state.isError)
     const resetError = useAuthStore(state => state.resetError)
@@ -78,7 +85,7 @@ const SearchMusicSide = () => {
     }, [setIsSearchPanelOpen])
 
 
-    const onSubmit = async () => {
+    const onSubmit = () => {
         if (!query.trim()) {
             setResults([])
             return
@@ -113,6 +120,29 @@ const SearchMusicSide = () => {
             setIsCreatePlayListWindowOpen(true)
         }
     }
+
+    const addTrackToPlayList = async (trackId) => {
+        await addTrackToPlayListService(playListId , trackId)
+        console.log(`Playlist id: ${playListId}, track id: ${trackId}`)
+    }
+
+    const removeTrack = async (trackId) => {
+        try {
+            const result = await removeTrackApi(trackId , playListId)
+            if (result.success) {
+                console.log("ВСЕ ОК")
+                removeId(trackId)
+                removeTrackFromList(trackId)
+            } else {
+                setServerError("Server error, try again later")
+            }
+        } catch (error) {
+            console.log("Fuck err: " , error)
+            setServerError("Server error, try again later")
+        }
+    }
+
+    const idsArray = ids ? ids.split(',') : []
 
     return (
         <section className={` ${isAboutPage ? 'hidden' : 'relative flex flex-col items-center w-[90%] mt-0 p-6 rounded-[2.5rem] bg-white/2 border border-white/5 backdrop-blur-xl shadow-[0_30px_60px_-15px_rgba(0,0,0,0.7)] shadow-indigo-500/5 transition-all duration-500'} `}>
@@ -270,6 +300,7 @@ const SearchMusicSide = () => {
                     <div className="grid grid-cols-2 gap-3 w-full "> 
                         {results.slice(0, 6).map((track) => {
                             const isActive = activeTrackId === track.id
+                            const isTrackAlreadyIn = idsArray.includes(track.id)
 
                             return (
                                 <div 
@@ -325,46 +356,50 @@ const SearchMusicSide = () => {
                                         )}
                                     </div>
                                     
-                                    {hasMusic ? (
+                                    {isTrackAlreadyIn && isPlaylistsExist ? (
                                         <button 
-                                            className="relative p-1 rounded bg-white/5 border border-white/10 hover:bg-blue-500/20 
-                                            transition-all hover:opacity-100 hover:cursor-pointer active:scale-[93%] peer"
+                                            className="relative p-1 rounded bg-blue-500/20 border border-blue-500/40 hover:bg-red-500/20 hover:border-red-500/40 
+                                            transition-all hover:cursor-pointer active:scale-[93%] group/btn"
                                             onClick={(e) => {
                                                 e.stopPropagation()
+                                                removeTrack(track.id)
+                                                console.log("Remove click")
                                             }}
                                         >
-                                            <Check size={18} className="text-white opacity-70 hover:opacity-100" />
-
+                                            <Check size={18} className="text-blue-400 group-hover/btn:hidden" />
+                                            <Trash2 size={18} className="hidden text-red-400 group-hover/btn:block" />
+                                                        
                                             <span className="absolute bottom-[calc(100%+6px)] left-1/2 -translate-x-1/2 
-                                                opacity-0 [button:hover_&]:opacity-100 transition-all duration-200
+                                                opacity-0 group-hover/btn:opacity-100 transition-all duration-200
                                                 bg-gray-900 backdrop-blur-md border border-white/15 
                                                 text-[11px] text-white font-medium px-2 py-0.5 rounded shadow-xl
                                                 pointer-events-none tracking-tight z-50">
-                                                Delete from playlist
+                                                Remove from playlist
                                             </span>
                                         </button>
-                                    ) : (
-                                        <button 
-                                            className="relative p-1 rounded bg-white/5 border border-white/10 hover:bg-blue-500/20 
-                                            transition-all hover:opacity-100 hover:cursor-pointer active:scale-[93%] peer"
-                                            onClick={(e) => {
-                                                e.stopPropagation()
-                                                setTrackId(track.id)
-                                                modalWindowFunc()
-                                            }}
-                                        >
-                                            <ListPlus size={18} className="text-white opacity-70 hover:opacity-100" />
-
-                                            <span className="absolute bottom-[calc(100%+6px)] left-1/2 -translate-x-1/2 
-                                                opacity-0 [button:hover_&]:opacity-100 transition-all duration-200
-                                                bg-gray-900 backdrop-blur-md border border-white/15 
-                                                text-[11px] text-white font-medium px-2 py-0.5 rounded shadow-xl
-                                                pointer-events-none tracking-tight z-50">
-                                                Add to playlist
-                                            </span>
-                                        </button>
-                                    )}
-
+                                        ) : (
+                                            <button 
+                                                className="relative p-1 rounded bg-white/5 border border-white/10 hover:bg-blue-500/20 
+                                                transition-all hover:opacity-100 hover:cursor-pointer active:scale-[93%]"
+                                                onClick={(e) => {
+                                                    e.stopPropagation()
+                                                    const id = track.id
+                                                    modalWindowFunc()
+                                                    addTrackToPlayList(id)
+                                                    setTrackId(track.id)
+                                                }}
+                                            >
+                                                <ListPlus size={18} className="text-white opacity-70 hover:opacity-100" />
+                                                        
+                                                <span className="absolute bottom-[calc(100%+6px)] left-1/2 -translate-x-1/2 
+                                                    opacity-0 [button:hover_&]:opacity-100 transition-all duration-200
+                                                     bg-gray-900 backdrop-blur-md border border-white/15 
+                                                    text-[11px] text-white font-medium px-2 py-0.5 rounded shadow-xl
+                                                    pointer-events-none tracking-tight z-50">
+                                                    Add to playlist
+                                                </span>
+                                            </button>
+                                        )}
 
                                     <div className={`w-1.5 h-1.5 rounded-full transition-all duration-500
                                         ${isActive ? 'bg-blue-500 shadow-[0_0_10px_#3b82f6]' : 'bg-transparent'}`} 

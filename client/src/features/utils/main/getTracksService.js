@@ -1,28 +1,25 @@
 import getTracks from "../../index/api/getTracksApi"
 import useTracksListPopupStore from "../../../shared/stores/useTracksListPopupStore"
 import useAuthStore from "../../../shared/stores/useAuthStore"
-
+import loadTracks from "../../index/api/loadTracksApi"
 
 const getTracksService = async (playlistId) => {
 
     const {
-        setLoading,
         setServerError
     } = useAuthStore.getState()
 
     const {
         setInfo,
-        resetInfo
+        resetInfo,
+        setIds,
+        setAllTracks,
+        setTracksLoading
     } = useTracksListPopupStore.getState()
-
-
-    // src={track.album.images[0]?.url} 
-    // alt={track.name}\
-    // {track.artists[0]?.name}
     
     try {
         resetInfo()
-        setLoading(true)
+        setTracksLoading(true)
         const result = await getTracks(playlistId)
         if (result.success) {
             if (result.data.tracks.length == 0) {
@@ -31,7 +28,23 @@ const getTracksService = async (playlistId) => {
                 setInfo("Your playlist is clear")
             } else {
                 console.log(result.data)
-                // ставим с втор данные ебашим их в компонент
+                const allIds = result.data.tracks.join(",")
+                console.log(allIds)
+                setIds(allIds)
+
+                const loadTracksResult = await loadTracks(allIds)
+                if (loadTracksResult.success) {
+                    setAllTracks(loadTracksResult.data.tracks)
+                    console.log(loadTracksResult.data)
+                } else {
+                    if (loadTracksResult.status === 401) {
+                        setServerError("Refresh the site about 5 times")
+                    } else if (loadTracksResult.status === 403) {
+                        setServerError("Please use VPN")
+                    } else {
+                        setServerError("Server error, try again later")
+                    }
+                }
             }
         } else {
             console.log("пизда")
@@ -43,7 +56,7 @@ const getTracksService = async (playlistId) => {
         console.log("Fuck err: " , error)
         setServerError("Err " , error)
     } finally {
-        setLoading(false)
+        setTracksLoading(false)
     }
 }
 export default getTracksService
