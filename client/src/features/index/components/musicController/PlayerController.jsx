@@ -1,13 +1,19 @@
 import { AnimatePresence , motion } from "framer-motion"
 
-import useControllerStore from "../../../shared/stores/useControllerStore"
+import useControllerStore from "../../../../shared/stores/useControllerStore"
 
 const PlayerController = () => {
 
-    const activeTrackId = useControllerStore(state => state.activeTrackId)
+    const userId = useControllerStore(state => state.userId)
+    const lastTracksByUser = useControllerStore(state => state.lastTracksByUser)
+
+    const activeTrackId = userId ? lastTracksByUser[userId] : null
 
     return (
-        <section className={`relative flex items-center w-[40%] h-[8.7%] bg-white/2 border border-white/5 backdrop-blur-md rounded-2xl overflow-hidden transition-all duration-300 ${!activeTrackId ? 'px-6' : 'px-2'}`}>
+        <section className={`relative flex items-center 
+                w-[calc(100%-32px)] 
+                max-w-[700px] 
+                min-w-[320px] bg-white/2 border border-white/5 backdrop-blur-md rounded-2xl overflow-hidden transition-all duration-300 ${!activeTrackId ? 'px-6' : 'px-2'}`}>
             <AnimatePresence mode="wait">
                 {activeTrackId ? (
                     <motion.div

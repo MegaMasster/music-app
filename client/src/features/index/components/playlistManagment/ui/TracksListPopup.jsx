@@ -2,13 +2,13 @@ import { X, Trash2, Music, Play, ListMusic , ListPlus , Check} from 'lucide-reac
 import { createPortal } from "react-dom"
 import { useNavigate, useParams } from "react-router-dom"
 
-import usePlayListStore from "../../../shared/stores/usePlayListStore"
-import useTracksListPopupStore from "../../../shared/stores/useTracksListPopupStore"
-import deletePlayList from "../api/deletePlayListApi"
-import useAuthStore from "../../../shared/stores/useAuthStore"
-import useControllerStore from '../../../shared/stores/useControllerStore'
-import removeTrackApi from '../api/removeTrackApi'
-import TracksLoader from "../../../shared/ui/loader/TracksLoader"
+import usePlayListStore from "../../../../../shared/stores/usePlayListStore"
+import useTracksListPopupStore from "../../../../../shared/stores/useTracksListPopupStore"
+import deletePlayList from "../../../api/deletePlayListApi"
+import useAuthStore from "../../../../../shared/stores/useAuthStore"
+import useControllerStore from '../../../../../shared/stores/useControllerStore'
+import removeTrackApi from '../../../api/removeTrackApi'
+import TracksLoader from "../../../../../shared/ui/loader/TracksLoader"
 
 const TracksListPopup = () => {
 
@@ -99,7 +99,7 @@ const TracksListPopup = () => {
         <section className="fixed inset-0 z-[100] flex items-center justify-center p-4">
 
             {isPlayListDeleted && (
-                <div className="absolute inset-0 z-[110] flex items-center justify-center p-6 animate-in fade-in zoom-in-95 duration-300">
+                <div className="absolute inset-0 z-[110] flex items-center justify-center animate-in fade-in zoom-in-95 duration-300">
 
                     <div className="absolute inset-0 bg-[#030507]/60 backdrop-blur-md rounded-[3rem]" />
                     
@@ -140,7 +140,8 @@ const TracksListPopup = () => {
                 onClick={handleClose}
             />
 
-            <div className="relative w-full max-w-[400px] h-[70vh] bg-[#030507] border border-blue-500/10 backdrop-blur-3xl rounded-2xl overflow-hidden flex flex-col 
+            <div className="relative w-full max-sm:w-[330px] max-md:w-[365px] max-w-[400px] min-w-[300px] min-h-[520px] h-[70vh] bg-[#030507] border 
+                border-blue-500/10 backdrop-blur-3xl rounded-2xl overflow-hidden flex flex-col 
                 shadow-2xl animate-in zoom-in-95 duration-300"
             >
                 
@@ -152,7 +153,9 @@ const TracksListPopup = () => {
                         <X size={20} />
                     </button>
 
-                    <div className="w-36 h-36 rounded-2xl overflow-hidden shadow-2xl border border-blue-500/20 bg-black flex-shrink-0">
+                    <div className="w-36 h-36 max-sm:w-28 max-sm:h-28 max-md:w-32 max-md:h-32 rounded-2xl overflow-hidden shadow-2xl border 
+                        border-blue-500/20 bg-black flex-shrink-0"
+                    >
                         {imageUrl ? (
                             <img src={imageUrl} className="w-full h-full object-cover select-none" alt="Cover" />
                         ) : (
@@ -164,14 +167,14 @@ const TracksListPopup = () => {
 
                     <div className="text-center space-y-1">
                         <span className="text-[7px] uppercase tracking-[0.5em] text-blue-500 font-black opacity-70">Collection</span>
-                        <h2 className="text-2xl font-black text-white tracking-tighter truncate w-64 uppercase">
+                        <h2 className="text-2xl max-sm:text-[18px] max-md:text-[20px] font-black text-white tracking-tighter truncate w-64 uppercase">
                             {playListName || "Vibe"}
                         </h2>
                     </div>
 
-                    <div className="flex items-center gap-3 w-full mt-2 px-2">
-                        <button className="flex-1 flex items-center justify-center gap-2 py-4 bg-blue-600 
-                            hover:bg-blue-500 text-white rounded-2xl font-black text-[9px] uppercase tracking-widest transition-all active:scale-95 
+                    <div className="flex items-center gap-3 w-full mt-0 px-2">
+                        <button className="flex-1 flex items-center justify-center gap-2 max-sm:py-3.5 max-sm:text-[8px] py-4 bg-blue-600 
+                            hover:bg-blue-500 text-white rounded-xl font-black text-[9px] uppercase tracking-widest transition-all active:scale-95 
                             shadow-lg shadow-blue-600/10 cursor-pointer"
                             onClick={() => {
                                 if (allTracks && allTracks.length > 0) {
@@ -182,10 +185,11 @@ const TracksListPopup = () => {
                             <Play size={12} fill="currentColor" /> Play Mix
                         </button>
                         <button 
-                            className="p-4 bg-blue-950/30 text-blue-500 hover:text-red-500 rounded-2xl border border-blue-500/10 transition-all cursor-pointer group"
+                            className="p-4 max-sm:p-3 bg-blue-950/30 text-blue-500 hover:text-red-500 rounded-xl border 
+                            border-blue-500/10 transition-all cursor-pointer group"
                             onClick={() => setIsPlayListDeleted(true)}
                         >
-                            <Trash2 size={16} className="group-hover:scale-110 transition-transform" />
+                            <Trash2 size={16} className="group-hover:scale-110 transition-transform"/>
                         </button>
                     </div>
 
@@ -211,7 +215,7 @@ const TracksListPopup = () => {
                                     <ListMusic size={24} className="text-blue-500/20" />
                                 </div>
                                 
-                                <span className="text-[10px] uppercase tracking-[0.3em] text-blue-500/80 font-black mb-1">
+                                <span className="text-[10px] uppercase tracking-[0.3rem] text-blue-500/80 font-black mb-1">
                                     Status: Empty
                                 </span>
                                 <p className="text-white/70 text-[11px] font-medium uppercase tracking-widest max-w-[180px] leading-relaxed">

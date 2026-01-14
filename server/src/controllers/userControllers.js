@@ -62,7 +62,8 @@ const verifyEmail = async (req , res) => {
         })
         res.status(201).json({
             success: true, 
-            email: result.email
+            email: result.email , 
+            id: result.id
         })
         console.log("Success verify: " , result)
     } catch (error) {

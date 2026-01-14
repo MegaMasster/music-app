@@ -1,7 +1,7 @@
 import getTracks from "../../index/api/getTracksApi"
 import useTracksListPopupStore from "../../../shared/stores/useTracksListPopupStore"
 import useAuthStore from "../../../shared/stores/useAuthStore"
-import loadTracks from "../../index/api/loadTracksApi"
+import loadTracks from "../../index/api/spotifyApi/loadTracksApi"
 
 const getTracksService = async (playlistId) => {
 

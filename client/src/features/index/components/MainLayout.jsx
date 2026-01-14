@@ -1,14 +1,15 @@
 import { useEffect } from "react"
 import { Outlet  } from 'react-router-dom'
 
-import Header from "./Header"
-import PlayerController from "./PlayerController"
 import useAuthStore from "../../../shared/stores/useAuthStore"
 import useIndexStore from "../../../shared/stores/useIndexStore"
 import Loader from "../../../shared/ui/loader/Loader"
-import SearchMusicSide from "./SearchMusicSide"
-import PlayListSide from "./PlayListSide"
-import TracksListPopup from "./TracksListPopup"
+
+import SearchMusicSide from "./searhSide/ui/SearchMusicSide"
+import PlayListSide from "./playlistManagment/ui/PlayListSide"
+import TracksListPopup from "./playlistManagment/ui/TracksListPopup"
+import Header from "./Header"
+import PlayerController from "./musicController/PlayerController"
 
 const MainLayout = () => {
 
@@ -74,15 +75,21 @@ const MainLayout = () => {
             <Header />
             <PlayerController />
             
-           <section className="relative z-10 flex flex-col items-center mb-5 w-[40%] h-[75%] bg-white/2 border
-                border-white/5 backdrop-blur-md rounded-[2rem] overflow-hidden"
+           <section className="relative z-10 flex flex-col justify-between items-center mb-5 h-auto bg-white/2
+                border-white/5 backdrop-blur-md rounded-2xl
+                w-[calc(100%-32px)] 
+                max-w-[700px] 
+                min-w-[320px] overflow-visible"
             >
-                <Outlet />
-                <SearchMusicSide />
+                <div className="flex flex-col w-full items-center overflow-visible ">
+                    <Outlet />
+                    <SearchMusicSide />
+                </div>
+
                 <PlayListSide />
             </section>
 
-            <TracksListPopup/>
+            <TracksListPopup />
         </main>
     )
 }

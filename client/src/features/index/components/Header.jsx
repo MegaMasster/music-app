@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import logout from '../api/logoutApi'
 import useAuthStore from '../../../shared/stores/useAuthStore'
 import Loader from "../../../shared/ui/loader/Loader"
+import useSearchHistoryStore from '../../../shared/stores/useSearchHistoryStore'
 
 const Header = () => {
 
@@ -15,12 +16,15 @@ const Header = () => {
     const resetError = useAuthStore(state => state.resetError)
     const setIsAuthenticated = useAuthStore(state => state.setIsAuthenticated)
 
+    const setUserId = useSearchHistoryStore(state => state.setUserId)
+
     const onSubmit = async () => {
         resetError()
         setLoading(true)
         try {
             const result = await logout()
             if (result.success) {
+                setUserId(null)
                 setIsAuthenticated(false)
                 console.log("SUCCESS Logut" , result)
                 navigate("/sign-in")
@@ -38,7 +42,10 @@ const Header = () => {
         <motion.header 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="flex justify-center items-center w-[75%] mt-4 py-3 px-6 bg-white/2 border border-white/5 backdrop-blur-md rounded-2xl"
+            className="flex justify-center items-center  mt-4 py-3 px-6 bg-white/2 border border-white/5 backdrop-blur-md rounded-2xl
+            w-[calc(100%-32px)] 
+            max-w-[700px] 
+            min-w-[320px]"
         >
 
             <Loader/>
@@ -48,20 +55,21 @@ const Header = () => {
                 <span className="text-[9px] text-white font-mono tracking-[0.2em] uppercase">Lab</span>
             </div>
 
-            <h1 className="text-[24px] font-black tracking-tight text-gradient-aurora select-none">
+            <h1 className="text-[24px] font-black tracking-tight max-sm:text-[16px] max-md:text-[20px] text-gradient-aurora select-none">
                 Aurora Musics
             </h1>
 
-            <div className="absolute right-6 flex items-center">
-                <button className="group flex items-center gap-2 px-3 py-1.5 rounded-xl border border-transparent 
+            <div className="absolute right-3 flex items-center">
+                <button className="group flex items-center gap-2 rounded-[5px] py-1 border border-transparent 
                     hover:border-white/10 hover:bg-white/5 hover:cursor-pointer transition-all duration-300"
                     onClick={onSubmit}
                 >
-                    <span className="text-[14px] text-white/30 font-mono tracking-[0.2em] uppercase group-hover:text-rose-500/70 transition-colors font-medium">
+                    <span className="text-[14px] max-sm:text-[9px] max-md:text-[11px] text-white/30 font-mono tracking-[0.2em]
+                    uppercase group-hover:text-rose-500/70 transition-colors font-medium">
                         Logout
                     </span>
                     <LogOut 
-                        size={18} 
+                        size={16} 
                         className="text-white/30 group-hover:text-rose-500 group-hover:translate-x-0.5 transition-all duration-300" 
                     />
                 </button>

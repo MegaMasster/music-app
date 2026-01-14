@@ -3,6 +3,9 @@ import { BrowserRouter , Routes , Route , Navigate } from "react-router-dom"
 
 import { authApi } from "../features/auth/api/authApi"
 import useAuthStore from "../shared/stores/useAuthStore"
+import useSearchHistoryStore from '../shared/stores/useSearchHistoryStore'
+import useControllerStore from '../shared/stores/useControllerStore'
+import useRecentlyPlayedStore from "../features/index/components/searhSide/model/useRecentlyPlayedStore"
 
 import { ROUTES } from "./routes"
 import PublicRoute from "./guards/PublicRoute"
@@ -28,6 +31,10 @@ const Router = () => {
     const setIsEmailVerified = useAuthStore(state => state.setIsEmailVerified)
     const clearUserEmail = useAuthStore(state => state.clearUserEmail)
 
+    const setUserIdHistory = useSearchHistoryStore(state => state.setUserId)
+    const setUserIdController = useControllerStore(state => state.setUserId)
+    const setUserIdRecentlyPlayed = useRecentlyPlayedStore(state => state.setUserId)
+
     useEffect(() => {
         const verifyToken = async () => {
             try {
@@ -36,6 +43,9 @@ const Router = () => {
                     setIsAuthenticated(true)
                     setIsEmailVerified(true)
                     clearUserEmail()
+                    setUserIdRecentlyPlayed(result.id)
+                    setUserIdHistory(result.id)
+                    setUserIdController(result.id)
                 } else {
                     setIsAuthenticated(false)
                     setIsEmailVerified(false)

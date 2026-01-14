@@ -4,13 +4,13 @@ import { useRef , useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { useForm } from "react-hook-form"
 
-import { ROUTES } from "../../../routing/routes"
-import usePlayListStore from "../../../shared/stores/usePlayListStore"
-import createPlayList from "../api/createPlayListApi"
-import useAuthStore from "../../../shared/stores/useAuthStore"
-import fetchPlayList from "../api/fetchPlayListApi"
-import useTracksListPopupStore from "../../../shared/stores/useTracksListPopupStore"
-import getTracksService from '../../utils/main/getTracksService'
+import { ROUTES } from "../../../../../routing/routes"
+import usePlayListStore from "../../../../../shared/stores/usePlayListStore"
+import createPlayList from "../../../api/createPlayListApi"
+import useAuthStore from "../../../../../shared/stores/useAuthStore"
+import fetchPlayList from "../../../api/fetchPlayListApi"
+import useTracksListPopupStore from "../../../../../shared/stores/useTracksListPopupStore"
+import getTracksService from '../../../../utils/main/getTracksService'
 
 const PlayListSide = () => {
 
@@ -141,17 +141,19 @@ const PlayListSide = () => {
     }
 
     return (
-        <section className={`${isAboutPage ? "hidden" : "relative flex flex-col justify-between items-start w-[90%] h-full mx-auto mt-6 mb-5"} z-10`}>
+        <section className={`${isAboutPage ? "hidden" : "relative flex flex-col justify-between items-start w-[90%] h-[full] mt-5 pb-4"} z-10`}>
             
-            <div className="flex items-center justify-between w-full">
-                <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-3">
-                    Playlists <Sparkles className="text-blue-500" size={20} />
+            <div className="flex items-center justify-between pb-2.5 w-full">
+                <h1 className="text-2xl max-sm:text-[16px] max-md:text-[20px] font-bold text-white tracking-tight flex items-center gap-3">
+                    Playlists <Sparkles className="text-blue-500" size={18} />
                 </h1>
                 
                 <button 
                     type="button"
                     onClick={() => setIsCreatePlayListWindowOpen(true)}
-                    className="group relative flex items-center gap-2 px-6 py-3 bg-white text-black font-black text-[10px] uppercase tracking-[0.2em] rounded-xl hover:bg-blue-500 hover:text-white transition-all duration-500 active:scale-95 cursor-pointer shadow-xl"
+                    className="group relative flex items-center max-sm:h-8 max-md:h-10 h-11 max-sm:text-[7px] max-md:text-[9px] gap-2 px-4  bg-white text-black 
+                    max-sm:w-25 max-md:w-30 font-black text-[10px] uppercase tracking-[0.2em] 
+                    rounded-[7px] hover:bg-blue-500 hover:text-white transition-all duration-500 active:scale-95 cursor-pointer shadow-xl"
                 >
                     <Plus size={14} className="group-hover:rotate-90 transition-transform duration-300" />
                     Create New
@@ -160,12 +162,12 @@ const PlayListSide = () => {
 
             {isPlaylistsExist ? (
                 <button 
-                    className="group relative flex flex-col items-start gap-2 p-2 rounded-2xl transition-all duration-300 hover:bg-white/[0.05] 
-                    active:scale-95 text-left w-[186px] hover:cursor-pointer"
+                    className="group relative flex flex-col items-start gap-2 p-2 rounded-xl transition-all duration-300 hover:bg-white/[0.05] 
+                    active:scale-95 text-left w-[186px]  hover:cursor-pointer"
                     onClick={handleOpenPopup}
                 >
-
-                    <div className="relative w-[160px] h-[140px] overflow-hidden rounded-xl border border-white/5 shadow-lg 
+                    {/* основа */}
+                    <div className="relative max-sm:w-[130px] max-md:w-[145px] max-sm:h-[110px] max-md:h-[125px] w-[160px] h-[140px] overflow-hidden rounded-xl border border-white/5 shadow-lg 
                         group-hover:border-white/20 transition-colors"
                     >
                         {imageUrl ? (
@@ -195,16 +197,16 @@ const PlayListSide = () => {
                     </div>
 
                     <div className="px-1 w-full">
-                        <p className="text-white font-medium text-sm truncate tracking-tight group-hover:text-blue-400 transition-colors">
+                        <p className="text-white font-medium text-sm max-sm:text-[12px] truncate tracking-tight group-hover:text-blue-400 transition-colors">
                             {playListName}
                         </p>
-                        <p className="text-[10px] text-gray-500 uppercase font-bold tracking-widest mt-0.5">
+                        <p className="text-[10px] max-sm:text-[8px] text-gray-500 uppercase font-bold tracking-widest mt-0.5">
                             Playlist
                         </p>
                     </div>
                 </button>
             ) : (
-                <div className="relative w-full h-44 rounded-[2.5rem] border border-white/5 bg-white/[0.02] backdrop-blur-sm flex 
+                <div className="relative w-full h-44 max-sm:h-34 max-md:h-38 rounded-[2rem] border border-white/5 bg-white/[0.02] backdrop-blur-sm flex 
                     flex-col items-center justify-center group"
                 >
                     <Music size={40} className="text-white/10" strokeWidth={1} />
@@ -213,15 +215,16 @@ const PlayListSide = () => {
             )}
 
             {isCreatePlayListWindowOpen && createPortal(
-                <div className="fixed inset-0 z-[10] flex items-center justify-center p-6 animate-in fade-in duration-300">
+                <div className="fixed inset-0 z-[10] flex items-center justify-center p-6  animate-in fade-in duration-300">
                     
                     <div 
-                        className="absolute inset-0 bg-black/60 backdrop-blur-[20px] cursor-pointer"
+                        className="absolute inset-0 bg-black/60 backdrop-blur-[25px] cursor-pointer"
                         onClick={handleClose} 
                     />
                     
                     <div 
-                        className="relative w-full max-w-[420px] bg-white/[0.05] border border-white/10 backdrop-blur-[40px] p-10 rounded-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)] animate-in zoom-in-95 duration-300"
+                        className="relative w-full max-w-[420px] bg-white/[0.05] border border-white/10 backdrop-blur-[40px] p-10 rounded-[1.5rem]
+                        shadow-[0_20px_50px_rgba(0,0,0,0.5)] animate-in zoom-in-95 duration-300"
                         onClick={(e) => e.stopPropagation()} 
                     >
                         <button 
@@ -234,8 +237,8 @@ const PlayListSide = () => {
 
                         <div className="space-y-8">
                             <div className="text-center">
-                                <h2 className="text-3xl font-bold text-white tracking-tighter">New Playlist</h2>
-                                <p className="text-[10px] text-blue-400 uppercase tracking-[0.4em] font-black mt-1">Design your vibe</p>
+                                <h2 className="text-3xl max-sm:text-2xl font-bold text-white tracking-tighter">New Playlist</h2>
+                                <p className="text-[10px] max-sm:text-[8px] text-blue-400 uppercase tracking-[0.4rem] font-black mt-1">Design your vibe</p>
                             </div>
 
                             <div className="group relative w-40 h-40 mx-auto" onClick={() => fileInputRef.current.click()}>
@@ -259,7 +262,7 @@ const PlayListSide = () => {
 
                             <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] text-gray-400 uppercase font-black tracking-[0.3em] ml-2">
+                                    <label className="text-[10px] max-sm:text-[8px] text-gray-400 uppercase font-black tracking-[0.3em] ml-2">
                                         Playlist Name
                                     </label>
                                     <input 

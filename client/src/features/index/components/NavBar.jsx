@@ -8,16 +8,16 @@ const NavBar = () => {
     ]
 
     return (
-        <nav className="flex justify-start w-[95%] p-4 gap-2 text-white">
+        <nav className="flex justify-start w-[95%] h-19 p-4 gap-2 text-white">
             {links.map((link) => (
                 <NavLink
                     key={link.path}
                     to={link.path}
-                    className="relative px-5 py-2.5 transition-colors duration-300 group"
+                    className="relative px-5 py-2.5 max-sm:py-1.5 max-md:py-2 transition-colors duration-300 group"
                 >
                     {({ isActive }) => (
                         <>
-                            <span className={`relative z-10 text-sm font-medium tracking-wide transition-colors duration-300 ${
+                            <span className={`relative z-10 text-[14px] max-sm:text-[11px] max-md:text-[12px] font-medium tracking-wide transition-colors duration-300 ${
                                 isActive ? 'text-white' : 'text-gray-400 group-hover:text-gray-200'
                             }`}>
                                 {link.label}

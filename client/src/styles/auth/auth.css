@@ -12,6 +12,9 @@ body, html  {
     padding: 0;
     overflow: hidden;
     font-family: "Mons";
+    height: auto !important; 
+    min-height: 100% !important;
+    overflow-y: auto !important;
 }
 ::selection {
     background: rgb(110, 124, 255); 

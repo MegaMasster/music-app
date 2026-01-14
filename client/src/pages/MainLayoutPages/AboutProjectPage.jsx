@@ -1,4 +1,4 @@
-import AboutProjectSide from "../../features/index/components/AboutProjectSide"
+import AboutProjectSide from "../../features/index/components/aboutProject/AboutProjectSide"
 
 const AboutProjectPage = () => {
     return(

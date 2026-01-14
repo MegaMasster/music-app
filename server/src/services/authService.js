@@ -101,7 +101,8 @@ class UserService {
             return {
                 success: true,
                 access_token: token,
-                email: newUser.email
+                email: newUser.email,
+                id: newUser.id
             }
         } catch (error) {
             console.error("Verify error:", error)

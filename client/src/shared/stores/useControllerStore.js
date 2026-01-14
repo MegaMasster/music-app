@@ -3,14 +3,27 @@ import { persist } from "zustand/middleware"
 
 const useControllerStore = create(
     persist(
-        (set) => ({
-            activeTrackId: null,
+        (set, get) => ({
+            lastTracksByUser: {},
+            userId: null,
 
-            setActiveTrackId: (id) => set({activeTrackId: id})
-        }) , {
-            name: "last_track_id",
+            setUserId: (id) => set({ userId: id }),
+
+            setActiveTrackId: (trackId) => set((state) => {
+                if (!state.userId) return state
+                
+                return {
+                    lastTracksByUser: {
+                        ...state.lastTracksByUser,
+                        [state.userId]: trackId
+                    }
+                };
+            })
+        }), 
+        {
+            name: "user_playback_state_v2", 
             partialize: (state) => ({
-                activeTrackId: state.activeTrackId
+                lastTracksByUser: state.lastTracksByUser
             })
         }
     )
