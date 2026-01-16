@@ -1,0 +1,96 @@
+import { useEffect } from "react"
+import { Outlet  } from 'react-router-dom'
+
+import useAuthStore from "../../../shared/stores/useAuthStore"
+import useIndexStore from "../../../shared/stores/useIndexStore"
+import Loader from "../../../shared/ui/loader/Loader"
+
+import SearchMusicSide from "./searhSide/ui/SearchMusicSide"
+import PlayListSide from "./playlistManagment/ui/PlayListSide"
+import TracksListPopup from "./playlistManagment/ui/TracksListPopup"
+import Header from "./Header"
+import PlayerController from "./musicController/PlayerController"
+
+const MainLayout = () => {
+
+    const setLoading = useAuthStore(state => state.setLoading)
+    const resetError = useAuthStore(state => state.resetError)
+    const setServerError = useAuthStore(state => state.setServerError)
+
+    const spotifyAccessToken = useIndexStore(state => state.spotifyAccessToken)
+    const setSpotifyAccessToken = useIndexStore(state => state.setSpotifyAccessToken)
+
+    // знаю, так делать нельзя, но для пет проекта сделаю исключение
+    const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID
+    const clientSecret = import.meta.env.VITE_SPOTIFY_CLIENT_SECRET
+
+    useEffect(() => {
+        const getSpotifyAccessToken = async () => {
+            if (spotifyAccessToken) {
+                setLoading(false)
+                return
+            }
+
+            resetError()
+            setLoading(true)
+
+            if (!clientId || !clientSecret) {
+                console.error("ENV DATA NOT FOUND SYKA")
+                setServerError("Env data not found.")
+                setLoading(false)
+                return
+            }
+
+            try {
+                const spotifyKeys = btoa(`${clientId}:${clientSecret}`)
+                const result = await fetch("https://accounts.spotify.com/api/token" , {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Basic ${spotifyKeys}`,
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: 'grant_type=client_credentials'
+                })
+
+                if(!result.ok) {
+                    const spotifyError = await result.json()
+                    throw new Error(`Error Spotify API: ${spotifyError.error_description || result.statusText}`)
+                }
+
+                const successData = await result.json()
+                setSpotifyAccessToken(successData.access_token)
+            } catch (error) {
+                console.error("Ошибка при получении токена:", error)
+                setServerError(error.message)
+            } finally {
+                setLoading(false)
+            }
+        }  
+        getSpotifyAccessToken()  
+    } , [spotifyAccessToken, clientId, clientSecret, resetError, setLoading, setServerError, setSpotifyAccessToken])
+
+    return(
+        <main className="indexWrapper">
+            <Loader />
+            <Header />
+            <PlayerController />
+            
+           <section className="relative z-10 flex flex-col justify-between items-center mb-5 h-auto bg-white/2
+                border-white/5 backdrop-blur-md rounded-2xl
+                w-[calc(100%-32px)] 
+                max-w-[700px] 
+                min-w-[320px] overflow-visible"
+            >
+                <div className="flex flex-col w-full items-center overflow-visible ">
+                    <Outlet />
+                    <SearchMusicSide />
+                </div>
+
+                <PlayListSide />
+            </section>
+
+            <TracksListPopup />
+        </main>
+    )
+}
+export default MainLayout

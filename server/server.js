@@ -12,12 +12,13 @@ const PORT = process.env.SERVER_PORT || 5000
 
 app.use(cors({
     origin: "http://localhost:5173",
-    methods: ["GET", "POST" , "PUT" , "DELETE"],
+    methods: ["GET", "POST" , "PATCH" , "DELETE"],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
 }))
 
-app.use(express.json())
+app.use(express.json({ limit: '10mb' }))
+app.use(express.urlencoded({ limit: '10mb', extended: true }))
 app.use(cookieParser())
 
 app.use("/api/auth" , router)
@@ -33,7 +34,7 @@ const startServer = async () => {
             process.exit(1)
         }
     } catch (error) {
-        console.error("❌ Failed to start server:", error)
+        console.error("Failed to start server:", error)
         process.exit(1)
     }
 }

@@ -1,5 +1,4 @@
 @import "tailwindcss";
-
 @font-face {
     font-family: "Mons";
     src: url("../../assets/fonts/Montserrat-VariableFont_wght\ —\ копия.woff2") format("woff2"),
@@ -7,15 +6,27 @@
     font-weight: 350;
     font-style: normal;
 }
-
 body, html  {
     background-color: #090a14;
     margin: 0;
     padding: 0;
     overflow: hidden;
     font-family: "Mons";
+    height: auto !important; 
+    min-height: 100% !important;
+    overflow-y: auto !important;
 }
-
+::selection {
+    background: rgb(110, 124, 255); 
+    color: white;
+}
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+.scrollbar-hide {
+    -ms-overflow-style: none;  
+    scrollbar-width: none;  
+}
 .wrapper {
     height: 100vh;
     width: 100vw;

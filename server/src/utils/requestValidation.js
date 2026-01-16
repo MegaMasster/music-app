@@ -1,11 +1,6 @@
 class RequestValidation {
-
     static signUpValidation(userData) {
-        const { username, email, password } = userData
-
-        if (username.length < 3) {
-            throw new Error("Invalid username format")
-        }
+        const { email, password } = userData
         if (!email || !password) {
             throw new Error("Email and password are required")
         }
@@ -18,5 +13,60 @@ class RequestValidation {
         }
     }
 
+    static verifyCodeValidation(data) {
+        const {email , code} = data
+        if (!code) {
+            throw new Error("Code are required")
+        }
+        if (!email) {
+            throw new Error("Email error, sign up again please")
+        }
+        if (code.length < 6) {
+            throw new Error("Invalid code")
+        }
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        if (!emailRegex.test(email)) {
+            throw new Error("Invalid email format")
+        }
+    }
+
+    static signInValidation(userData) {
+        const {email , password} = userData
+        if (!email) {
+            throw new Error("Email must be filled in")
+        }
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        if (!emailRegex.test(email)) {
+            throw new Error("Invalid email format")
+        }
+        if (password.length < 8) {
+            throw new Error("Invalid password")
+        }
+    }
+
+    static forgotPasswordValidation(userData) {
+        const {email} = userData
+        if (!email) {
+            throw new Error("Email must be filled in")
+        }
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        if (!emailRegex.test(email)) {
+            throw new Error("Invalid email format")
+        }
+    }
+
+    static resetPasswordValidation(userData) {
+        const {email , new_password} = userData
+        if (!email) {
+            throw new Error("Email must be filled in")
+        }
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        if (!emailRegex.test(email)) {
+            throw new Error("Invalid email format")
+        }
+        if (new_password.length < 8) {
+            throw new Error("Password must be at least 8 characters")
+        }
+    }
 }
 export default RequestValidation
