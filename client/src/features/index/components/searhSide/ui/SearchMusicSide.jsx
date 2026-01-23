@@ -1,14 +1,13 @@
 import { useEffect, useRef  } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useLocation } from 'react-router-dom'
-import { createPortal } from 'react-dom'
 
 import leaveIcon from "../../../../../assets/images/indexIcons/leaveIcon.png"
 import { Clock , ListPlus , Check , Trash2  } from 'lucide-react'
 
 import useIndexStore from "../../../../../shared/stores/useIndexStore"
 import useAuthStore from "../../../../../shared/stores/useAuthStore"
-import SearchMusicsLoader from '../../../../../shared/ui/loader/searchMusicsLoader'
+import SearchMusicsLoader from '../../../../../shared/ui/loader/SearchMusicsLoader.jsx'
 import { ROUTES } from "../../../../../routing/routes"
 import debounceSearch from '../../../../utils/main/debounce'
 import useDebounceSearchStore from '../../../../../shared/stores/useDebounceSearchStore'
@@ -16,11 +15,11 @@ import useSearchHistoryStore from '../../../../../shared/stores/useSearchHistory
 import saveSearchHistory from '../../../../utils/main/saveSearchHistory'
 import useControllerStore from '../../../../../shared/stores/useControllerStore'
 import usePlayListStore from '../../../../../shared/stores/usePlayListStore'
-import addTrackToPlayListService from "../../../../utils/main/addTrackToPlayListService"
-import useTracksListPopupStore from '../../../../../shared/stores/useTracksListPopupStore'
-import removeTrackApi from '../../../api/removeTrackApi'
-import RecentlyPlayed from './RecentlyPlayed'
-import useRecentlyPlayedStore from '../model/useRecentlyPlayedStore'
+import addTrackToPlayListService from "../../../../utils/main/addTrackToPlayListService.js"
+import useTracksListPopupStore from '../../../../../shared/stores/useTracksListPopupStore.js'
+import removeTrackApi from '../../../api/removeTrackApi.js'
+import RecentlyPlayed from './RecentlyPlayed.jsx'
+import useRecentlyPlayedStore from '../model/useRecentlyPlayedStore.js'
 
 // ну тут просто ебнуться можно
 const SearchMusicSide = () => {
