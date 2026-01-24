@@ -4,7 +4,8 @@ import nodemailer from 'nodemailer'
 dotenv.config()
 
 const transporter = nodemailer.createTransport({
-    service: "gmail",
+    host: "smtp-relay.brevo.com",
+    port: 587,
     pool: true, 
     maxConnections: 5, 
     maxMessages: 100,
