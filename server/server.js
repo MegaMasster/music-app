@@ -11,7 +11,7 @@ const app = express()
 const PORT = process.env.SERVER_PORT || 5000
 
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: "https://aurorasounds.onrender.com",
     methods: ["GET", "POST" , "PATCH" , "DELETE"],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
@@ -28,7 +28,7 @@ const startServer = async () => {
         const dbConnect = await checkDatabaseConnection()
         if (dbConnect) {
             app.listen(PORT , () => {
-                console.log(`Server started on http://localhost:${PORT}`)
+                console.log(`Server started!!!`)
             })
         } else {
             process.exit(1)
