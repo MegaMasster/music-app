@@ -16,7 +16,7 @@ const transporter = nodemailer.createTransport({
 
 const sendPasswordResetLink = async (email , resetToken) => {
     try {
-        const resetLink = `http://localhost:5173/reset-password/${resetToken}`
+        const resetLink = `https://aurorasounds.onrender.com/reset-password/${resetToken}`
 
         transporter.sendMail({
             from: `"Aurora Music" <${process.env.EMAIL_USER}>`,

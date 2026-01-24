@@ -56,7 +56,8 @@ const verifyEmail = async (req , res) => {
         const result = await userService.verifyEmail(req.body)
         res.cookie("jwt" , result.access_token , {
             httpOnly: true,
-            domain: 'localhost', 
+            secure: true, 
+            sameSite: 'none',
             maxAge: 14 * 24 * 60 * 60 * 1000,
             path: '/'
         })
@@ -107,7 +108,8 @@ const signIn = async (req , res) => {
         const result = await userService.signIn(req.body)
         res.cookie("jwt" , result.access_token , {
             httpOnly: true,
-            domain: 'localhost', 
+            secure: true, 
+            sameSite: 'none',
             maxAge: 14 * 24 * 60 * 60 * 1000,
             path: '/'
         })

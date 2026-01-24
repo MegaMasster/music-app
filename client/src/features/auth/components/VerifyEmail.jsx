@@ -44,7 +44,6 @@ const VerifyEmail = () => {
             }
             const result = await authApi.verifyEmail(requestData)
             if (result.success) {
-                console.log(result.id)
                 setIsEmailVerified(true)
                 clearUserEmail()
                 setVerificationCode('')
