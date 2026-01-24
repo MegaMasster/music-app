@@ -207,11 +207,11 @@ const feedback = async (req , res) => {
 const logout = async (req , res) => {
     try {
         console.log("JWT data: " , req.body)
-        const { token } = req.body
         res.cookie("jwt" , "" , {
             httpOnly: true,
             expires: new Date(0),
-            domain: 'localhost'
+            secure: true, 
+            sameSite: 'none'
         })
         res.status(200).json({success: true, message: 'Logged out successfully'})
     } catch (error) {
