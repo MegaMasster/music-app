@@ -1,37 +1,35 @@
-import { Resend } from 'resend'
 import dotenv from 'dotenv'
+import nodemailer from 'nodemailer'
 
 dotenv.config()
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+const transporter = nodemailer.createTransport({
+    service: "gmail",
+    pool: true, 
+    maxConnections: 5, 
+    maxMessages: 100,
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    }
+})
 
-const sendVerificationCode = async (email, code) => {
+const sendVerificationCode = (email , code) => {
     try {
-        const { data, error } = await resend.emails.send({
-            from: 'Aurora Music <onboarding@resend.dev>',
+        transporter.sendMail({
+            from: `"Aurora Music" <${process.env.EMAIL_USER}>`,
             to: email,
             subject: 'Verification code',
             html: `
-                <div style="font-family: sans-serif; text-align: center;">
-                    <h2>Your verification code</h2>
-                    <h1 style="font-size: 32px; color: #2563eb; letter-spacing: 5px;">${code}</h1>
-                    <p>Code is valid for 15 minutes</p>
-                </div>
+                <h2>Your verification code</h2>
+                <h1 style="font-size: 32px; color: #2563eb;">${code}</h1>
+                <p>Сode is valid for 15 minutes</p>
             `,
-        });
-
-        if (error) {
-            console.error('Ошибка Resend:', error)
-            throw new Error('Не удалось отправить код')
-        }
-
-        console.log('Код успешно отправлен:', data.id)
-        return data
-
+            timeout: 5000
+        })
     } catch (error) {
-        console.error('Критическая ошибка отправки email:', error)
+        console.error('Ошибка отправки email:', error)
         throw new Error('Не удалось отправить код')
     }
 }
-
 export default sendVerificationCode

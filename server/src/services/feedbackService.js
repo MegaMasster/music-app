@@ -1,9 +1,15 @@
-import { Resend } from 'resend'
 import dotenv from 'dotenv'
+import nodemailer from 'nodemailer'
 
 dotenv.config()
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+    }
+})
 
 const feedbackService = async (data) => {
     try {
@@ -13,11 +19,12 @@ const feedbackService = async (data) => {
             throw new Error("The fields are filled in incorrectly")
         }
 
-        const { data: response, error } = await resend.emails.send({
-            from: 'Feedback <onboarding@resend.dev>', 
-            to: 'aurora.sounds01@gmail.com',   
+        const mailOptions = {
+            from: process.env.EMAIL_USER, 
+            to: process.env.EMAIL_USER,   
             subject: `Feedback from ${userEmail}`,
-            reply_to: userEmail,         
+            replyTo: userEmail,           
+            text: `Message from: ${userEmail}\n\nBug :\n${problemText}`,
             html: `
                 <div style="font-family: sans-serif; border: 1px solid #eee; padding: 20px;">
                     <p><strong>Sender:</strong> ${userEmail}</p>
@@ -27,20 +34,15 @@ const feedbackService = async (data) => {
                     </div>
                 </div>
             `
-        })
-
-        if (error) {
-            console.error("Resend feedback error:", error)
-            throw error
         }
 
+        const info = await transporter.sendMail(mailOptions)
         console.log(`Feedback sent from ${userEmail}`)
-        return response
+        return info
         
     } catch (error) {
-        console.error("feedback service error: ", error)
+        console.error("feedback error: ", error)
         throw error
     }
 }
-
 export default feedbackService
