@@ -4,7 +4,9 @@ import nodemailer from 'nodemailer'
 dotenv.config()
 
 const transporter = nodemailer.createTransport({
-    service: "gmail",
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
     pool: true, 
     maxConnections: 5, 
     maxMessages: 100,
@@ -14,7 +16,7 @@ const transporter = nodemailer.createTransport({
     }
 })
 
-const sendVerificationCode = (email , code) => {
+const sendVerificationCode = async (email , code) => {
     try {
         transporter.sendMail({
             from: `"Aurora Music" <${process.env.EMAIL_USER}>`,
