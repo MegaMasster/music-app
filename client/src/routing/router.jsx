@@ -25,7 +25,6 @@ const IndexPage = lazy(() => import("../pages/MainLayoutPages/IndexPage"))
 const TrackListPopupPage = lazy(() => import("../pages/MainLayoutPages/TrackListPopupPage"))
 
 const Router = () => { 
-    console.log("RENDER: ROUTER")
 
     const setIsAuthenticated = useAuthStore(state => state.setIsAuthenticated)
     const setIsEmailVerified = useAuthStore(state => state.setIsEmailVerified)
