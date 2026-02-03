@@ -26,7 +26,6 @@ const Header = () => {
             if (result.success) {
                 setUserId(null)
                 setIsAuthenticated(false)
-                console.log("SUCCESS Logut" , result)
                 navigate("/sign-in")
             } else {
                 setServerError("Unsuccessful logout, please try again later.")

@@ -131,14 +131,12 @@ const SearchMusicSide = () => {
 
     const addTrackToPlayList = async (trackId) => {
         await addTrackToPlayListService(playListId , trackId)
-        console.log(`Playlist id: ${playListId}, track id: ${trackId}`)
     }
 
     const removeTrack = async (trackId) => {
         try {
             const result = await removeTrackApi(trackId , playListId)
             if (result.success) {
-                console.log("ВСЕ ОК")
                 removeId(trackId)
                 removeTrackFromList(trackId)
             } else {
@@ -381,7 +379,6 @@ const SearchMusicSide = () => {
                                             onClick={(e) => {
                                                 e.stopPropagation()
                                                 removeTrack(track.id)
-                                                console.log("Remove click")
                                             }}
                                         >
                                             <Check size={18} className="text-blue-400 group-hover/btn:hidden" />
