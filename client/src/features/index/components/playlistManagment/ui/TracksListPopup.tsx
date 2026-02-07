@@ -10,6 +10,10 @@ import useControllerStore from '../../../../../shared/stores/useControllerStore'
 import removeTrackApi from '../../../api/removeTrackApi'
 import TracksLoader from "../../../../../shared/ui/loader/TracksLoader"
 
+interface DeletePlaylistResponse {
+    id: string
+}
+
 const TracksListPopup = () => {
 
     const navigate = useNavigate()
@@ -43,7 +47,10 @@ const TracksListPopup = () => {
     const tracksLoading = useTracksListPopupStore(state => state.tracksLoading)
 
     const setActiveTrackId = useControllerStore(state => state.setActiveTrackId)
-    const activeTrackId = useControllerStore(state => state.activeTrackId)
+    const userId = useControllerStore(state => state.userId)
+    const lastTracksByUser = useControllerStore(state => state.lastTracksByUser)
+
+    const activeTrackId = userId ? lastTracksByUser[userId] : null
 
     if (!id || !isTracksListPopupOpen) return null
 
@@ -53,11 +60,11 @@ const TracksListPopup = () => {
         navigate("/index")
     }
 
-    const delPlayList = async (id) => {
+    const delPlayList = async (id: string) => {
         if (!id || id === "null") return
         setLoading(true)
         try {
-            const result = await deletePlayList(id)
+            const result = await deletePlayList<DeletePlaylistResponse>(id)
             if (result.success) {
                 setIsPlayListDeleted(false)
                 handleClose()
@@ -74,10 +81,10 @@ const TracksListPopup = () => {
         }
     }
 
-    const removeTrack = async (trackId) => {
+    const removeTrack = async (trackId: string) => {
         setTracksLoading(true)
         try {
-            const result = await removeTrackApi(trackId , playListId)
+            const result = await removeTrackApi(trackId , playListId as string)
             if (result.success) {
                 console.log("ВСЕ ОК")
                 removeId(trackId)
@@ -178,7 +185,7 @@ const TracksListPopup = () => {
                             shadow-lg shadow-blue-600/10 cursor-pointer"
                             onClick={() => {
                                 if (allTracks && allTracks.length > 0) {
-                                    setActiveTrackId(allTracks[0].id)
+                                    setActiveTrackId(allTracks?.[0]?.id ?? "")
                                 }
                             }}
                         >
@@ -232,12 +239,12 @@ const TracksListPopup = () => {
                                     </span>
                                     {allTracks.map((track) => {
                                         const isActive = activeTrackId === track.id
-                                        const isTrackAlreadyIn = idsArray.includes(track.id)
+                                        const isTrackAlreadyIn = idsArray.includes(track.id as string)
 
                                         return (
                                             <div 
                                                 key={track.id} 
-                                                onClick={() => setActiveTrackId(track.id)}
+                                                onClick={() => setActiveTrackId(track.id as string)}
                                                 className={`group relative flex items-center h-17 gap-2 p-3 w-full rounded-2xl border transition-all 
                                                 duration-500 cursor-pointer 
                                                 ${isActive 
@@ -316,7 +323,6 @@ const TracksListPopup = () => {
                                                         onClick={(e) => {
                                                             e.stopPropagation()
                                                             setTrackId(track.id)
-                                                            modalWindowFunc()
                                                         }}
                                                     >
                                                         <ListPlus size={18} className="text-white opacity-70 hover:opacity-100" />

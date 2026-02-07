@@ -1,4 +1,3 @@
-import { V } from "framer-motion/dist/types.d-BJcRxCew"
 import { create } from "zustand"
 import { persist , devtools } from "zustand/middleware"
 

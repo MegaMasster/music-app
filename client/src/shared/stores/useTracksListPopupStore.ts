@@ -2,13 +2,26 @@ import { create } from "zustand"
 import { devtools } from "zustand/middleware"
 
 // уже не помню
-export interface TracksListPopupAllTracks {
-    imgUrl?: string | null
-    trackName?: string | null
-    trackArtistName?: string | null
-    trackId: string | null
-    id?: string
+interface TrackImage {
+    url: string
 }
+interface TrackAlbum<T> {
+    images: T[]
+}
+type Album = TrackAlbum<TrackImage>
+
+type Artists = {
+    name: string
+}
+
+export interface TracksListPopupAllTracks {
+    album: Album
+    name: string
+    id: string
+    artists: Artists[]
+}
+
+
 
 interface TracksListPopupStates {
     isTracksListPopupOpen: boolean

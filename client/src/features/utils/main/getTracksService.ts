@@ -49,7 +49,7 @@ const getTracksService = async (playlistId: string) => {
                         trackName: null,
                         trackArtistName: null,
                         imgUrl: null
-                    }));
+                    }))
 
                     setAllTracks(formattedTracks)
                     console.log(loadTracksResult.data)

@@ -12,6 +12,16 @@ import fetchPlayList from "../../../api/fetchPlayListApi"
 import useTracksListPopupStore from "../../../../../shared/stores/useTracksListPopupStore"
 import getTracksService from '../../../../utils/main/getTracksService'
 
+interface CreatePlayListData {
+    playlistName: string
+}
+
+interface CreatePlayListResponseData {
+    id: string
+    name: string    
+    image_url?: string
+}
+
 const PlayListSide = () => {
 
     const navigate = useNavigate()
@@ -74,14 +84,17 @@ const PlayListSide = () => {
         }
     })
 
-    const fileInputRef = useRef(null)
+    const fileInputRef = useRef<HTMLInputElement>(null)
 
-    const handleImageChange = (e) => {
-        const file = e.target.files[0]
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
         if (file) {
             const reader = new FileReader()
-            reader.onloadend = () => setImage(reader.result)
-            reader.readAsDataURL(file)
+            reader.onloadend = () => {
+                if (typeof reader.result === 'string') {
+                    setImage(reader.result);
+                }
+            }
         }
     }
 
@@ -94,7 +107,7 @@ const PlayListSide = () => {
     const location = useLocation()
     const isAboutPage = location.pathname === ROUTES.ABOUT_AUTHOR
 
-    const onSubmit = async (data) => {
+    const onSubmit = async (data: CreatePlayListData) => {
         setLoading(true)
         resetError()
 
@@ -107,7 +120,7 @@ const PlayListSide = () => {
         console.log(playlistData)
 
         try {
-            const result = await createPlayList(playlistData)
+            const result = await createPlayList<CreatePlayListResponseData>(playlistData)
             if (result.success) {
                 if (result.data && (Array.isArray(result.data) ? result.data.length > 0 : true)) {
                     const created = Array.isArray(result.data) ? result.data[0] : result.data
@@ -137,7 +150,7 @@ const PlayListSide = () => {
     const handleOpenPopup = () => {
         setIsTracksListPopupOpen(true)
         navigate(`/index/playlist/${playListId}`)
-        getTracksService(playListId)
+        getTracksService(playListId as string)
     }
 
     return (
@@ -173,7 +186,7 @@ const PlayListSide = () => {
                         {imageUrl ? (
                             <img 
                                 src={imageUrl} 
-                                alt={playListName} 
+                                alt={playListName as string} 
                                 className="w-full h-full object-cover select-none transition-transform duration-500 group-hover:scale-110"
                             />
                         ) : (
@@ -241,7 +254,7 @@ const PlayListSide = () => {
                                 <p className="text-[10px] max-sm:text-[8px] text-blue-400 uppercase tracking-[0.4rem] font-black mt-1">Design your vibe</p>
                             </div>
 
-                            <div className="group relative w-40 h-40 mx-auto" onClick={() => fileInputRef.current.click()}>
+                            <div className="group relative w-40 h-40 mx-auto" onClick={() => fileInputRef.current?.click()}>
                                 <div className="absolute -inset-4 bg-blue-500/20 rounded-[2.5rem] blur-2xl opacity-0 group-hover:opacity-100 
                                     transition-opacity duration-500" 
                                 />
@@ -266,7 +279,7 @@ const PlayListSide = () => {
                                         Playlist Name
                                     </label>
                                     <input 
-                                        {...register("playlistName", { 
+                                        {...register("playlistName", {
                                             required: "Name is required", 
                                             maxLength: { value: 30, message: "Too long" }
                                         })}

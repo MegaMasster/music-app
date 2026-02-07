@@ -1,9 +1,16 @@
 import { MAIN_ENDPOINTS } from "./mainEndpoints"
 const BASE_URL = import.meta.env.VITE_API_URL
 
-const deletePlayList = async (playListId) => {
+interface ApiResponse<T> {
+    success: boolean
+    data?: T
+    message?: string
+    status?: number
+}
 
-    const url = `${BASE_URL}${MAIN_ENDPOINTS.DELETE}`
+const removeTrackApi = async <T>(trackId: string , playlistId: string): Promise<ApiResponse<T>> => {
+
+    const url = `${BASE_URL}${MAIN_ENDPOINTS.REMOVETRACK}`
 
     const controller = new AbortController()
     const timer = setTimeout(() => {
@@ -15,7 +22,7 @@ const deletePlayList = async (playListId) => {
             method: "DELETE",
             headers: {"Content-Type" : "application/json"},
             credentials: "include",
-            body: JSON.stringify({id: playListId}),
+            body: JSON.stringify({trackId: trackId , playlistId: playlistId}),
             signal: controller.signal
         })
 
@@ -23,7 +30,7 @@ const deletePlayList = async (playListId) => {
 
         if (!response.ok) {
             const errorData = await response.json()
-            const error = new Error(errorData.message || "Server error")
+            const error = new Error(errorData.message || "Server error") as any
             error.status = response.status
             throw error
         }
@@ -34,10 +41,11 @@ const deletePlayList = async (playListId) => {
             data: successData
         }
 
-    } catch (error) {
+    } catch (error: unknown) {
         clearTimeout(timer)
 
-        if (error.name === "AbortError") {
+        if (error instanceof Error) {
+            if (error.name === "AbortError") {
             return {
                 success: false,
                 message: "Request timeout",
@@ -45,11 +53,17 @@ const deletePlayList = async (playListId) => {
             }
         }
 
-        return {
-            success: false,
-            status: error.status || 500,
-            message: error.message
+            return {
+                success: false,
+                status: (error as any).status || 500,
+                message: error.message
+            }
+        } else {
+            return {
+                success: false,
+                message: "Unknown error"
+            }
         }
     }
 }
-export default deletePlayList
+export default removeTrackApi
