@@ -1,8 +1,14 @@
-import { motion } from "framer-motion"
+import { motion , Variants } from "framer-motion"
+import { ReactNode , FC } from "react"
 
-const AuthAnim = ({children , className=""}) => {
+interface AuthAnimProps {
+    children: ReactNode,
+    className?: string
+}
 
-    const SignInAnimation = {
+const AuthAnim: FC<AuthAnimProps> = ({children , className=""}) => {
+
+    const SignInAnimation: Variants = {
         hidden: {
             x: 35,
             opacity: 0

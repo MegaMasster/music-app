@@ -1,7 +1,7 @@
 import useAuthStore from "../../stores/useAuthStore"
 
 const Loader = () => {
-    const { isLoading } = useAuthStore()
+    const isLoading = useAuthStore(state => state.isLoading)
 
     return (
         <>
@@ -31,7 +31,7 @@ const Loader = () => {
                             ))}
                         </div>
                     </div>
-
+                    {/* @ts-expect-error: styled-jsx is not in React types */}
                     <style jsx>{`
                         @keyframes music-bounce {
                             0%, 100% { 
@@ -50,5 +50,4 @@ const Loader = () => {
         </>
     )
 }
-
 export default Loader

@@ -1,8 +1,12 @@
-import addTrackToPlayListApi from "../../index/api/addTrackToPlayListApi"
+import addTrackToPlayList from "../../index/api/addTrackToPlayListApi"
 import useTracksListPopupStore from "../../../shared/stores/useTracksListPopupStore"
 import useAuthStore from "../../../shared/stores/useAuthStore"
 
-const addTrackToPlayListService = async (playListId , trackId) => {
+interface AddTrackToPlayListResponse {
+    id: string
+}
+
+const addTrackToPlayListService = async (playListId: string , trackId: string) => {
 
     const {
         setServerError
@@ -14,10 +18,12 @@ const addTrackToPlayListService = async (playListId , trackId) => {
     } = useTracksListPopupStore.getState()
 
     try {
-        const result = await addTrackToPlayListApi(playListId , trackId)
+        const result = await addTrackToPlayList<AddTrackToPlayListResponse>(playListId , trackId)
         if (result.success) {
             addId(trackId)
-            addTrackToList(trackId)
+            addTrackToList({
+                trackId: trackId
+            })
         } else {
             setServerError("Server error, try again later")
             console.log("FUCK: " , result)

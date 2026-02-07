@@ -1,20 +1,16 @@
 import { create } from "zustand"
 import { devtools } from "zustand/middleware"
 
-interface DebounceSearchResultTracks {
-    // уже не помню что мне там возвращает 
-    name: string,
-    id: string
-}
+import { SpotifyTrackItem } from "../../features/utils/main/interfaces/tracks"
 
 interface DebounceSearchStates {
     query: string,
-    results: DebounceSearchResultTracks[]
+    results: SpotifyTrackItem[]
 }
 
 interface DebounceSearchActions {
     setQuery: (inputText: string) => void,
-    setResults: (data: DebounceSearchResultTracks[]) => void
+    setResults: (data: SpotifyTrackItem[]) => void
 }
 
 type DebounceSearchStore = DebounceSearchStates & DebounceSearchActions

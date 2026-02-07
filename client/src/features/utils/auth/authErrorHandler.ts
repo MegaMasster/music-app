@@ -1,6 +1,11 @@
+interface ErrorType {
+    status: number | string,
+    message: string
+}
+
 class AuthErrorHandler {
 
-    static handlerSignUpError (error) {
+    static handlerSignUpError (error: ErrorType) {
         if (error.status === 409) {
             return "The user already exists. Please log in."
         } else if (error.status === 408) {
@@ -14,7 +19,7 @@ class AuthErrorHandler {
         }
     }
 
-    static handlerVerifyEmailError (error) {
+    static handlerVerifyEmailError (error: ErrorType) {
         if (error.status === 400) {
             return error.message
         } else if (error.status === 408) {
@@ -26,7 +31,7 @@ class AuthErrorHandler {
         }
     }
 
-    static handlerSignInError (error) {
+    static handlerSignInError (error: ErrorType) {
         if (error.status === 400) {
             return error.message
         } else if (error.status === 408) {
@@ -38,7 +43,7 @@ class AuthErrorHandler {
         }
     }
 
-    static handleForgotPasswordError (error) {
+    static handleForgotPasswordError (error: ErrorType) {
         if (error.status === 400) {
             return error.message
         } else if (error.status === 408) {
@@ -48,7 +53,7 @@ class AuthErrorHandler {
         }
     }
 
-    static handleCheckResetToken (error) {
+    static handleCheckResetToken (error: ErrorType) {
         if (error.status === 400) {
             return error.message
         } else if (error.status === 408) {
@@ -58,7 +63,7 @@ class AuthErrorHandler {
         }
     }
 
-    static handleResetPassword (error) {
+    static handleResetPassword (error: ErrorType) {
         if (error.status === 400) {
             return error.message
         } else if (error.status === 408) {

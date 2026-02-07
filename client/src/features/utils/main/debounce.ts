@@ -6,6 +6,8 @@ import useIndexStore from "../../../shared/stores/useIndexStore"
 import useAuthStore from "../../../shared/stores/useAuthStore"
 import MainErrorHandler from "./mainErrorHandler"
 
+import { SpotifyResponse } from "./interfaces/tracks"
+
 
 const debounceSearch = async () => {  
     
@@ -31,22 +33,29 @@ const debounceSearch = async () => {
             setMusicLoading(true)
             try {
                 const apiPath = `/v1/search?q=${encodeURIComponent(query)}`
-                const result = await debouceApi(spotifyAccessToken , apiPath)
+                const result = await debouceApi<SpotifyResponse>(spotifyAccessToken , apiPath)
                 if (isCurrent) {
                     if (result.success) {
                         console.log(result.data)
-                        setResults(result.data)
+                        setResults(result.data?.tracks.items ?? [])
                     } else {
-                        const errorMessage = MainErrorHandler.handleSearchMusics(result)
+                        const errorMessage = MainErrorHandler.handleSearchMusics({
+                            status: result.status ?? 500,
+                            message: result.error ?? "Unknown error"
+                        })
                         setServerError(errorMessage)
                         setResults([])
                     }
                 }
-            } catch (error) {
-                if (isCurrent) {
-                    const errorMessage = MainErrorHandler.handleSearchMusics(error)
-                    setServerError(errorMessage)
-                }  
+            } catch (error: unknown) {
+                if (error instanceof Error) {
+                    if (isCurrent) {
+                        const errorMessage = MainErrorHandler.handleSearchMusics(error)
+                        setServerError(errorMessage)
+                    } 
+                }  else {
+                    setServerError("Unrnown error")
+                }
             } finally {
                 setMusicLoading(false)
             }
@@ -56,6 +65,6 @@ const debounceSearch = async () => {
             isCurrent = false
             clearTimeout(delayDebounceFn)
         }
-    } , [query])
+    } , [query , spotifyAccessToken])
 }
 export default debounceSearch

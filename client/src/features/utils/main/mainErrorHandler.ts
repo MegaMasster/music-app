@@ -1,6 +1,11 @@
+interface ErrorType {
+    status?: string | number,
+    message: string
+}
+
 class MainErrorHandler {
 
-    static handleSearchMusics (error) {
+    static handleSearchMusics (error: ErrorType) {
         if (error.status === 400) {
             return error.message
         } else if (error.status === 403) {

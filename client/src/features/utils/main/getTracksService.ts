@@ -3,7 +3,7 @@ import useTracksListPopupStore from "../../../shared/stores/useTracksListPopupSt
 import useAuthStore from "../../../shared/stores/useAuthStore"
 import loadTracks from "../../index/api/spotifyApi/loadTracksApi"
 
-const getTracksService = async (playlistId) => {
+const getTracksService = async (playlistId: string) => {
 
     const {
         setServerError
