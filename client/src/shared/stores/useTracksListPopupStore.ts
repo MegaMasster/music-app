@@ -2,7 +2,7 @@ import { create } from "zustand"
 import { devtools } from "zustand/middleware"
 
 // уже не помню
-interface TracksListPopupAllTracks {
+export interface TracksListPopupAllTracks {
     imgUrl?: string | null
     trackName?: string | null
     trackArtistName?: string | null

@@ -1,7 +1,15 @@
 import getTracks from "../../index/api/getTracksApi"
-import useTracksListPopupStore from "../../../shared/stores/useTracksListPopupStore"
+import useTracksListPopupStore  , { TracksListPopupAllTracks } from "../../../shared/stores/useTracksListPopupStore"
 import useAuthStore from "../../../shared/stores/useAuthStore"
-import loadTracks from "../../index/api/spotifyApi/loadTracksApi"
+import loadTracks from "../../index/api/spotifyApi/loadTracksApi"  
+
+interface GetTracksResponse {
+    tracks: string[]
+}
+
+interface LoadTracksResult {
+    tracks: string[]
+}
 
 const getTracksService = async (playlistId: string) => {
 
@@ -20,21 +28,30 @@ const getTracksService = async (playlistId: string) => {
     try {
         resetInfo()
         setTracksLoading(true)
-        const result = await getTracks(playlistId)
+        const result = await getTracks<GetTracksResponse>(playlistId)
         if (result.success) {
-            if (result.data.tracks.length == 0) {
+            if (result.data?.tracks.length == 0) {
                 console.log(result.data)
                 console.log("трэков нет")
                 setInfo("Your playlist is clear")
             } else {
                 console.log(result.data)
-                const allIds = result.data.tracks.join(",")
+                const allIds = result.data?.tracks.join(",")
                 console.log(allIds)
-                setIds(allIds)
+                setIds(allIds ?? null)
 
-                const loadTracksResult = await loadTracks(allIds)
+                const loadTracksResult = await loadTracks<LoadTracksResult>(allIds)
                 if (loadTracksResult.success) {
-                    setAllTracks(loadTracksResult.data.tracks)
+                   const tracksFromApi = loadTracksResult.data?.tracks ?? [];
+    
+                    const formattedTracks: TracksListPopupAllTracks[] = tracksFromApi.map(id => ({
+                        trackId: id,
+                        trackName: null,
+                        trackArtistName: null,
+                        imgUrl: null
+                    }));
+
+                    setAllTracks(formattedTracks)
                     console.log(loadTracksResult.data)
                 } else {
                     if (loadTracksResult.status === 401) {
@@ -52,9 +69,12 @@ const getTracksService = async (playlistId: string) => {
             console.log(result.message)
             setServerError("Server error")
         }
-    } catch (error) {
-        console.log("Fuck err: " , error)
-        setServerError("Err " , error)
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            setServerError(error.message)
+        } else {
+            setServerError("Unknown error")
+        }
     } finally {
         setTracksLoading(false)
     }

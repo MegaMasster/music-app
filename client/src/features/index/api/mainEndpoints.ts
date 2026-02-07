@@ -6,4 +6,4 @@ export const MAIN_ENDPOINTS = {
     GETTRACKS: "/api/auth/playlist/gettracks",
     REMOVETRACK: "/api/auth/playlist/removetrack",
     ADDTRACK:"/api/auth/playlist/addtrack"
-}
+} as const

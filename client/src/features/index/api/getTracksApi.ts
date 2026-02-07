@@ -1,7 +1,14 @@
 import { MAIN_ENDPOINTS } from "./mainEndpoints"
 const BASE_URL = import.meta.env.VITE_API_URL
 
-const getTracks = async (playListId) => {
+interface ApiResponse<T> {
+    success: boolean
+    data?: T
+    status?: number
+    message?: string
+}
+
+const getTracks = async <T>(playListId: string): Promise<ApiResponse<T>> => {
 
     const url = `${BASE_URL}${MAIN_ENDPOINTS.GETTRACKS}?playlistId=${playListId}`
 
@@ -22,32 +29,39 @@ const getTracks = async (playListId) => {
 
         if (!response.ok) {
             const errorData = await response.json()
-            const error = new Error(errorData.message || "Server error")
+            const error = new Error(errorData.message || "Server error") as any
             error.status = response.status
             throw error
         }
 
-        const successData = await response.json()
+        const successData = await response.json() as T
         return {
             success: true,
             data: successData
         }
 
-    } catch (error) {
+    } catch (error: unknown) {
         clearTimeout(timer)
 
-        if (error.name === "AbortError") {
+        if (error instanceof Error) {
+            if (error.name === "AbortError") {
+                return {
+                    success: false,
+                    message: "Request timeout",
+                    status: 408
+                }
+            }
+
             return {
                 success: false,
-                message: "Request timeout",
-                status: 408
+                status: (error as any).status || 500,
+                message: error.message
             }
-        }
-
-        return {
-            success: false,
-            status: error.status || 500,
-            message: error.message
+        } else {
+            return {
+                success: false,
+                message: "Unknown error"
+            }
         }
     }
 }
