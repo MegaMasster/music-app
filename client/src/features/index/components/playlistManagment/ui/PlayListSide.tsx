@@ -22,6 +22,13 @@ interface CreatePlayListResponseData {
     image_url?: string
 }
 
+interface FetchPlaylistReponseData {
+    id: string
+    name: string
+    image_url?: string
+    tracks?: string[]
+}
+
 const PlayListSide = () => {
 
     const navigate = useNavigate()
@@ -52,13 +59,15 @@ const PlayListSide = () => {
     useEffect(() => {
         const loadPlayList = async () => {
             try {
-                const result = await fetchPlayList()
-                if (result.success) {
+                const result = await fetchPlayList<FetchPlaylistReponseData[]>()
+                if (result.success && result.data) {
                     if (result.data.length > 0) {
+                        const firstPlaylist = result.data[0]
+
                         console.log(result.data)
-                        setPlayListId(result.data[0].id)
-                        setImageUrl(result.data[0].image_url)
-                        setPlayListName(result.data[0].name)
+                        setPlayListId(firstPlaylist.id)
+                        setImageUrl(firstPlaylist.image_url as string)
+                        setPlayListName(firstPlaylist.name)
                         setIsPlaylistsExist(true)
                     } else {
                         setIsPlaylistsExist(false)

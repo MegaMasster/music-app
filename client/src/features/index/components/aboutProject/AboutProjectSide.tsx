@@ -1,4 +1,4 @@
-import { useForm } from 'react-hook-form'
+import { useForm  , SubmitHandler  } from 'react-hook-form'
 import { motion } from 'framer-motion'
 import { 
     Github, 
@@ -16,6 +16,11 @@ import feedbackApi from "../../api/feedbackApi"
 import useAuthStore from "../../../../shared/stores/useAuthStore"
 import useIndexStore from "../../../../shared/stores/useIndexStore"
 import Loader from "../../../../shared/ui/loader/Loader"
+
+interface FeedbackData {
+    userEmail: string
+    problemText: string
+}
 
 const AboutProjectSide = () => {
 
@@ -37,7 +42,7 @@ const AboutProjectSide = () => {
         handleSubmit,
         reset,
         formState: {errors}
-    } = useForm({mode: "onTouched"})
+    } = useForm<FeedbackData>({mode: "onTouched"})
 
     const frontendStack = [
         { name: "React 19 / vite", color: "bg-blue-400" },
@@ -57,7 +62,7 @@ const AboutProjectSide = () => {
         { name: "reCAPTCHA v2", color: "bg-blue-400" },
     ]
 
-    const onSubmit = async (data) => {
+    const onSubmit = async (data: FeedbackData) => {
         try {
             setLoading(true)
             const result = await feedbackApi(data)
