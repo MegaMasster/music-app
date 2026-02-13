@@ -14,7 +14,7 @@ const RecentlyPlayed = () => {
     const setActiveTrackId = useControllerStore(state => state.setActiveTrackId)
 
     return (
-        <section className="relative z-10 w-full min-h-[255px]">  
+        <section className="relative z-10 w-full min-h-[270px] sm:min-h-[255px]">  
             <div className="flex items-center gap-1 mb-2 px-1">
                 <p className='text-white font-bold tracking-tight text-sm max-sm:text-[10px] max-md:text-[12px]'>Recently listened</p>
                 <div className="h-px flex-1 bg-white/5" />
@@ -87,7 +87,7 @@ const RecentlyPlayed = () => {
                     })}
                 </div>
             ) : (
-                <div className="flex flex-col items-center justify-center py-14 px-4 rounded-4xl border border-dashed border-white/5 bg-white/[0.01]">
+                <div className="flex flex-col items-center justify-center py-18 md:py-15 px-4 rounded-4xl border border-dashed border-white/5 bg-white/[0.01]">
                     <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center mb-2">
                         <Music size={18} className="text-gray-600" />
                     </div>

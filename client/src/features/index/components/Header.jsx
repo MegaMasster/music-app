@@ -41,7 +41,7 @@ const Header = () => {
         <motion.header 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="flex justify-center items-center h-[80px]  mt-4 py-3 px-6 bg-white/2 border border-white/5 backdrop-blur-md rounded-2xl
+            className="flex justify-center items-center h-[70px]  mt-4 py-3 px-6 bg-white/2 border border-white/5 backdrop-blur-md rounded-2xl
             w-[calc(100%-32px)] 
             max-w-[700px] 
             min-w-[320px]"
