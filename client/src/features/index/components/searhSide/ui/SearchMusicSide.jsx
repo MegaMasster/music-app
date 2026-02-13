@@ -426,7 +426,7 @@ const SearchMusicSide = () => {
                 ) : (
                     <>
                         {isError ? (
-                            <div className='flex items-center justify-center h-auto p-4 bg-rose-500/5 border border-rose-500/10 rounded-2xl shadow-inner'>
+                            <div className='min-h-[270px] sm:min-h-[255px] flex items-center justify-center h-auto p-4 bg-rose-500/5 border border-rose-500/10 rounded-2xl shadow-inner'>
                                 <p className='text-xs text-rose-400 font-mono tracking-tight uppercase'>{serverError}</p>
                             </div>
                         ) : (
