@@ -1,4 +1,3 @@
-import { P } from "framer-motion/dist/types.d-BJcRxCew"
 import { MAIN_ENDPOINTS } from "./mainEndpoints"
 const BASE_URL = import.meta.env.VITE_API_URL
 

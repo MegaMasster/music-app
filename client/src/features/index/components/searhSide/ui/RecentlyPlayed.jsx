@@ -6,7 +6,6 @@ import useControllerStore from "../../../../../shared/stores/useControllerStore"
 const RecentlyPlayed = () => {
 
     const getUserTracks = useRecentlyPlayedStore(state => state.getUserTracks)
-    // const addTrack = useRecentlyPlayedStore(state => state.addTrack)
     const userTracks = getUserTracks()
 
     const activeTrackId = useControllerStore(state => 
