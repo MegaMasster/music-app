@@ -119,7 +119,7 @@ const Router = () => {
                         }
                     />
 
-                    <Route element={<ProtectedRoute />}>
+                    
                         <Route element={<MainLayoutPage />}>
 
                             <Route path={ROUTES.INDEX} element={<IndexPage /> }> 
@@ -129,7 +129,7 @@ const Router = () => {
                             <Route path={ROUTES.ABOUT_AUTHOR} element={<AboutProjectPage />} />
 
                         </Route>
-                    </Route>
+                    
 
                     <Route
                         path="*"

@@ -13,7 +13,7 @@ const PlayerController = () => {
         <section className={`relative flex items-center 
                 w-[calc(100%-32px)] 
                 max-w-[700px] 
-                min-w-[320px] bg-white/2 border border-white/5 backdrop-blur-md rounded-2xl overflow-hidden transition-all duration-300 ${!activeTrackId ? 'px-6' : 'px-2'}`}>
+                min-w-[320px] h-[80px] bg-white/2 border border-white/5 backdrop-blur-md rounded-2xl overflow-hidden transition-all duration-300 ${!activeTrackId ? 'px-6' : 'px-2'}`}>
             <AnimatePresence mode="wait">
                 {activeTrackId ? (
                     <motion.div

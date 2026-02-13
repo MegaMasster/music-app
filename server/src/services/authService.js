@@ -170,6 +170,8 @@ class UserService {
 
             await sendPasswordResetLink(email , resetToken)
 
+            console.log("Reset token: " , resetToken)
+
             return {
                 success: true,
                 email: email
