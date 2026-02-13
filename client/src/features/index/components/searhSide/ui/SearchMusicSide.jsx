@@ -310,7 +310,7 @@ const SearchMusicSide = () => {
 
             <div className='flex flex-col w-full mt-3 '>
                 {isMusicsFound && results.length > 0 ? (
-                    <div className="grid grid-cols-2 gap-2 w-full h-auto"> 
+                    <article className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full h-auto"> 
                         {results.slice(0, 6).map((track) => {
                             const isActive = activeTrackId === track.id
                             const isTrackAlreadyIn = idsArray.includes(track.id)
@@ -322,7 +322,7 @@ const SearchMusicSide = () => {
                                         setActiveTrackId(track.id)
                                         addTrack(track)
                                     }}
-                                    className={`group relative flex items-center h-17 gap-2 p-2 w-full rounded-lg border transition-all duration-500 cursor-pointer 
+                                    className={`group relative flex items-center h-17 max-sm:h-12 max-md:h-15 md gap-2 p-2 w-full rounded-lg border transition-all duration-500 cursor-pointer 
                                     ${isActive 
                                         ? 'bg-blue-600/10 border-blue-500/40 shadow-[0_0_25px_rgba(59,130,246,0.15)]' 
                                         : 'bg-white/[0.03] border-white/5 hover:border-blue-500/30 hover:bg-white/[0.08]'
@@ -333,7 +333,7 @@ const SearchMusicSide = () => {
                                         <div className="absolute inset-0 bg-linear-to-r from-blue-500/10 via-transparent to-transparent pointer-events-none" />
                                     )}
 
-                                    <div className="relative w-12 h-12 flex-shrink-0 rounded-xl overflow-hidden shadow-xl bg-black/40">
+                                    <div className="relative w-12 h-12 max-sm:h-9 max-sm:w-9 max-md:h-11 max-md:w-11 flex-shrink-0 rounded-xl overflow-hidden shadow-xl bg-black/40">
                                         <img 
                                             src={track.album.images[0]?.url} 
                                             alt={track.name}
@@ -357,17 +357,17 @@ const SearchMusicSide = () => {
                                     </div>
 
                                     <div className="flex flex-col flex-1 min-w-0">
-                                        <h4 className={`text-[12px] font-bold truncate transition-colors duration-300
+                                        <h4 className={`text-[12px] max-sm:text-[8px] max-md:text-[10px] font-bold truncate transition-colors duration-300
                                             ${isActive ? 'text-blue-400' : 'text-white'}`}>
                                             {track.name}
                                         </h4>
-                                        <p className="text-[11px] text-gray-500 truncate mt-0.5">
+                                        <p className="text-[11px] max-sm:text-[8px] max-md:text-[10px] text-gray-500 truncate mt-0.5">
                                             {track.artists[0]?.name}
                                         </p>
                                         
                                         {isActive && (
-                                            <span className="text-[8px] text-blue-500/80 font-black tracking-[0.2em] mt-1.5 animate-pulse">
-                                                NOW PLAYING
+                                            <span className="text-[8px] max-sm:text-[6px] max-md:text-[7px] text-blue-500/80 font-black tracking-[0.2em] mt-1.5 animate-pulse">
+                                                Now Playing
                                             </span>
                                         )}
                                     </div>
@@ -422,7 +422,7 @@ const SearchMusicSide = () => {
                                 </div>
                             )
                         })}
-                    </div>
+                    </article>
                 ) : (
                     <>
                         {isError ? (
